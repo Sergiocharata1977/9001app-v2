@@ -1,0 +1,64 @@
+{
+  "tags": {
+    "allowUnknownTags": true,
+    "dictionaries": ["jsdoc", "closure"]
+  },
+  "source": {
+    "include": [
+      "backend/src",
+      "frontend/src",
+      "agent-coordinator/src"
+    ],
+    "includePattern": "\\.(js|jsx|ts|tsx)$",
+    "excludePattern": "(node_modules/|dist/|build/|coverage/)"
+  },
+  "plugins": [
+    "plugins/markdown",
+    "plugins/summarize"
+  ],
+  "templates": {
+    "cleverLinks": true,
+    "monospaceLinks": true,
+    "default": {
+      "outputSourceFiles": true,
+      "includeDate": false
+    },
+    "path": "node_modules/docdash",
+    "staticFiles": {
+      "include": [
+        "./docs/assets/css",
+        "./docs/assets/js"
+      ]
+    }
+  },
+  "opts": {
+    "destination": "./docs/api",
+    "recurse": true,
+    "readme": "./docs/README.md",
+    "template": "node_modules/docdash",
+    "tutorials": "./docs/tutorials",
+    "configure": "./docs/jsdoc-config.json"
+  },
+  "markdown": {
+    "parser": "gfm",
+    "hardwrap": true,
+    "idInHeadings": true
+  },
+  "docdash": {
+    "static": true,
+    "sort": true,
+    "search": true,
+    "collapse": false,
+    "typedefs": true,
+    "removeQuotes": "none",
+    "scripts": [],
+    "menu": {
+      "Github repo": {
+        "href": "https://github.com/Sergiocharata1977/9001app-v2",
+        "target": "_blank",
+        "class": "menu-item",
+        "id": "repository"
+      }
+    }
+  }
+}

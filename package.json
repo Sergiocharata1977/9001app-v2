@@ -1,32 +1,149 @@
 {
-  "name": "agent-coordinator",
-  "version": "1.0.0",
-  "description": "Coordinador de agentes para proyecto ISO 9001",
-  "main": "dist/coordinator.js",
+  "name": "9001app-v2",
+  "version": "2.0.0",
+  "description": "Sistema de Gestión de Calidad ISO 9001:2015 con migración a MongoDB Atlas y sistema de agentes inteligentes",
+  "main": "index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/coordinator.js",
-    "dev": "ts-node src/coordinator.ts",
-    "security": "node dist/coordinator.js security",
-    "structure": "node dist/coordinator.js structure",
-    "typescript": "node dist/coordinator.js typescript",
-    "api": "node dist/coordinator.js api",
-    "full": "node dist/coordinator.js full-migration",
-    "web": "node dist/coordinator.js web"
+    "start": "node backend/index.js",
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:backend": "cd backend && npm run dev",
+    "dev:frontend": "cd frontend && npm run dev",
+    "build": "npm run build:backend && npm run build:frontend",
+    "build:backend": "cd backend && npm run build",
+    "build:frontend": "cd frontend && npm run build",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "cd backend && npm test",
+    "test:frontend": "cd frontend && npm test",
+    "lint": "npm run lint:backend && npm run lint:frontend",
+    "lint:backend": "cd backend && npm run lint",
+    "lint:frontend": "cd frontend && npm run lint",
+    "format": "npm run format:backend && npm run format:frontend",
+    "format:backend": "cd backend && npm run format",
+    "format:frontend": "cd frontend && npm run format",
+    "install:all": "npm install && cd backend && npm install && cd ../frontend && npm install && cd ../agent-coordinator && npm install",
+    "setup": "npm run setup:mongodb && npm run setup:agents",
+    "setup:mongodb": "node setup-mongodb.js",
+    "setup:agents": "cd agent-coordinator && npm run setup",
+    "migrate": "npm run migrate:schemas && npm run migrate:data",
+    "migrate:schemas": "node scripts/migrate-schemas.js",
+    "migrate:data": "node scripts/migrate-data.js",
+    "validate": "npm run validate:migration && npm run validate:system",
+    "validate:migration": "node scripts/validate-migration.js",
+    "validate:system": "node scripts/validate-system.js",
+    "rollback": "node scripts/rollback-migration.js",
+    "agents:start": "cd agent-coordinator && npm run start",
+    "agents:stop": "cd agent-coordinator && npm run stop",
+    "agents:restart": "cd agent-coordinator && npm run restart",
+    "agents:status": "cd agent-coordinator && npm run status",
+    "agents:logs": "cd agent-coordinator && npm run logs",
+    "agent:run": "cd agent-coordinator && npm run run",
+    "agents:test": "cd agent-coordinator && npm run test",
+    "docs:generate": "npm run docs:api && npm run docs:migration && npm run docs:agents && npm run docs:superadmin",
+    "docs:api": "jsdoc -c docs/jsdoc-config.json",
+    "docs:migration": "node scripts/generate-migration-docs.js",
+    "docs:agents": "node scripts/generate-agents-docs.js",
+    "docs:superadmin": "node scripts/generate-superadmin-docs.js",
+    "docs:validate": "node scripts/validate-docs.js",
+    "docs:pdf": "node scripts/generate-pdf-docs.js",
+    "docs:update": "npm run docs:generate && npm run docs:validate",
+    "docs:serve": "npx http-server docs -p 8080 -o",
+    "deploy": "npm run deploy:backend && npm run deploy:frontend",
+    "deploy:backend": "cd backend && npm run deploy",
+    "deploy:frontend": "cd frontend && npm run deploy",
+    "monitor": "npm run monitor:system && npm run monitor:agents",
+    "monitor:system": "node scripts/monitor-system.js",
+    "monitor:agents": "cd agent-coordinator && npm run monitor",
+    "backup": "node scripts/backup-system.js",
+    "restore": "node scripts/restore-system.js",
+    "clean": "npm run clean:node_modules && npm run clean:build && npm run clean:logs",
+    "clean:node_modules": "rm -rf node_modules && cd backend && rm -rf node_modules && cd ../frontend && rm -rf node_modules && cd ../agent-coordinator && rm -rf node_modules",
+    "clean:build": "rm -rf dist && cd backend && rm -rf dist && cd ../frontend && rm -rf dist",
+    "clean:logs": "rm -rf logs && cd agent-coordinator && rm -rf logs",
+    "reset": "npm run clean && npm run install:all && npm run setup",
+    "health": "node scripts/health-check.js",
+    "performance": "node scripts/performance-test.js",
+    "security": "node scripts/security-audit.js",
+    "update": "npm run update:dependencies && npm run update:docs",
+    "update:dependencies": "npm update && cd backend && npm update && cd ../frontend && npm update && cd ../agent-coordinator && npm update",
+    "update:docs": "npm run docs:update",
+    "report": "npm run report:coverage && npm run report:performance && npm run report:security",
+    "report:coverage": "node scripts/generate-coverage-report.js",
+    "report:performance": "node scripts/generate-performance-report.js",
+    "report:security": "node scripts/generate-security-report.js"
   },
-  "dependencies": {
-    "@types/node": "^20.0.0",
-    "axios": "^1.4.0",
-    "chalk": "^5.0.0",
-    "commander": "^11.0.0",
-    "cors": "^2.8.5",
-    "express": "^4.21.2",
-    "typescript": "^5.0.0"
+  "keywords": [
+    "iso9001",
+    "quality-management",
+    "mongodb",
+    "typescript",
+    "react",
+    "nodejs",
+    "agents",
+    "audit",
+    "crm",
+    "agricultural"
+  ],
+  "author": "Sergio Charata",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sergiocharata1977/9001app-v2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Sergiocharata1977/9001app-v2/issues"
+  },
+  "homepage": "https://github.com/Sergiocharata1977/9001app-v2#readme",
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
   },
   "devDependencies": {
-    "@types/commander": "^2.12.0",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^4.17.23",
-    "ts-node": "^10.9.0"
+    "concurrently": "^8.2.2",
+    "jsdoc": "^4.0.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.0",
+    "mermaid": "^10.6.0",
+    "markdown-pdf": "^11.0.0",
+    "http-server": "^14.1.1",
+    "prettier": "^3.1.0",
+    "eslint": "^8.55.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "cross-env": "^7.0.3"
+  },
+  "config": {
+    "docs": {
+      "output": "./docs",
+      "templates": "./docs-templates",
+      "assets": "./docs/assets"
+    },
+    "migration": {
+      "source": "turso",
+      "target": "mongodb",
+      "validate": true,
+      "backup": true
+    },
+    "agents": {
+      "count": 9,
+      "autoRestart": true,
+      "healthCheck": true
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{md,json}": [
+      "prettier --write"
+    ]
   }
 }
