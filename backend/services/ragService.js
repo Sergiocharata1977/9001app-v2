@@ -1,4 +1,4 @@
-const { createClient } = require('@libsql/client');
+const { createClient } = require('mongoose');
 
 /**
  * Servicio RAG simplificado para el Sistema SGC ISO 9001
@@ -6,10 +6,10 @@ const { createClient } = require('@libsql/client');
  */
 class RAGService {
   constructor() {
-    // Configuración de Turso
+    // MongoDB
     this.tursoClient = createClient({
-      url: process.env.TURSO_DATABASE_URL || 'libsql://isoflow4-sergiocharata1977.turso.io',
-      authToken: process.env.TURSO_AUTH_TOKEN || ''
+      url: process.env.MONGODB_URI || 'mongodb://isoflow4-sergiocharata1977.turso.io',
+      authToken: process.env.MONGODB_AUTH_TOKEN || ''
     });
   }
 
@@ -30,7 +30,7 @@ class RAGService {
         ...options
       };
 
-      // Paso 1: Buscar datos relevantes en Turso
+      // MongoDB
       const relevantData = await this.searchData(question, organizationId);
       
       // Paso 2: Calcular relevancia y ordenar

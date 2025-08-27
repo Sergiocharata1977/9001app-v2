@@ -2,7 +2,7 @@
 
 # 🗄️ BASE DE DATOS (SQLite local para desarrollo)
 DATABASE_URL=file:./data.db
-TURSO_AUTH_TOKEN=local-development
+MONGODB_AUTH_TOKEN=local-development
 
 # 🔐 JWT SECRET (para desarrollo)
 JWT_SECRET=dev-secret-key-change-in-production

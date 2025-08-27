@@ -16,10 +16,10 @@ export class TursoRAGController {
   private ragService: TursoRAGService;
 
   constructor() {
-    // Configuración de Turso desde variables de entorno
+    // MongoDB
     const tursoConfig = {
-      url: process.env.TURSO_DATABASE_URL || 'libsql://isoflow4-sergiocharata1977.turso.io',
-      authToken: process.env.TURSO_AUTH_TOKEN || ''
+      url: process.env.MONGODB_URI || 'mongodb://isoflow4-sergiocharata1977.turso.io',
+      authToken: process.env.MONGODB_AUTH_TOKEN || ''
     };
 
     const openaiApiKey = process.env.OPENAI_API_KEY || '';

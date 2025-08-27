@@ -5,7 +5,7 @@
  * Sistema para consultas directas a tablas específicas
  */
 
-const tursoClient = require('../lib/tursoClient.js');
+import MongoDBConnection from '../config/mongodb';
 
 class DirectQuerySystem {
   static async queryPersonal(organizationId = 1) {

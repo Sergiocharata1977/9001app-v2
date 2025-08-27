@@ -1,5 +1,5 @@
 const { Router  } = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+import MongoDBConnection from '../config/mongodb';
 const { randomUUID  } = require('crypto');
 const { ensureTenant, secureQuery, requireRole  } = require('../middleware/tenantMiddleware.js');
 

@@ -1,4 +1,4 @@
-const tursoClient = require('../lib/tursoClient.js');
+import MongoDBConnection from '../config/mongodb';
 
 /**
  * Middleware para validar límites del plan de la organización

@@ -83,7 +83,7 @@ const AdministracionPage = () => {
     {
       categoria: 'Base de Datos',
       configuraciones: [
-        { nombre: 'DATABASE_URL', descripcion: 'URL de conexión a Turso DB', tipo: 'string', requerido: true },
+        { nombre: 'DATABASE_URL', descripcion: 'URL de conexión a MongoDB', tipo: 'string', requerido: true },
         { nombre: 'DATABASE_AUTH_TOKEN', descripcion: 'Token de autenticación Turso', tipo: 'string', requerido: true }
       ]
     },
@@ -275,7 +275,7 @@ const AdministracionPage = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-gray-600 mb-3">
-                  Turso DB con soporte multi-tenant
+                  MongoDB con soporte multi-tenant
                 </p>
                 <Badge className="bg-green-100 text-green-800">Multi-Tenant</Badge>
               </CardContent>

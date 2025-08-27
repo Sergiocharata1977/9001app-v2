@@ -1,4 +1,4 @@
-const tursoClient = require('../lib/tursoClient.js');
+import MongoDBConnection from '../config/mongodb';
 const { randomUUID } = require('crypto');
 
 // Función para registrar una acción en los logs de auditoría
