@@ -33,7 +33,7 @@ router.get('/stats', async (req, res) => {
 
 /**
  * GET /api/rag/test-connection
- * Prueba la conectividad con Turso
+ * Prueba la conectividad con MongoDB
  */
 router.get('/test-connection', async (req, res) => {
   await ragController.testConnection(req, res);
@@ -68,7 +68,7 @@ router.get('/suggestions', async (req, res) => {
 
 /**
  * POST /api/rag/create-table
- * Crea la tabla RAG en Turso
+ * Crea la tabla RAG en MongoDB
  */
 router.post('/create-table', async (req, res) => {
   await ragController.createRAGTable(req, res);

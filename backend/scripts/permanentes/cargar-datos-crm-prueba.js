@@ -2,15 +2,12 @@
 // SCRIPT PARA CARGAR DATOS DE PRUEBA CRM
 // ===============================================
 
-import { TursoClient } from '@libsql/client';
+import { MongoClient } from 'mongodb';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
-const tursoClient = new TursoClient({
-    url: process.env.TURSO_DATABASE_URL,
-    authToken: process.env.TURSO_AUTH_TOKEN,
-});
+const mongoClient = mongoClient;
 
 // Datos de prueba para clientes
 const clientesPrueba = [
@@ -122,7 +119,7 @@ async function cargarClientesPrueba() {
         console.log('🚀 Iniciando carga de datos de prueba CRM...');
 
         // Verificar si ya existen clientes
-        const clientesExistentes = await tursoClient.execute({
+        const clientesExistentes = await mongoClient.execute({
             sql: 'SELECT COUNT(*) as count FROM clientes WHERE organization_id = 1'
         });
 
@@ -137,7 +134,7 @@ async function cargarClientesPrueba() {
             const clienteId = generarId();
             const now = new Date().toISOString();
 
-            await tursoClient.execute({
+            await mongoClient.execute({
                 sql: `INSERT INTO clientes (
           id, organization_id, nombre, razon_social, rfc, tipo_cliente, categoria,
           direccion, ciudad, estado, codigo_postal, pais, telefono, email, sitio_web,
@@ -160,18 +157,18 @@ async function cargarClientesPrueba() {
         console.log('🎉 Carga de clientes de prueba completada exitosamente');
 
         // Mostrar estadísticas
-        const totalClientes = await tursoClient.execute({
+        const totalClientes = await mongoClient.execute({
             sql: 'SELECT COUNT(*) as total FROM clientes WHERE organization_id = 1'
         });
 
-        const clientesPorTipo = await tursoClient.execute({
+        const clientesPorTipo = await mongoClient.execute({
             sql: `SELECT tipo_cliente, COUNT(*) as count 
             FROM clientes 
             WHERE organization_id = 1 
             GROUP BY tipo_cliente`
         });
 
-        const clientesPorCategoria = await tursoClient.execute({
+        const clientesPorCategoria = await mongoClient.execute({
             sql: `SELECT categoria, COUNT(*) as count 
             FROM clientes 
             WHERE organization_id = 1 

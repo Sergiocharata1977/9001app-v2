@@ -1,12 +1,12 @@
 import { Router } from 'express';
-import { TursoRAGController } from '../controllers/tursoRAGController';
+import { MongoDBRAGController } from '../controllers/mongodbRAGController';
 import { authMiddleware } from '../../middleware/authMiddleware';
 
 const router = Router();
-const ragController = new TursoRAGController();
+const ragController = new MongoDBRAGController();
 
 /**
- * Rutas para el Sistema RAG con Turso e IA
+ * Rutas para el Sistema RAG con MongoDB e IA
  * Todas las rutas requieren autenticación
  */
 
@@ -33,7 +33,7 @@ router.get('/stats', async (req, res) => {
 
 /**
  * GET /api/rag/test-connection
- * Prueba la conectividad con Turso
+ * Prueba la conectividad con MongoDB
  */
 router.get('/test-connection', async (req, res) => {
   await ragController.testConnection(req, res);
@@ -74,7 +74,7 @@ router.get('/health', async (req, res) => {
   try {
     res.json({
       success: true,
-      message: 'Sistema RAG con Turso funcionando correctamente',
+      message: 'Sistema RAG con MongoDB funcionando correctamente',
       timestamp: new Date().toISOString(),
       version: '1.0.0',
       features: [

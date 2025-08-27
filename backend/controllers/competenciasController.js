@@ -1,4 +1,4 @@
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 // Listar todas las competencias de la organización del usuario
 const getCompetencias = async (req, res) => {
@@ -14,7 +14,7 @@ const getCompetencias = async (req, res) => {
 
     console.log(`🔎 [Competencias] Obteniendo competencias para organización: ${organization_id}`);
     
-    const result = await tursoClient.execute({ 
+    const result = await mongoClient.execute({ 
       sql: 'SELECT * FROM competencias WHERE organization_id = ? ORDER BY created_at DESC',
       args: [organization_id]
     });
@@ -56,7 +56,7 @@ const createCompetencia = async (req, res) => {
       });
     }
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'INSERT INTO competencias (nombre, descripcion, organization_id, created_at, updated_at) VALUES (?, ?, ?, datetime("now"), datetime("now"))',
       args: [nombre, descripcion || '', organization_id]
     });
@@ -105,7 +105,7 @@ const updateCompetencia = async (req, res) => {
     }
     
     // Verificar que la competencia pertenece a la organización
-    const existingResult = await tursoClient.execute({
+    const existingResult = await mongoClient.execute({
       sql: 'SELECT id FROM competencias WHERE id = ? AND organization_id = ?',
       args: [id, organization_id]
     });
@@ -117,7 +117,7 @@ const updateCompetencia = async (req, res) => {
       });
     }
     
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: 'UPDATE competencias SET nombre = ?, descripcion = ?, updated_at = datetime("now") WHERE id = ? AND organization_id = ?',
       args: [nombre, descripcion || '', id, organization_id]
     });
@@ -153,7 +153,7 @@ const deleteCompetencia = async (req, res) => {
     }
     
     // Verificar que la competencia pertenece a la organización
-    const existingResult = await tursoClient.execute({
+    const existingResult = await mongoClient.execute({
       sql: 'SELECT id FROM competencias WHERE id = ? AND organization_id = ?',
       args: [id, organization_id]
     });
@@ -165,7 +165,7 @@ const deleteCompetencia = async (req, res) => {
       });
     }
     
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: 'DELETE FROM competencias WHERE id = ? AND organization_id = ?',
       args: [id, organization_id]
     });

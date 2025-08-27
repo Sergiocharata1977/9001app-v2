@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const authMiddleware = require('../middleware/authMiddleware');
-const tursoClient = require('../lib/tursoClient');
+const mongoClient = require('../lib/mongoClient');
 
 router.use(authMiddleware);
 
@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
     const orgId = req.user?.organization_id;
     console.log('🔧 Obteniendo proyectos de diseño y desarrollo para organización:', orgId);
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT * FROM diseno_desarrollo_productos 
             WHERE organization_id = ? 
             ORDER BY created_at DESC`,
@@ -47,7 +47,7 @@ router.get('/:id', async (req, res) => {
     const orgId = req.user?.organization_id;
     console.log('🔧 Obteniendo proyecto:', id);
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT * FROM diseno_desarrollo_productos 
             WHERE id = ? AND organization_id = ?`,
       args: [id, orgId]
@@ -93,7 +93,7 @@ router.post('/', async (req, res) => {
     const orgId = req.user?.organization_id;
     console.log('🔧 Creando nuevo proyecto de diseño y desarrollo');
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO diseno_desarrollo_productos (
         organization_id, nombre_producto, descripcion, etapa_actual,
         responsable_id, fecha_inicio, fecha_fin_estimada,
@@ -148,7 +148,7 @@ router.put('/:id', async (req, res) => {
     const orgId = req.user?.organization_id;
     console.log('🔧 Actualizando proyecto:', id);
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `UPDATE diseno_desarrollo_productos SET
         nombre_producto = ?, descripcion = ?, etapa_actual = ?,
         responsable_id = ?, fecha_inicio = ?, fecha_fin_estimada = ?,
@@ -194,7 +194,7 @@ router.delete('/:id', async (req, res) => {
     const orgId = req.user?.organization_id;
     console.log('🔧 Eliminando proyecto:', id);
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `DELETE FROM diseno_desarrollo_productos 
             WHERE id = ? AND organization_id = ?`,
       args: [id, orgId]

@@ -114,7 +114,7 @@ ${generarSeccionArchivos(mapa.docs, 'docs-esenciales')}
 
 ## 🔍 **ARCHIVOS CRÍTICOS**
 - **Configuración:** \`frontend/src/config/\`, \`backend/config/\`
-- **Base de Datos:** \`backend/lib/tursoClient.js\`
+- **Base de Datos:** \`backend/lib/mongoClient.js\`
 - **Rutas Principales:** \`frontend/src/routes/AppRoutes.jsx\`
 - **Menús:** \`frontend/src/components/menu/MainMenuCards.jsx\`
 - **Autenticación:** \`backend/middleware/authMiddleware.js\`
@@ -122,7 +122,7 @@ ${generarSeccionArchivos(mapa.docs, 'docs-esenciales')}
 ## 📝 **NOTAS PARA IA**
 - Los archivos más importantes están en \`components/\`, \`pages/\`, \`controllers/\`
 - La estructura sigue patrones React + Express estándar
-- Base de datos: Turso (SQLite) con 35+ tablas
+- Base de datos: MongoDB (SQLite) con 35+ tablas
 - Sistema RAG implementado en \`backend/RAG-System/\`
 `;
 

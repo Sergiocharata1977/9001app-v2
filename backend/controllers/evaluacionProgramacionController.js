@@ -1,4 +1,4 @@
-const turso = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 // Obtener todas las programaciones de evaluación de una organización
 const getProgramaciones = async (req, res) => {
@@ -6,7 +6,7 @@ const getProgramaciones = async (req, res) => {
 
   try {
     console.log('🔄 [Backend] Obteniendo programaciones para organización:', organization_id);
-    const result = await turso.execute({
+    const result = await mongodb.execute({
       sql: 'SELECT * FROM evaluacion_programacion WHERE organization_id = ? ORDER BY fecha_creacion DESC',
       args: [organization_id],
     });
@@ -41,7 +41,7 @@ const createProgramacion = async (req, res) => {
   }
 
   try {
-    const result = await turso.execute({
+    const result = await mongodb.execute({
       sql: 'INSERT INTO evaluacion_programacion (organization_id, nombre, descripcion, fecha_inicio, fecha_fin, estado, usuario_creador) VALUES (?, ?, ?, ?, ?, ?, ?)',
       args: [organization_id, nombreFinal, descripcion, fecha_inicio, fecha_fin, estado || 'borrador', String(user_id)],
     });
@@ -71,7 +71,7 @@ const getProgramacionById = async (req, res) => {
   const { id } = req.params;
 
   try {
-    const result = await turso.execute({
+    const result = await mongodb.execute({
       sql: 'SELECT * FROM evaluacion_programacion WHERE id = ? AND organization_id = ?',
       args: [id, organization_id],
     });
@@ -98,7 +98,7 @@ const updateProgramacion = async (req, res) => {
 
   try {
     // Verificar que la programación existe y pertenece a la organización
-    const existingResult = await turso.execute({
+    const existingResult = await mongodb.execute({
       sql: 'SELECT * FROM evaluacion_programacion WHERE id = ? AND organization_id = ?',
       args: [id, organization_id],
     });
@@ -108,13 +108,13 @@ const updateProgramacion = async (req, res) => {
     }
 
     // Actualizar la programación
-    await turso.execute({
+    await mongodb.execute({
       sql: 'UPDATE evaluacion_programacion SET nombre = ?, descripcion = ?, fecha_inicio = ?, fecha_fin = ?, estado = ? WHERE id = ? AND organization_id = ?',
       args: [nombreFinal, descripcion, fecha_inicio, fecha_fin, estado, id, organization_id],
     });
 
     // Obtener la programación actualizada
-    const updatedResult = await turso.execute({
+    const updatedResult = await mongodb.execute({
       sql: 'SELECT * FROM evaluacion_programacion WHERE id = ? AND organization_id = ?',
       args: [id, organization_id],
     });
@@ -133,7 +133,7 @@ const deleteProgramacion = async (req, res) => {
 
   try {
     // Verificar que la programación existe y pertenece a la organización
-    const existingResult = await turso.execute({
+    const existingResult = await mongodb.execute({
       sql: 'SELECT * FROM evaluacion_programacion WHERE id = ? AND organization_id = ?',
       args: [id, organization_id],
     });
@@ -143,7 +143,7 @@ const deleteProgramacion = async (req, res) => {
     }
 
     // Eliminar la programación
-    await turso.execute({
+    await mongodb.execute({
       sql: 'DELETE FROM evaluacion_programacion WHERE id = ? AND organization_id = ?',
       args: [id, organization_id],
     });

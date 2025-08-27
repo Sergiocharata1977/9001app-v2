@@ -1,5 +1,5 @@
 const express = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 const authMiddleware = require('../middleware/authMiddleware.js');
 
 const router = express.Router();
@@ -15,7 +15,7 @@ router.get('/', authMiddleware, async (req, res) => {
     const orgId = req.user?.organization_id || 2;
     console.log('📋 Obteniendo todos los procesos SGC para organización:', orgId);
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT 
         p.id, p.codigo, p.nombre, p.descripcion, p.objetivo, p.alcance, p.version,
         p.tipo, p.categoria, p.nivel_critico, p.estado, p.responsable_id,
@@ -64,7 +64,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
     console.log(`🔍 Buscando proceso SGC con ID: ${id}`);
     
     // Obtener proceso principal
-    const procesoResult = await tursoClient.execute({
+    const procesoResult = await mongoClient.execute({
       sql: 'SELECT * FROM procesos WHERE id = ? AND organization_id = ? AND is_active = 1',
       args: [id, orgId]
     });
@@ -79,7 +79,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
     const proceso = procesoResult.rows[0];
     
     // Obtener participantes SGC
-    const participantesResult = await tursoClient.execute({
+    const participantesResult = await mongoClient.execute({
       sql: `SELECT sp.*, p.nombre_completo, p.puesto 
             FROM sgc_personal_relaciones sp
             LEFT JOIN personal p ON sp.personal_id = p.id
@@ -89,7 +89,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
     });
     
     // Obtener documentos SGC
-    const documentosResult = await tursoClient.execute({
+    const documentosResult = await mongoClient.execute({
       sql: `SELECT sd.*, d.nombre as documento_nombre, d.tipo as documento_tipo
             FROM sgc_documentos_relacionados sd
             LEFT JOIN documentos d ON sd.documento_id = d.id
@@ -99,7 +99,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
     });
     
     // Obtener normas SGC
-    const normasResult = await tursoClient.execute({
+    const normasResult = await mongoClient.execute({
       sql: `SELECT sn.*, n.nombre as norma_nombre
             FROM sgc_normas_relacionadas sn
             LEFT JOIN normas n ON sn.norma_id = n.id
@@ -169,7 +169,7 @@ router.post('/', authMiddleware, async (req, res) => {
     const id = `proc-${Date.now()}`;
     const codigoFinal = codigo || `PROC-${String(Date.now()).slice(-6)}`;
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO procesos (
         id, organization_id, codigo, nombre, descripcion, objetivo, alcance, version,
         tipo, categoria, nivel_critico, responsable_id, departamento_id, supervisor_id,
@@ -237,7 +237,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
       });
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `UPDATE procesos SET 
         codigo = COALESCE(?, codigo),
         nombre = ?, descripcion = COALESCE(?, descripcion), 
@@ -298,7 +298,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     console.log(`🗑️ Eliminando proceso SGC ID: ${id}`);
 
     // Soft delete - marcar como inactivo en lugar de eliminar
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `UPDATE procesos SET 
         is_active = 0, estado = 'obsoleto', 
         updated_at = datetime('now'), updated_by = ?,
@@ -317,15 +317,15 @@ router.delete('/:id', authMiddleware, async (req, res) => {
 
     // También desactivar datos SGC relacionados
     await Promise.all([
-      tursoClient.execute({
+      mongoClient.execute({
         sql: 'UPDATE sgc_personal_relaciones SET is_active = 0 WHERE entidad_tipo = "proceso" AND entidad_id = ?',
         args: [id]
       }),
-      tursoClient.execute({
+      mongoClient.execute({
         sql: 'UPDATE sgc_documentos_relacionados SET is_active = 0 WHERE entidad_tipo = "proceso" AND entidad_id = ?',
         args: [id]
       }),
-      tursoClient.execute({
+      mongoClient.execute({
         sql: 'UPDATE sgc_normas_relacionadas SET is_active = 0 WHERE entidad_tipo = "proceso" AND entidad_id = ?',
         args: [id]
       })
@@ -357,7 +357,7 @@ router.get('/:id/participantes', authMiddleware, async (req, res) => {
     const { id } = req.params;
     const orgId = req.user?.organization_id || 2;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT 
         sp.id, sp.personal_id, sp.rol, sp.asistio, sp.justificacion_ausencia,
         sp.observaciones, sp.datos_adicionales, sp.created_at, sp.updated_at,
@@ -403,7 +403,7 @@ router.post('/:id/participantes', authMiddleware, async (req, res) => {
     
     const participanteId = `PART_PROC_${id}_${personal_id}`;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO sgc_personal_relaciones (
         id, organization_id, entidad_tipo, entidad_id, personal_id, rol,
         observaciones, created_at, updated_at, created_by, is_active
@@ -433,7 +433,7 @@ router.get('/:id/documentos', authMiddleware, async (req, res) => {
     const { id } = req.params;
     const orgId = req.user?.organization_id || 2;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT 
         sd.id, sd.documento_id, sd.tipo_relacion, sd.descripcion, sd.es_obligatorio,
         sd.datos_adicionales, sd.created_at, sd.updated_at,
@@ -479,7 +479,7 @@ router.post('/:id/documentos', authMiddleware, async (req, res) => {
     
     const documentoId = `DOC_PROC_${id}_${documento_id}`;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO sgc_documentos_relacionados (
         id, organization_id, entidad_tipo, entidad_id, documento_id, tipo_relacion,
         descripcion, es_obligatorio, created_at, updated_at, created_by, is_active
@@ -509,7 +509,7 @@ router.get('/:id/normas', authMiddleware, async (req, res) => {
     const { id } = req.params;
     const orgId = req.user?.organization_id || 2;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT 
         sn.id, sn.norma_id, sn.punto_norma, sn.clausula_descripcion, sn.tipo_relacion,
         sn.nivel_cumplimiento, sn.observaciones, sn.evidencias, sn.acciones_requeridas,
@@ -559,7 +559,7 @@ router.post('/:id/normas', authMiddleware, async (req, res) => {
     
     const normaId = `NOR_PROC_${id}_${norma_id}_${punto_norma.replace(/\./g, '_')}`;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO sgc_normas_relacionadas (
         id, organization_id, entidad_tipo, entidad_id, norma_id, punto_norma,
         clausula_descripcion, tipo_relacion, nivel_cumplimiento, observaciones,
@@ -595,7 +595,7 @@ router.get('/dashboard/sgc', authMiddleware, async (req, res) => {
     
     const [resumenResult, tiposResult, cumplimientoResult] = await Promise.all([
       // Resumen general
-      tursoClient.execute({
+      mongoClient.execute({
         sql: `SELECT 
           COUNT(*) as total_procesos,
           COUNT(CASE WHEN estado = 'activo' THEN 1 END) as activos,
@@ -607,7 +607,7 @@ router.get('/dashboard/sgc', authMiddleware, async (req, res) => {
       }),
       
       // Distribución por tipos
-      tursoClient.execute({
+      mongoClient.execute({
         sql: `SELECT tipo, categoria, COUNT(*) as cantidad
         FROM procesos WHERE organization_id = ? AND is_active = 1
         GROUP BY tipo, categoria ORDER BY cantidad DESC`,
@@ -615,7 +615,7 @@ router.get('/dashboard/sgc', authMiddleware, async (req, res) => {
       }),
       
       // Cumplimiento de normas
-      tursoClient.execute({
+      mongoClient.execute({
         sql: `SELECT 
           nivel_cumplimiento,
           COUNT(*) as cantidad

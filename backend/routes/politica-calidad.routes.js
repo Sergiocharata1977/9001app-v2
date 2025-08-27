@@ -1,5 +1,5 @@
 const express = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 const router = express.Router();
 
@@ -7,7 +7,7 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     console.log('📋 Obteniendo todas las políticas de calidad...');
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'SELECT * FROM politica_calidad WHERE organization_id = ? ORDER BY nombre',
       args: [req.user?.organization_id || 1]
     });
@@ -30,7 +30,7 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params;
     console.log(`🔍 Buscando política de calidad con ID: ${id}`);
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'SELECT * FROM politica_calidad WHERE id = ? AND organization_id = ?',
       args: [id, req.user?.organization_id || 1]
     });
@@ -78,7 +78,7 @@ router.post('/', async (req, res) => {
     // Generar ID único
     const id = `politica-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO politica_calidad (
         id, organization_id, nombre, politica_calidad, alcance, mapa_procesos, organigrama
       ) VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING *`,
@@ -128,7 +128,7 @@ router.put('/:id', async (req, res) => {
       });
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `UPDATE politica_calidad 
             SET nombre = ?, politica_calidad = ?, alcance = ?, mapa_procesos = ?, 
                 organigrama = ?, estado = ?, updated_at = datetime('now', 'localtime')
@@ -172,7 +172,7 @@ router.delete('/:id', async (req, res) => {
     console.log(`🗑️ Eliminando política de calidad ID: ${id}`);
 
     // Verificar si existe antes de eliminar
-    const checkResult = await tursoClient.execute({
+    const checkResult = await mongoClient.execute({
       sql: 'SELECT nombre FROM politica_calidad WHERE id = ? AND organization_id = ?',
       args: [id, req.user?.organization_id || 1]
     });
@@ -185,7 +185,7 @@ router.delete('/:id', async (req, res) => {
     }
 
     // Eliminar el registro
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: 'DELETE FROM politica_calidad WHERE id = ? AND organization_id = ?',
       args: [id, req.user?.organization_id || 1]
     });
@@ -212,7 +212,7 @@ router.get('/search/:term', async (req, res) => {
     const { term } = req.params;
     console.log(`🔍 Buscando políticas de calidad con término: ${term}`);
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT * FROM politica_calidad 
             WHERE organization_id = ? 
             AND (nombre LIKE ? OR politica_calidad LIKE ? OR alcance LIKE ?)

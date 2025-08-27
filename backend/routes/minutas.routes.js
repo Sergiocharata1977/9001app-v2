@@ -1,5 +1,5 @@
 const express = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 const router = express.Router();
 
@@ -19,7 +19,7 @@ router.get('/search', async (req, res) => {
       });
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT * FROM v_minutas_completas 
              WHERE titulo LIKE ? OR organizador_nombre LIKE ? OR agenda LIKE ?
              ORDER BY created_at DESC`,
@@ -44,23 +44,23 @@ router.get('/search', async (req, res) => {
 router.get('/stats', async (req, res) => {
   try {
     const [totalResult, participantesResult, documentosResult, normasResult, esteMesResult] = await Promise.all([
-      tursoClient.execute({
+      mongoClient.execute({
         sql: `SELECT COUNT(*) as total FROM minutas WHERE is_active = 1`,
         args: []
       }),
-      tursoClient.execute({
+      mongoClient.execute({
         sql: `SELECT COUNT(*) as total FROM sgc_personal_relaciones WHERE entidad_tipo = 'minuta' AND is_active = 1`,
         args: []
       }),
-      tursoClient.execute({
+      mongoClient.execute({
         sql: `SELECT COUNT(*) as total FROM sgc_documentos_relacionados WHERE entidad_tipo = 'minuta' AND is_active = 1`,
         args: []
       }),
-      tursoClient.execute({
+      mongoClient.execute({
         sql: `SELECT COUNT(*) as total FROM sgc_normas_relacionadas WHERE entidad_tipo = 'minuta' AND is_active = 1`,
         args: []
       }),
-      tursoClient.execute({
+      mongoClient.execute({
         sql: `SELECT COUNT(*) as esteMes FROM minutas 
               WHERE created_at >= datetime('now', 'start of month') AND is_active = 1`,
         args: []
@@ -94,7 +94,7 @@ router.get('/recent', async (req, res) => {
   try {
     const { limit = 10 } = req.query;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT * FROM v_minutas_completas ORDER BY created_at DESC LIMIT ?`,
       args: [parseInt(limit)]
     });
@@ -118,7 +118,7 @@ router.get('/export', async (req, res) => {
   try {
     const { format = 'json' } = req.query;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT * FROM v_minutas_completas ORDER BY created_at DESC`,
       args: []
     });
@@ -159,7 +159,7 @@ router.get('/', async (req, res) => {
     try {
       console.log('🔍 Probando consulta directa a tabla minutas...');
       // Primero hacer una consulta simple para verificar que la tabla existe
-      const tableCheck = await tursoClient.execute({
+      const tableCheck = await mongoClient.execute({
         sql: `SELECT name FROM sqlite_master WHERE type='table' AND name='minutas'`,
         args: []
       });
@@ -175,7 +175,7 @@ router.get('/', async (req, res) => {
       
       console.log('✅ Tabla minutas existe, procediendo con consulta...');
       
-      result = await tursoClient.execute({
+      result = await mongoClient.execute({
         sql: `SELECT * FROM minutas LIMIT 10`,
         args: []
       });
@@ -211,7 +211,7 @@ router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT * FROM v_minutas_completas WHERE id = ?`,
       args: [id]
     });
@@ -253,7 +253,7 @@ router.post('/', async (req, res) => {
       });
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO minutas (
         titulo, responsable, descripcion, created_at
       ) VALUES (?, ?, ?, datetime('now', 'localtime'))`,
@@ -265,7 +265,7 @@ router.post('/', async (req, res) => {
     });
 
     // Obtener la minuta creada
-    const createdMinuta = await tursoClient.execute({
+    const createdMinuta = await mongoClient.execute({
       sql: `SELECT * FROM minutas WHERE id = ?`,
       args: [result.lastInsertRowid]
     });
@@ -303,7 +303,7 @@ router.put('/:id', async (req, res) => {
     }
 
     // Verificar que la minuta existe
-    const existingMinuta = await tursoClient.execute({
+    const existingMinuta = await mongoClient.execute({
       sql: `SELECT * FROM minutas WHERE id = ?`,
       args: [id]
     });
@@ -316,7 +316,7 @@ router.put('/:id', async (req, res) => {
     }
 
     // Actualizar la minuta
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `UPDATE minutas SET 
         titulo = ?, 
         responsable = ?, 
@@ -331,7 +331,7 @@ router.put('/:id', async (req, res) => {
     });
 
     // Obtener la minuta actualizada
-    const updatedMinuta = await tursoClient.execute({
+    const updatedMinuta = await mongoClient.execute({
       sql: `SELECT * FROM minutas WHERE id = ?`,
       args: [id]
     });
@@ -357,7 +357,7 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
 
     // Verificar que la minuta existe
-    const existingMinuta = await tursoClient.execute({
+    const existingMinuta = await mongoClient.execute({
       sql: `SELECT * FROM minutas WHERE id = ?`,
       args: [id]
     });
@@ -370,7 +370,7 @@ router.delete('/:id', async (req, res) => {
     }
 
     // Eliminar la minuta
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `DELETE FROM minutas WHERE id = ?`,
       args: [id]
     });
@@ -394,7 +394,7 @@ router.get('/:id/documentos', async (req, res) => {
   try {
     const { id } = req.params;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT * FROM v_sgc_documentos_completos 
              WHERE entidad_tipo = 'minuta' AND entidad_id = ?
              ORDER BY tipo_relacion, documento_nombre`,
@@ -422,7 +422,7 @@ router.get('/:id/historial', async (req, res) => {
     
     // Por ahora retornamos un historial básico
     // En el futuro esto se conectará con una tabla de historial
-    const minuta = await tursoClient.execute({
+    const minuta = await mongoClient.execute({
       sql: `SELECT * FROM minutas WHERE id = ?`,
       args: [id]
     });
@@ -464,7 +464,7 @@ router.get('/:id/pdf', async (req, res) => {
   try {
     const { id } = req.params;
     
-    const minuta = await tursoClient.execute({
+    const minuta = await mongoClient.execute({
       sql: `SELECT * FROM minutas WHERE id = ?`,
       args: [id]
     });
@@ -498,7 +498,7 @@ router.get('/responsable/:responsable', async (req, res) => {
   try {
     const { responsable } = req.params;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT * FROM minutas WHERE responsable LIKE ? ORDER BY created_at DESC`,
       args: [`%${responsable}%`]
     });
@@ -522,7 +522,7 @@ router.post('/:id/duplicate', async (req, res) => {
   try {
     const { id } = req.params;
     
-    const minuta = await tursoClient.execute({
+    const minuta = await mongoClient.execute({
       sql: `SELECT * FROM minutas WHERE id = ?`,
       args: [id]
     });
@@ -536,7 +536,7 @@ router.post('/:id/duplicate', async (req, res) => {
 
     const originalMinuta = minuta.rows[0];
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO minutas (
         titulo, responsable, descripcion, created_at
       ) VALUES (?, ?, ?, datetime('now', 'localtime'))`,
@@ -548,7 +548,7 @@ router.post('/:id/duplicate', async (req, res) => {
     });
 
     // Obtener la minuta duplicada
-    const duplicatedMinuta = await tursoClient.execute({
+    const duplicatedMinuta = await mongoClient.execute({
       sql: `SELECT * FROM minutas WHERE id = ?`,
       args: [result.lastInsertRowid]
     });
@@ -577,7 +577,7 @@ router.get('/:id/participantes', async (req, res) => {
   try {
     const { id } = req.params;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT * FROM v_sgc_personal_relaciones_completos 
              WHERE entidad_tipo = 'minuta' AND entidad_id = ?
              ORDER BY rol, nombre_personal`,
@@ -612,7 +612,7 @@ router.post('/:id/participantes', async (req, res) => {
     }
 
     // Verificar que la minuta existe
-    const minutaExists = await tursoClient.execute({
+    const minutaExists = await mongoClient.execute({
       sql: `SELECT id FROM minutas WHERE id = ? AND is_active = 1`,
       args: [id]
     });
@@ -627,7 +627,7 @@ router.post('/:id/participantes', async (req, res) => {
     // Generar ID único
     const participanteId = `PART_MIN_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO sgc_personal_relaciones (
         id, organization_id, entidad_tipo, entidad_id, personal_id, 
         rol, asistio, datos_adicionales, created_at, updated_at, is_active
@@ -643,7 +643,7 @@ router.post('/:id/participantes', async (req, res) => {
     });
 
     // Obtener el participante creado con datos completos
-    const createdParticipante = await tursoClient.execute({
+    const createdParticipante = await mongoClient.execute({
       sql: `SELECT * FROM v_sgc_personal_relaciones_completos WHERE id = ?`,
       args: [participanteId]
     });
@@ -668,7 +668,7 @@ router.delete('/:id/participantes/:participanteId', async (req, res) => {
   try {
     const { id, participanteId } = req.params;
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `UPDATE sgc_personal_relaciones SET is_active = 0, updated_at = CURRENT_TIMESTAMP
              WHERE id = ? AND entidad_tipo = 'minuta' AND entidad_id = ?`,
       args: [participanteId, id]
@@ -713,7 +713,7 @@ router.post('/:id/documentos', async (req, res) => {
     }
 
     // Verificar que la minuta existe
-    const minutaExists = await tursoClient.execute({
+    const minutaExists = await mongoClient.execute({
       sql: `SELECT id FROM minutas WHERE id = ? AND is_active = 1`,
       args: [id]
     });
@@ -728,7 +728,7 @@ router.post('/:id/documentos', async (req, res) => {
     // Generar ID único
     const documentoId = `DOC_MIN_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
 
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `INSERT INTO sgc_documentos_relacionados (
         id, organization_id, entidad_tipo, entidad_id, documento_id,
         tipo_relacion, descripcion, es_obligatorio, created_at, updated_at, is_active
@@ -737,7 +737,7 @@ router.post('/:id/documentos', async (req, res) => {
     });
 
     // Obtener documento creado con datos completos
-    const createdDocumento = await tursoClient.execute({
+    const createdDocumento = await mongoClient.execute({
       sql: `SELECT * FROM v_sgc_documentos_completos WHERE id = ?`,
       args: [documentoId]
     });
@@ -762,7 +762,7 @@ router.delete('/:id/documentos/:documentoId', async (req, res) => {
   try {
     const { id, documentoId } = req.params;
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `UPDATE sgc_documentos_relacionados SET is_active = 0, updated_at = CURRENT_TIMESTAMP
              WHERE id = ? AND entidad_tipo = 'minuta' AND entidad_id = ?`,
       args: [documentoId, id]
@@ -798,7 +798,7 @@ router.get('/:id/normas', async (req, res) => {
   try {
     const { id } = req.params;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT * FROM v_sgc_normas_completas 
              WHERE entidad_tipo = 'minuta' AND entidad_id = ?
              ORDER BY punto_norma`,
@@ -840,7 +840,7 @@ router.post('/:id/normas', async (req, res) => {
     }
 
     // Verificar que la minuta existe
-    const minutaExists = await tursoClient.execute({
+    const minutaExists = await mongoClient.execute({
       sql: `SELECT id FROM minutas WHERE id = ? AND is_active = 1`,
       args: [id]
     });
@@ -855,7 +855,7 @@ router.post('/:id/normas', async (req, res) => {
     // Generar ID único
     const normaId = `NOR_MIN_${Date.now()}_${Math.random().toString(36).substr(2, 5)}`;
 
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `INSERT INTO sgc_normas_relacionadas (
         id, organization_id, entidad_tipo, entidad_id, norma_id,
         punto_norma, clausula_descripcion, tipo_relacion, nivel_cumplimiento,
@@ -868,7 +868,7 @@ router.post('/:id/normas', async (req, res) => {
     });
 
     // Obtener norma creada con datos completos
-    const createdNorma = await tursoClient.execute({
+    const createdNorma = await mongoClient.execute({
       sql: `SELECT * FROM v_sgc_normas_completas WHERE id = ?`,
       args: [normaId]
     });
@@ -893,7 +893,7 @@ router.delete('/:id/normas/:normaId', async (req, res) => {
   try {
     const { id, normaId } = req.params;
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `UPDATE sgc_normas_relacionadas SET is_active = 0, updated_at = CURRENT_TIMESTAMP
              WHERE id = ? AND entidad_tipo = 'minuta' AND entidad_id = ?`,
       args: [normaId, id]
@@ -934,7 +934,7 @@ router.get('/dashboard/sgc', async (req, res) => {
       cumplimientoResult
     ] = await Promise.all([
       // Resumen general
-      tursoClient.execute({
+      mongoClient.execute({
         sql: `SELECT 
           COUNT(*) as total_minutas,
           COUNT(CASE WHEN estado = 'aprobada' THEN 1 END) as aprobadas,
@@ -944,14 +944,14 @@ router.get('/dashboard/sgc', async (req, res) => {
       }),
       
       // Minutas por tipo
-      tursoClient.execute({
+      mongoClient.execute({
         sql: `SELECT tipo, COUNT(*) as cantidad
         FROM minutas WHERE is_active = 1
         GROUP BY tipo ORDER BY cantidad DESC`
       }),
       
       // Participación promedio
-      tursoClient.execute({
+      mongoClient.execute({
         sql: `SELECT 
           AVG(total_participantes) as promedio_participantes,
           AVG(participantes_asistieron) as promedio_asistencia
@@ -959,7 +959,7 @@ router.get('/dashboard/sgc', async (req, res) => {
       }),
       
       // Cumplimiento de normas
-      tursoClient.execute({
+      mongoClient.execute({
         sql: `SELECT 
           nivel_cumplimiento,
           COUNT(*) as cantidad
@@ -993,7 +993,7 @@ router.get('/dashboard/sgc', async (req, res) => {
 // Obtener lista de personal disponible para participantes
 router.get('/util/personal', async (req, res) => {
   try {
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT id, nombres, apellidos, email, departamento_id, puesto_id
              FROM personal WHERE is_active = 1
              ORDER BY nombres, apellidos`
@@ -1016,7 +1016,7 @@ router.get('/util/personal', async (req, res) => {
 // Obtener lista de documentos disponibles
 router.get('/util/documentos', async (req, res) => {
   try {
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT id, titulo, nombre, tipo_archivo
              FROM documentos WHERE is_active = 1
              ORDER BY titulo`
@@ -1039,7 +1039,7 @@ router.get('/util/documentos', async (req, res) => {
 // Obtener lista de normas disponibles
 router.get('/util/normas', async (req, res) => {
   try {
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT id, nombre, version, descripcion
              FROM normas WHERE is_active = 1
              ORDER BY nombre`

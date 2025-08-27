@@ -1,4 +1,4 @@
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 // @desc    Obtener todos los eventos de una organización
 // @route   GET /api/events

@@ -1,6 +1,6 @@
 const { Router  } = require('express');
 const { randomUUID  } = require('crypto');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 // Helper function to convert BigInt to string in objects
 function convertBigIntToString(obj) {
@@ -36,7 +36,7 @@ router.post('/', async (req, res) => {
 
   try {
     // Generar numeroAccion secuencial (AM-001, AM-002, etc.)
-    const lastAccionResult = await tursoClient.execute("SELECT numeroAccion FROM acciones ORDER BY numeroAccion DESC LIMIT 1");
+    const lastAccionResult = await mongoClient.execute("SELECT numeroAccion FROM acciones ORDER BY numeroAccion DESC LIMIT 1");
     let nextNumeroAccion = 'AM-001';
     if (lastAccionResult.rows.length > 0) {
       const lastNumero = lastAccionResult.rows[0].numeroAccion;
@@ -47,14 +47,14 @@ router.post('/', async (req, res) => {
     const id = randomUUID();
     const estadoInicial = 'p1_planificacion_accion'; // Estado inicial por defecto
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO acciones (id, hallazgo_id, numeroAccion, estado, descripcion_accion, responsable_accion, fecha_plan_accion, eficacia, titulo, prioridad)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [id, hallazgo_id, nextNumeroAccion, estadoInicial, descripcion_accion, responsable_accion, fecha_plan_accion, 'Pendiente', titulo, prioridad],
     });
 
     // Devolver la acción recién creada
-    const newAccionResult = await tursoClient.execute({
+    const newAccionResult = await mongoClient.execute({
         sql: 'SELECT * FROM acciones WHERE id = ?',
         args: [id],
     });
@@ -86,7 +86,7 @@ router.get('/', async (req, res) => {
     }
 
     try {
-        const result = await tursoClient.execute({ sql: query, args });
+        const result = await mongoClient.execute({ sql: query, args });
         const data = result.rows.map(row => convertBigIntToString(row));
         res.json(data);
     } catch (error) {
@@ -129,7 +129,7 @@ router.put('/:id', async (req, res) => {
         
         const updateQuery = `UPDATE acciones SET ${fields.join(', ')} WHERE id = ?`;
         
-        const result = await tursoClient.execute({
+        const result = await mongoClient.execute({
             sql: updateQuery,
             args: args
         });
@@ -139,7 +139,7 @@ router.put('/:id', async (req, res) => {
         }
         
         // Devolver la acción actualizada
-        const updatedAccionResult = await tursoClient.execute({
+        const updatedAccionResult = await mongoClient.execute({
             sql: 'SELECT * FROM acciones WHERE id = ?',
             args: [id]
         });
@@ -158,7 +158,7 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     
     try {
-        const result = await tursoClient.execute({
+        const result = await mongoClient.execute({
             sql: 'DELETE FROM acciones WHERE id = ?',
             args: [id]
         });
@@ -180,7 +180,7 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params;
     
     try {
-        const result = await tursoClient.execute({
+        const result = await mongoClient.execute({
             sql: 'SELECT * FROM acciones WHERE id = ?',
             args: [id]
         });

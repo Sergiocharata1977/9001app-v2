@@ -6,7 +6,7 @@
 // Objetivo: Cargar datos de prueba para el sistema CRM
 // ===============================================
 
-const tursoClient = require('../../lib/tursoClient.js');
+const mongoClient = require('../../lib/mongoClient.js');
 const crypto = require('crypto');
 
 console.log('🚀 Iniciando carga de datos de prueba para CRM...\n');
@@ -22,7 +22,7 @@ const generateRandomDate = (start, end) => {
 // Función para obtener vendedores existentes
 const getVendedores = async () => {
   try {
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'SELECT id, nombres, apellidos FROM personal WHERE organization_id = 1 AND is_active = 1 LIMIT 5',
       args: []
     });
@@ -30,7 +30,7 @@ const getVendedores = async () => {
     if (result.rows.length === 0) {
       // Si no hay vendedores, crear uno por defecto
       const vendedorId = generateUUID();
-      await tursoClient.execute({
+      await mongoClient.execute({
         sql: `INSERT INTO personal (
           id, organization_id, nombres, apellidos, email, telefono, 
           documento_identidad, fecha_nacimiento, nacionalidad, direccion, 
@@ -254,7 +254,7 @@ async function cargarDatosCRM() {
 
     console.log('\n📊 5. Insertando clientes en base de datos...');
     for (const cliente of clientes) {
-      await tursoClient.execute({
+      await mongoClient.execute({
         sql: `INSERT INTO clientes (
           id, organization_id, nombre, razon_social, rfc, tipo_cliente, categoria,
           direccion, ciudad, estado, codigo_postal, pais, telefono, email, sitio_web,
@@ -278,7 +278,7 @@ async function cargarDatosCRM() {
 
     console.log('\n📊 6. Insertando oportunidades en base de datos...');
     for (const oportunidad of oportunidades) {
-      await tursoClient.execute({
+      await mongoClient.execute({
         sql: `INSERT INTO oportunidades (
           id, organization_id, cliente_id, vendedor_id, supervisor_id, titulo,
           descripcion, tipo_oportunidad, etapa, probabilidad, valor_estimado, moneda,
@@ -303,7 +303,7 @@ async function cargarDatosCRM() {
 
     console.log('\n📊 7. Insertando actividades en base de datos...');
     for (const actividad of actividades) {
-      await tursoClient.execute({
+      await mongoClient.execute({
         sql: `INSERT INTO actividades_crm (
           id, organization_id, oportunidad_id, cliente_id, vendedor_id, tipo_actividad,
           titulo, descripcion, fecha_actividad, duracion_minutos, estado, resultado,
@@ -327,28 +327,28 @@ async function cargarDatosCRM() {
     console.log('\n📊 8. Verificando datos insertados...');
     
     // Verificar clientes
-    const clientesCount = await tursoClient.execute({
+    const clientesCount = await mongoClient.execute({
       sql: 'SELECT COUNT(*) as count FROM clientes WHERE organization_id = 1 AND is_active = 1',
       args: []
     });
     console.log(`📋 Total clientes en BD: ${clientesCount.rows[0].count}`);
 
     // Verificar oportunidades
-    const oportunidadesCount = await tursoClient.execute({
+    const oportunidadesCount = await mongoClient.execute({
       sql: 'SELECT COUNT(*) as count FROM oportunidades WHERE organization_id = 1 AND is_active = 1',
       args: []
     });
     console.log(`📋 Total oportunidades en BD: ${oportunidadesCount.rows[0].count}`);
 
     // Verificar actividades
-    const actividadesCount = await tursoClient.execute({
+    const actividadesCount = await mongoClient.execute({
       sql: 'SELECT COUNT(*) as count FROM actividades_crm WHERE organization_id = 1 AND is_active = 1',
       args: []
     });
     console.log(`📋 Total actividades en BD: ${actividadesCount.rows[0].count}`);
 
     // Estadísticas por tipo de cliente
-    const statsClientes = await tursoClient.execute({
+    const statsClientes = await mongoClient.execute({
       sql: `SELECT tipo_cliente, COUNT(*) as count 
             FROM clientes 
             WHERE organization_id = 1 AND is_active = 1 
@@ -361,7 +361,7 @@ async function cargarDatosCRM() {
     });
 
     // Estadísticas por etapa de oportunidad
-    const statsOportunidades = await tursoClient.execute({
+    const statsOportunidades = await mongoClient.execute({
       sql: `SELECT etapa, COUNT(*) as count, SUM(valor_estimado) as valor_total
             FROM oportunidades 
             WHERE organization_id = 1 AND is_active = 1 

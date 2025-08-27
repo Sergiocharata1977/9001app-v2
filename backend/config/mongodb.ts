@@ -1,37 +1,39 @@
-import mongoose from 'mongoose';
-import { Logger } from '../utils/Logger';
+import { MongoClient, Db } from 'mongodb';
+import dotenv from 'dotenv';
 
-interface MongoDBConfig {
+dotenv.config();
+
+export interface MongoDBConfig {
   uri: string;
-  options: mongoose.ConnectOptions;
-  databaseName: string;
+  dbName: string;
+  options: {
+    useNewUrlParser: boolean;
+    useUnifiedTopology: boolean;
+    maxPoolSize: number;
+    serverSelectionTimeoutMS: number;
+    socketTimeoutMS: number;
+  };
 }
 
-class MongoDBConnection {
+export class MongoDBConnection {
   private static instance: MongoDBConnection;
-  private logger: Logger;
+  private client: MongoClient | null = null;
+  private db: Db | null = null;
   private isConnected: boolean = false;
-  private config: MongoDBConfig;
 
-  private constructor() {
-    this.logger = new Logger('MongoDB');
-    
-    this.config = {
-      uri: process.env.MONGODB_URI || 'mongodb://localhost:27017',
-      databaseName: process.env.MONGODB_DB_NAME || '9001app-v2',
-      options: {
-        retryWrites: true,
-        w: 'majority',
-        maxPoolSize: 10,
-        serverSelectionTimeoutMS: 5000,
-        socketTimeoutMS: 45000,
-        bufferCommands: false,
-        bufferMaxEntries: 0,
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      }
-    };
-  }
+  private config: MongoDBConfig = {
+    uri: process.env.MONGODB_URI || 'mongodb://localhost:27017',
+    dbName: process.env.MONGODB_DB_NAME || '9001app-v2',
+    options: {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    }
+  };
+
+  private constructor() {}
 
   public static getInstance(): MongoDBConnection {
     if (!MongoDBConnection.instance) {
@@ -40,102 +42,65 @@ class MongoDBConnection {
     return MongoDBConnection.instance;
   }
 
-  async connect(): Promise<void> {
-    if (this.isConnected) {
-      this.logger.info('MongoDB ya está conectado');
-      return;
-    }
-
+  public async connect(): Promise<Db> {
     try {
-      this.logger.info('Conectando a MongoDB...');
+      if (this.isConnected && this.db) {
+        return this.db;
+      }
+
+      console.log('🔌 Conectando a MongoDB...');
+      this.client = new MongoClient(this.config.uri, this.config.options);
       
-      await mongoose.connect(this.config.uri, this.config.options);
-      
+      await this.client.connect();
+      this.db = this.client.db(this.config.dbName);
       this.isConnected = true;
-      this.logger.info(`✅ MongoDB conectado exitosamente a: ${this.config.databaseName}`);
       
-      // Configurar eventos de conexión
-      mongoose.connection.on('error', (error) => {
-        this.logger.error('Error en conexión MongoDB:', error);
-        this.isConnected = false;
-      });
-
-      mongoose.connection.on('disconnected', () => {
-        this.logger.warn('MongoDB desconectado');
-        this.isConnected = false;
-      });
-
-      mongoose.connection.on('reconnected', () => {
-        this.logger.info('MongoDB reconectado');
-        this.isConnected = true;
-      });
-
+      console.log('✅ Conexión a MongoDB establecida');
+      return this.db;
     } catch (error) {
-      this.logger.error('Error conectando a MongoDB:', error);
+      console.error('❌ Error conectando a MongoDB:', error);
       throw error;
     }
   }
 
-  async disconnect(): Promise<void> {
-    if (!this.isConnected) {
-      return;
-    }
-
+  public async disconnect(): Promise<void> {
     try {
-      await mongoose.disconnect();
-      this.isConnected = false;
-      this.logger.info('MongoDB desconectado');
+      if (this.client) {
+        await this.client.close();
+        this.isConnected = false;
+        this.db = null;
+        console.log('🔌 Conexión a MongoDB cerrada');
+      }
     } catch (error) {
-      this.logger.error('Error desconectando MongoDB:', error);
-      throw error;
+      console.error('❌ Error cerrando conexión MongoDB:', error);
     }
   }
 
-  getConnection(): mongoose.Connection {
-    return mongoose.connection;
+  public getDb(): Db | null {
+    return this.db;
   }
 
-  isConnectedToDB(): boolean {
+  public isConnectedToDb(): boolean {
     return this.isConnected;
   }
 
-  getDatabaseName(): string {
-    return this.config.databaseName;
-  }
-
-  async healthCheck(): Promise<{ healthy: boolean; details: any }> {
-    try {
-      if (!this.isConnected) {
-        return { healthy: false, details: { error: 'No conectado' } };
-      }
-
-      const adminDb = mongoose.connection.db.admin();
-      const result = await adminDb.ping();
-      
-      return {
-        healthy: true,
-        details: {
-          ping: result,
-          database: this.config.databaseName,
-          collections: await this.getCollectionsCount()
-        }
-      };
-    } catch (error) {
-      return {
-        healthy: false,
-        details: { error: error.message }
-      };
-    }
-  }
-
-  private async getCollectionsCount(): Promise<number> {
-    try {
-      const collections = await mongoose.connection.db.listCollections().toArray();
-      return collections.length;
-    } catch (error) {
-      return 0;
-    }
+  public getConfig(): MongoDBConfig {
+    return this.config;
   }
 }
 
-export default MongoDBConnection;
+// Exportar instancia singleton
+export const mongoConnection = MongoDBConnection.getInstance();
+
+// Manejar cierre graceful
+process.on('SIGINT', async () => {
+  console.log('\n🔄 Cerrando conexión MongoDB...');
+  await mongoConnection.disconnect();
+  process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  console.log('\n🔄 Cerrando conexión MongoDB...');
+  await mongoConnection.disconnect();
+  process.exit(0);
+});

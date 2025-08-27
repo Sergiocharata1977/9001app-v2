@@ -3,7 +3,7 @@ const path = require('path');
 
 /**
  * Script para configurar el sistema RAG usando la API
- * No requiere acceso directo a Turso
+ * No requiere acceso directo a MongoDB
  */
 
 console.log('🚀 Configurando Sistema RAG con API...');
@@ -33,7 +33,7 @@ const setupRAGSystem = async () => {
   
   try {
     // 1. Verificar conectividad
-    console.log('📡 Verificando conectividad con Turso...');
+    console.log('📡 Verificando conectividad con MongoDB...');
     const healthResponse = await fetch('http://localhost:3000/api/rag/health');
     
     if (!healthResponse.ok) {
@@ -116,18 +116,18 @@ console.log('✅ Script de instalación por API creado');
 const installationGuide = `
 # Sistema RAG - Instalación Simplificada por API
 
-## 🚀 Instalación Rápida (Sin Acceso Directo a Turso)
+## 🚀 Instalación Rápida (Sin Acceso Directo a MongoDB)
 
 ### 1. Instalar Dependencias
 \`\`\`bash
 cd backend
-npm install @libsql/client
+npm install mongodb/client
 \`\`\`
 
 ### 2. Configurar Variables de Entorno
 Agregar al archivo .env del backend:
 \`\`\`
-TURSO_DATABASE_URL=libsql://isoflow4-sergiocharata1977.turso.io
+TURSO_DATABASE_URL=libsql://isoflow4-sergiocharata1977.mongodb.io
 TURSO_AUTH_TOKEN=tu_token_aqui
 \`\`\`
 
@@ -217,7 +217,7 @@ function App() {
 
 ## 🎯 Ventajas de la Instalación por API
 
-✅ **No requiere acceso directo a Turso**
+✅ **No requiere acceso directo a MongoDB**
 ✅ **Instalación automática y segura**
 ✅ **Verificación automática de la instalación**
 ✅ **Datos de ejemplo incluidos**
@@ -242,13 +242,13 @@ function App() {
 Para problemas:
 1. Ejecutar: \`node backend/scripts/temporales/setup-rag-api.js\`
 2. Revisar logs del servidor
-3. Verificar conectividad con Turso
+3. Verificar conectividad con MongoDB
 4. Contactar al administrador
 
 ## 🎉 ¡Listo!
 
 Una vez completados estos pasos, tendrás un sistema RAG completamente funcional que:
-- Busca información en tu base de datos Turso
+- Busca información en tu base de datos MongoDB
 - Proporciona respuestas inteligentes sobre ISO 9001
 - Ofrece sugerencias de consultas relacionadas
 - Muestra estadísticas en tiempo real
@@ -260,7 +260,7 @@ fs.writeFileSync(guidePath, installationGuide);
 console.log('✅ Guía de instalación por API creada');
 
 console.log('\n🎉 Configuración del sistema RAG por API completada!');
-console.log('\n📋 Ahora puedes crear la tabla RAG sin acceso directo a Turso:');
+console.log('\n📋 Ahora puedes crear la tabla RAG sin acceso directo a MongoDB:');
 console.log('\n1. Integrar rutas en el servidor');
 console.log('2. Iniciar el servidor: npm start');
 console.log('3. Crear tabla: curl -X POST http://localhost:3000/api/rag/create-table');

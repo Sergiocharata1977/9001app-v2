@@ -1,5 +1,5 @@
 const { Router  } = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 const crypto = require('crypto');
 
 const router = Router();
@@ -8,7 +8,7 @@ const router = Router();
 router.get('/hallazgo/:hallazgoId', async (req, res) => {
   const { hallazgoId } = req.params;
   try {
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'SELECT * FROM tratamientos WHERE hallazgoId = ? ORDER BY fechaCompromisoImplementacion ASC',
       args: [hallazgoId],
     });
@@ -23,7 +23,7 @@ router.get('/hallazgo/:hallazgoId', async (req, res) => {
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
     try {
-      const result = await tursoClient.execute({
+      const result = await mongoClient.execute({
         sql: 'SELECT * FROM tratamientos WHERE id = ?',
         args: [id],
       });
@@ -57,7 +57,7 @@ router.post('/', async (req, res) => {
 
   // Verificar que el hallazgo exista
   try {
-    const hallazgoExists = await tursoClient.execute({
+    const hallazgoExists = await mongoClient.execute({
         sql: 'SELECT id FROM hallazgos WHERE id = ?',
         args: [hallazgoId]
     });
@@ -67,7 +67,7 @@ router.post('/', async (req, res) => {
 
     const id = crypto.randomUUID();
     
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `INSERT INTO tratamientos (
               id, hallazgoId, analisisCausa, descripcionAnalisis, planAccion,
               responsableImplementacion, fechaCompromisoImplementacion, estadoPlan
@@ -78,7 +78,7 @@ router.post('/', async (req, res) => {
       ],
     });
 
-    const newTratamientoResult = await tursoClient.execute({
+    const newTratamientoResult = await mongoClient.execute({
         sql: 'SELECT * FROM tratamientos WHERE id = ?',
         args: [id]
     });
@@ -121,7 +121,7 @@ router.put('/:id', async (req, res) => {
   sqlArgs.push(id);
 
   try {
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `UPDATE tratamientos SET ${sqlSetParts.join(', ')} WHERE id = ?`,
       args: sqlArgs,
     });
@@ -130,7 +130,7 @@ router.put('/:id', async (req, res) => {
         return res.status(404).json({ error: 'Tratamiento no encontrado.' });
     }
 
-    const updatedTratamientoResult = await tursoClient.execute({
+    const updatedTratamientoResult = await mongoClient.execute({
         sql: 'SELECT * FROM tratamientos WHERE id = ?',
         args: [id]
     });
@@ -146,7 +146,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'DELETE FROM tratamientos WHERE id = ?',
       args: [id],
     });

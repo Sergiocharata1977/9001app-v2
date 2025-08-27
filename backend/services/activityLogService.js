@@ -1,4 +1,4 @@
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 const crypto = require('crypto');
 
 /**
@@ -51,7 +51,7 @@ class ActivityLogService {
         activityData.user_agent || null
       ];
 
-      await tursoClient.execute({ sql, args });
+      await mongoClient.execute({ sql, args });
 
       return { id, created_at: now };
 
@@ -110,7 +110,7 @@ class ActivityLogService {
 
       args.push(limite, offset);
 
-      const result = await tursoClient.execute({ sql, args });
+      const result = await mongoClient.execute({ sql, args });
 
       // Parsear JSON de datos anteriores y nuevos
       const actividades = result.rows.map(row => ({
@@ -158,7 +158,7 @@ class ActivityLogService {
         ORDER BY total DESC
       `;
 
-      const result = await tursoClient.execute({
+      const result = await mongoClient.execute({
         sql,
         args: [organization_id]
       });

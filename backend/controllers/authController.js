@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const db = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 // @desc    Registrar una nueva organización y su usuario admin
 // @route   POST /api/auth/register

@@ -1,4 +1,4 @@
-const tursoClient = require('../../lib/tursoClient.js');
+const mongoClient = require('../../lib/mongoClient.js');
 
 async function checkRAGSystemStatus() {
   console.log('🔍 Verificando estado del sistema RAG...\n');
@@ -6,12 +6,12 @@ async function checkRAGSystemStatus() {
   try {
     // 1. Verificar conexión a la base de datos
     console.log('📊 1. Verificando conexión a la base de datos...');
-    const connectionTest = await tursoClient.execute('SELECT 1 as test');
+    const connectionTest = await mongoClient.execute('SELECT 1 as test');
     console.log('✅ Conexión a la base de datos: OK');
 
     // 2. Verificar tablas RAG
     console.log('\n📋 2. Verificando tablas RAG...');
-    const ragTables = await tursoClient.execute(`
+    const ragTables = await mongoClient.execute(`
       SELECT name FROM sqlite_master 
       WHERE type='table' AND name LIKE '%rag%'
       ORDER BY name
@@ -24,7 +24,7 @@ async function checkRAGSystemStatus() {
 
     // 3. Verificar organizaciones
     console.log('\n🏢 3. Verificando organizaciones...');
-    const organizations = await tursoClient.execute(`
+    const organizations = await mongoClient.execute(`
       SELECT id, name, plan, created_at 
       FROM organizations 
       ORDER BY id
@@ -37,7 +37,7 @@ async function checkRAGSystemStatus() {
 
     // 4. Verificar normas ISO 9001 globales
     console.log('\n📚 4. Verificando normas ISO 9001 globales...');
-    const globalNorms = await tursoClient.execute(`
+    const globalNorms = await mongoClient.execute(`
       SELECT COUNT(*) as count 
       FROM rag_documents 
       WHERE organization_id = 0
@@ -47,7 +47,7 @@ async function checkRAGSystemStatus() {
 
     // 5. Verificar documentos por organización
     console.log('\n📄 5. Verificando documentos por organización...');
-    const docsByOrg = await tursoClient.execute(`
+    const docsByOrg = await mongoClient.execute(`
       SELECT 
         o.name as organization_name,
         COUNT(rd.id) as document_count
@@ -63,7 +63,7 @@ async function checkRAGSystemStatus() {
 
     // 6. Verificar configuración RAG
     console.log('\n⚙️ 6. Verificando configuración RAG...');
-    const ragConfig = await tursoClient.execute(`
+    const ragConfig = await mongoClient.execute(`
       SELECT 
         COUNT(*) as total_documents,
         COUNT(CASE WHEN is_indexed = 1 THEN 1 END) as indexed_documents,
@@ -78,7 +78,7 @@ async function checkRAGSystemStatus() {
 
     // 7. Verificar usuarios
     console.log('\n👥 7. Verificando usuarios...');
-    const users = await tursoClient.execute(`
+    const users = await mongoClient.execute(`
       SELECT 
         u.name, u.email, u.role, o.name as organization_name
       FROM usuarios u

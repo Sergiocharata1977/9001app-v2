@@ -1,4 +1,4 @@
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 /**
  * Middleware para asegurar que todas las operaciones estén limitadas a la organización del usuario
@@ -46,7 +46,7 @@ const secureQuery = (req) => {
     
     // Función para ejecutar query seguro
     execute: async (sql, args = []) => {
-      return await tursoClient.execute({
+      return await mongoClient.execute({
         sql,
         args: [organizationId, ...args]
       });
@@ -112,7 +112,7 @@ const verifyResourceOwnership = (tableName, resourceIdParam = 'id') => {
       const resourceId = req.params[resourceIdParam];
       const { organizationId } = secureQuery(req);
       
-      const result = await tursoClient.execute({
+      const result = await mongoClient.execute({
         sql: `SELECT id FROM ${tableName} WHERE id = ? AND organization_id = ?`,
         args: [resourceId, organizationId]
       });

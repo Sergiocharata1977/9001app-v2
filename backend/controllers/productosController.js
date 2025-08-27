@@ -1,4 +1,4 @@
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 // @desc    Obtener todos los productos de la organización
 // @route   GET /api/productos
@@ -15,7 +15,7 @@ const getProductos = async (req, res) => {
       });
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `
         SELECT 
           id, nombre, descripcion, codigo, estado, tipo, categoria,
@@ -53,7 +53,7 @@ const getProducto = async (req, res) => {
       });
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `
         SELECT 
           id, nombre, descripcion, codigo, estado, tipo, categoria,
@@ -110,7 +110,7 @@ const createProducto = async (req, res) => {
 
     // Verificar si el código ya existe (si se proporciona)
     if (codigo) {
-      const existingResult = await tursoClient.execute({
+      const existingResult = await mongoClient.execute({
         sql: 'SELECT id FROM productos WHERE codigo = ? AND organization_id = ?',
         args: [codigo, organization_id]
       });
@@ -123,7 +123,7 @@ const createProducto = async (req, res) => {
       }
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `
         INSERT INTO productos (
           organization_id, nombre, descripcion, codigo, estado, tipo, categoria,
@@ -177,7 +177,7 @@ const updateProducto = async (req, res) => {
     console.log(`🔍 Actualizando producto ${id} para organización ${organization_id}...`);
 
     // Verificar que el producto existe y pertenece a la organización
-    const existingResult = await tursoClient.execute({
+    const existingResult = await mongoClient.execute({
       sql: 'SELECT id FROM productos WHERE id = ? AND organization_id = ?',
       args: [id, organization_id]
     });
@@ -188,7 +188,7 @@ const updateProducto = async (req, res) => {
 
     // Verificar si el código ya existe en otro producto (si se está cambiando)
     if (codigo) {
-      const duplicateResult = await tursoClient.execute({
+      const duplicateResult = await mongoClient.execute({
         sql: 'SELECT id FROM productos WHERE codigo = ? AND organization_id = ? AND id != ?',
         args: [codigo, organization_id, id]
       });
@@ -201,7 +201,7 @@ const updateProducto = async (req, res) => {
       }
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `
         UPDATE productos SET 
           nombre = ?, descripcion = ?, codigo = ?, estado = ?, tipo = ?, categoria = ?,
@@ -249,7 +249,7 @@ const deleteProducto = async (req, res) => {
     console.log(`🔍 Eliminando producto ${id} de organización ${organization_id}...`);
 
     // Verificar que el producto existe y pertenece a la organización
-    const existingResult = await tursoClient.execute({
+    const existingResult = await mongoClient.execute({
       sql: 'SELECT id FROM productos WHERE id = ? AND organization_id = ?',
       args: [id, organization_id]
     });
@@ -258,7 +258,7 @@ const deleteProducto = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Producto no encontrado' });
     }
 
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: 'DELETE FROM productos WHERE id = ? AND organization_id = ?',
       args: [id, organization_id]
     });
@@ -288,7 +288,7 @@ const getHistorialProducto = async (req, res) => {
     
     console.log(`🔍 Obteniendo historial del producto ${id}...`);
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `
         SELECT 
           id, campo_modificado, valor_anterior, valor_nuevo,

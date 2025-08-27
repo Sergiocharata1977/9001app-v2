@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 const crypto = require('crypto');
 const ActivityLogService = require('../services/activityLogService.js');
 const authMiddleware = require('../middleware/authMiddleware.js');
@@ -16,7 +16,7 @@ router.get('/', async (req, res, next) => {
     console.log('🔓 Obteniendo departamentos para organización:', organizationId);
     
     // TODO: Considerar un JOIN para obtener el nombre del responsable si es necesario en el listado
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'SELECT * FROM departamentos WHERE organization_id = ? ORDER BY created_at DESC',
       args: [String(organizationId)]
     });
@@ -35,7 +35,7 @@ router.get('/:id', async (req, res, next) => {
     const organizationId = req.user?.organization_id || req.user?.org_id;
     console.log(`🔓 Obteniendo departamento ${id} para organización ${organizationId}`);
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'SELECT * FROM departamentos WHERE id = ? AND organization_id = ?',
       args: [id, String(organizationId)],
     });
@@ -64,7 +64,7 @@ router.post('/', async (req, res, next) => {
 
   try {
     // Verificar si ya existe un departamento con el mismo nombre en la misma organización
-    const existing = await tursoClient.execute({
+    const existing = await mongoClient.execute({
       sql: 'SELECT id FROM departamentos WHERE nombre = ? AND organization_id = ?',
       args: [nombre, organization_id],
     });
@@ -79,7 +79,7 @@ router.post('/', async (req, res, next) => {
     const now = new Date().toISOString();
 
     // Primero verificar si las columnas de timestamp existen
-    const columnsInfo = await tursoClient.execute({
+    const columnsInfo = await mongoClient.execute({
       sql: 'PRAGMA table_info(departamentos)',
       args: []
     });
@@ -101,7 +101,7 @@ router.post('/', async (req, res, next) => {
       args = [id, nombre, descripcion || null, objetivos || null, organization_id];
     }
 
-    await tursoClient.execute({ sql, args });
+    await mongoClient.execute({ sql, args });
 
     // Registrar en la bitácora
     await ActivityLogService.registrarCreacion(
@@ -138,7 +138,7 @@ router.put('/:id', async (req, res, next) => {
   try {
     // Si se proporciona un nombre, verificar que no entre en conflicto con otro departamento
     if (nombre) {
-      const existing = await tursoClient.execute({
+      const existing = await mongoClient.execute({
         sql: 'SELECT id FROM departamentos WHERE nombre = ? AND id != ?',
         args: [nombre, id],
       });
@@ -150,7 +150,7 @@ router.put('/:id', async (req, res, next) => {
     }
 
     // Obtener datos anteriores para la bitácora
-    const prevResult = await tursoClient.execute({
+    const prevResult = await mongoClient.execute({
       sql: 'SELECT * FROM departamentos WHERE id = ?',
       args: [id],
     });
@@ -183,7 +183,7 @@ router.put('/:id', async (req, res, next) => {
     }
 
     // Verificar si existe la columna updated_at
-    const columnsInfo = await tursoClient.execute({
+    const columnsInfo = await mongoClient.execute({
       sql: 'PRAGMA table_info(departamentos)',
       args: []
     });
@@ -199,7 +199,7 @@ router.put('/:id', async (req, res, next) => {
 
     const sql = `UPDATE departamentos SET ${fields.join(', ')} WHERE id = ?`;
 
-    const result = await tursoClient.execute({ sql, args });
+    const result = await mongoClient.execute({ sql, args });
 
     if (result.rowsAffected === 0) {
       const err = new Error('Departamento no encontrado.');
@@ -208,7 +208,7 @@ router.put('/:id', async (req, res, next) => {
     }
 
     // Devolver el departamento actualizado
-    const updatedDeptResult = await tursoClient.execute({
+    const updatedDeptResult = await mongoClient.execute({
       sql: 'SELECT * FROM departamentos WHERE id = ?',
       args: [id],
     });
@@ -238,7 +238,7 @@ router.delete('/:id', async (req, res, next) => {
 
   try {
     // 1. Verificar si hay puestos asociados
-    const puestosCheck = await tursoClient.execute({
+    const puestosCheck = await mongoClient.execute({
       sql: 'SELECT 1 FROM puestos WHERE departamento_id = ? LIMIT 1',
       args: [id],
     });
@@ -250,7 +250,7 @@ router.delete('/:id', async (req, res, next) => {
     }
 
     // 2. Verificar si hay personal asociado
-    const personalCheck = await tursoClient.execute({
+    const personalCheck = await mongoClient.execute({
       sql: 'SELECT 1 FROM personal WHERE departamento_id = ? LIMIT 1',
       args: [id],
     });
@@ -262,14 +262,14 @@ router.delete('/:id', async (req, res, next) => {
     }
 
     // Obtener datos anteriores para la bitácora
-    const prevResult = await tursoClient.execute({
+    const prevResult = await mongoClient.execute({
       sql: 'SELECT * FROM departamentos WHERE id = ?',
       args: [id],
     });
     const prevData = prevResult.rows[0] || null;
 
     // 3. Si no hay dependencias, proceder con la eliminación
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'DELETE FROM departamentos WHERE id = ?',
       args: [id],
     });

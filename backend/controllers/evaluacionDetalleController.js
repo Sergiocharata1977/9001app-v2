@@ -1,4 +1,4 @@
-const turso = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 // Obtener todos los detalles de una programación de evaluación
 const getDetallesPorProgramacion = async (req, res) => {
@@ -6,7 +6,7 @@ const getDetallesPorProgramacion = async (req, res) => {
   const { programacionId } = req.params;
 
   try {
-    const result = await turso.execute({
+    const result = await mongodb.execute({
       sql: 'SELECT * FROM evaluaciones_detalle WHERE organization_id = ? AND programacion_id = ?',
       args: [organization_id, programacionId],
     });
@@ -27,7 +27,7 @@ const createDetalle = async (req, res) => {
   }
 
   try {
-    const result = await turso.execute({
+    const result = await mongodb.execute({
       sql: 'INSERT INTO evaluaciones_detalle (organization_id, programacion_id, evaluado_id, competencia_id, puntaje, observaciones, evaluador_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
       args: [organization_id, programacion_id, evaluado_id, competencia_id, puntaje, observaciones, evaluador_id],
     });

@@ -1,5 +1,5 @@
 const express = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 const authMiddleware = require('../middleware/authMiddleware.js');
 
 const router = express.Router();
@@ -8,7 +8,7 @@ const router = express.Router();
 router.get('/test', async (req, res) => {
   try {
     console.log('🧪 Test rápido de normas...');
-    const result = await tursoClient.execute('SELECT COUNT(*) as count FROM normas WHERE organization_id = 0');
+    const result = await mongoClient.execute('SELECT COUNT(*) as count FROM normas WHERE organization_id = 0');
     console.log('🧪 Resultado test:', result.rows[0]);
     res.json({ success: true, data: result.rows[0] });
   } catch (error) {
@@ -21,7 +21,7 @@ router.get('/test', async (req, res) => {
 router.get('/test2', async (req, res) => {
   try {
     console.log('🧪 Test con parámetros...');
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'SELECT id, codigo, titulo FROM normas WHERE organization_id = 0 OR organization_id = ? LIMIT 5',
       args: [2]
     });
@@ -58,7 +58,7 @@ router.get('/', authMiddleware, async (req, res) => {
     // Consulta simplificada sin ORDER BY para debuggear
     console.log(`🔍 [${Date.now() - startTime}ms] Consultando normas para org_id: ${organization_id}`);
     
-    const queryPromise = tursoClient.execute({
+    const queryPromise = mongoClient.execute({
       sql: `SELECT id, codigo, titulo, version, tipo, estado, organization_id 
             FROM normas 
             WHERE organization_id = 0 OR organization_id = ?`,
@@ -98,7 +98,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
     
     console.log(`🔓 Obteniendo norma ${id} sin restricciones`);
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT n.*, o.name as organization_name 
             FROM normas n 
             LEFT JOIN organizations o ON n.organization_id = o.id 
@@ -146,7 +146,7 @@ router.post('/', authMiddleware, async (req, res) => {
 
     console.log('🔓 Creando nueva norma sin restricciones');
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO normas (
         codigo, titulo, descripcion, version, tipo, estado, categoria,
         responsable, fecha_revision, observaciones, organization_id, created_at
@@ -194,7 +194,7 @@ router.put('/:id', async (req, res) => {
 
     console.log(`🔓 Actualizando norma ${id} sin restricciones`);
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `UPDATE normas SET 
         codigo = ?, titulo = ?, descripcion = ?, version = ?, tipo = ?, 
         estado = ?, categoria = ?, responsable = ?, fecha_revision = ?, 
@@ -237,7 +237,7 @@ router.delete('/:id', async (req, res) => {
     
     console.log(`🔓 Eliminando norma ${id} sin restricciones`);
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `DELETE FROM normas WHERE id = ?`,
       args: [id]
     });

@@ -1,4 +1,4 @@
-const tursoClient = require('../../lib/tursoClient.js');
+const mongoClient = require('../../lib/mongoClient.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -22,7 +22,7 @@ async function updateAccionesTable() {
     for (let i = 0; i < commands.length; i++) {
       const command = commands[i];
       try {
-        await tursoClient.execute(command);
+        await mongoClient.execute(command);
         console.log(`✅ Comando ${i + 1}/${commands.length} ejecutado correctamente`);
       } catch (error) {
         console.log(`⚠️ Comando ${i + 1}/${commands.length} falló (puede ser normal si la columna ya existe):`, error.message);
@@ -31,14 +31,14 @@ async function updateAccionesTable() {
     
     // Verificar la estructura de la tabla
     console.log('🔍 Verificando estructura de la tabla...');
-    const tableInfo = await tursoClient.execute("PRAGMA table_info(acciones)");
+    const tableInfo = await mongoClient.execute("PRAGMA table_info(acciones)");
     console.log('📊 Columnas en la tabla acciones:');
     tableInfo.rows.forEach(row => {
       console.log(`  - ${row.name} (${row.type})`);
     });
     
     // Verificar datos existentes
-    const countResult = await tursoClient.execute("SELECT COUNT(*) as count FROM acciones");
+    const countResult = await mongoClient.execute("SELECT COUNT(*) as count FROM acciones");
     console.log(`📈 Total de acciones en la base de datos: ${countResult.rows[0].count}`);
     
     console.log('✅ Actualización de la tabla de acciones completada exitosamente');

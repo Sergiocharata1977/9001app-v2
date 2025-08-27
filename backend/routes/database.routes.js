@@ -217,7 +217,7 @@ router.get('/info', async (req, res) => {
     try {
         // Obtener lista de tablas
         const tablesQuery = `SELECT name FROM sqlite_master WHERE type='table'`;
-        const tables = await dbService.tursoClient.query(tablesQuery);
+        const tables = await dbService.mongoClient.query(tablesQuery);
         
         res.json({
             success: true,

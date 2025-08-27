@@ -10,11 +10,11 @@ class RAGController {
   }
 
   /**
-   * Crea la tabla RAG en Turso por API
+   * Crea la tabla RAG en MongoDB por API
    */
   async createRAGTable(req, res) {
     try {
-      console.log('🔧 Creando tabla RAG en Turso...');
+      console.log('🔧 Creando tabla RAG en MongoDB...');
 
       const result = await this.ragService.createRAGTable();
 
@@ -103,7 +103,7 @@ class RAGController {
         data: {
           ...stats,
           timestamp: new Date().toISOString(),
-          system: 'Turso RAG System'
+          system: 'MongoDB RAG System'
         }
       });
 
@@ -118,11 +118,11 @@ class RAGController {
   }
 
   /**
-   * Prueba de conectividad con Turso
+   * Prueba de conectividad con MongoDB
    */
   async testConnection(req, res) {
     try {
-      console.log('🔍 Probando conectividad con Turso...');
+      console.log('🔍 Probando conectividad con MongoDB...');
 
       const testResult = await this.ragService.testConnection();
 
@@ -144,10 +144,10 @@ class RAGController {
       }
 
     } catch (error) {
-      console.error('❌ Error de conectividad con Turso:', error);
+      console.error('❌ Error de conectividad con MongoDB:', error);
       res.status(500).json({
         success: false,
-        error: 'Error de conectividad con Turso',
+        error: 'Error de conectividad con MongoDB',
         details: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
     }
@@ -371,7 +371,7 @@ class RAGController {
         timestamp: new Date().toISOString(),
         version: '1.0.0',
         features: [
-          'Consulta RAG con Turso',
+          'Consulta RAG con MongoDB',
           'Búsqueda semántica',
           'Análisis de insights',
           'Sugerencias inteligentes',

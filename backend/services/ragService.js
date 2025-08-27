@@ -1,14 +1,14 @@
-const { createClient } = require('@libsql/client');
+const { createClient } = require('mongodb/client');
 
 /**
  * Servicio RAG simplificado para el Sistema SGC ISO 9001
- * Integra con Turso y proporciona respuestas inteligentes
+ * Integra con MongoDB y proporciona respuestas inteligentes
  */
 class RAGService {
   constructor() {
-    // Configuración de Turso
-    this.tursoClient = createClient({
-      url: process.env.TURSO_DATABASE_URL || 'libsql://isoflow4-sergiocharata1977.turso.io',
+    // Configuración de MongoDB
+    this.mongoClient = createClient({
+      url: process.env.TURSO_DATABASE_URL || 'libsql://isoflow4-sergiocharata1977.mongodb.io',
       authToken: process.env.TURSO_AUTH_TOKEN || ''
     });
   }
@@ -30,7 +30,7 @@ class RAGService {
         ...options
       };
 
-      // Paso 1: Buscar datos relevantes en Turso
+      // Paso 1: Buscar datos relevantes en MongoDB
       const relevantData = await this.searchData(question, organizationId);
       
       // Paso 2: Calcular relevancia y ordenar
@@ -66,7 +66,7 @@ class RAGService {
   }
 
   /**
-   * Busca datos relevantes en Turso
+   * Busca datos relevantes en MongoDB
    */
   async searchData(question, organizationId = 'default') {
     const questionLower = question.toLowerCase();
@@ -104,10 +104,10 @@ class RAGService {
     sql += ` ORDER BY fecha_actualizacion DESC LIMIT 50`;
     
     try {
-      const result = await this.tursoClient.execute(sql, params);
+      const result = await this.mongoClient.execute(sql, params);
       return result.rows || [];
     } catch (error) {
-      console.error('Error buscando en Turso:', error);
+      console.error('Error buscando en MongoDB:', error);
       return [];
     }
   }
@@ -377,7 +377,7 @@ class RAGService {
         GROUP BY tipo, estado
       `;
       
-      const result = await this.tursoClient.execute(sql, [organizationId]);
+      const result = await this.mongoClient.execute(sql, [organizationId]);
       
       // Procesar estadísticas
       const stats = {
@@ -400,11 +400,11 @@ class RAGService {
   }
 
   /**
-   * Crea la tabla RAG en Turso
+   * Crea la tabla RAG en MongoDB
    */
   async createRAGTable() {
     try {
-      console.log('🔧 Creando tabla RAG en Turso...');
+      console.log('🔧 Creando tabla RAG en MongoDB...');
 
       // SQL para crear la tabla RAG
       const createTableSQL = `
@@ -458,13 +458,13 @@ class RAGService {
       `;
 
       // Ejecutar las consultas
-      await this.tursoClient.execute(createTableSQL);
-      await this.tursoClient.execute(createIndexesSQL);
-      await this.tursoClient.execute(createTriggerSQL);
-      await this.tursoClient.execute(insertDataSQL);
+      await this.mongoClient.execute(createTableSQL);
+      await this.mongoClient.execute(createIndexesSQL);
+      await this.mongoClient.execute(createTriggerSQL);
+      await this.mongoClient.execute(insertDataSQL);
 
       // Verificar que se creó correctamente
-      const result = await this.tursoClient.execute('SELECT COUNT(*) as count FROM rag_data');
+      const result = await this.mongoClient.execute('SELECT COUNT(*) as count FROM rag_data');
       const count = result.rows?.[0]?.count || 0;
 
       console.log(`✅ Tabla RAG creada exitosamente con ${count} registros`);
@@ -483,20 +483,20 @@ class RAGService {
   }
 
   /**
-   * Prueba la conectividad con Turso
+   * Prueba la conectividad con MongoDB
    */
   async testConnection() {
     try {
-      const result = await this.tursoClient.execute('SELECT COUNT(*) as count FROM rag_data');
+      const result = await this.mongoClient.execute('SELECT COUNT(*) as count FROM rag_data');
       return {
         success: true,
-        message: 'Conexión exitosa con Turso',
+        message: 'Conexión exitosa con MongoDB',
         dataCount: result.rows?.[0]?.count || 0
       };
     } catch (error) {
       return {
         success: false,
-        message: 'Error de conectividad con Turso',
+        message: 'Error de conectividad con MongoDB',
         error: error.message
       };
     }

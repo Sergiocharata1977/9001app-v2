@@ -1,5 +1,5 @@
 const express = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 const ActivityLogService = require('../services/activityLogService.js');
 const authMiddleware = require('../middleware/authMiddleware.js');
 const crypto = require('crypto');
@@ -12,7 +12,7 @@ router.get('/', authMiddleware, async (req, res, next) => {
     const organizationId = req.user?.organization_id || req.user?.org_id || 2;
     console.log('📈 Obteniendo mediciones para organización:', organizationId);
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'SELECT * FROM mediciones WHERE organization_id = ? ORDER BY fecha_medicion DESC',
       args: [organizationId]
     });
@@ -36,7 +36,7 @@ router.get('/:id', authMiddleware, async (req, res, next) => {
     const organizationId = req.user?.organization_id || req.user?.org_id || 2;
     console.log(`🔍 Obteniendo medición ${id} para organización ${organizationId}`);
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'SELECT * FROM mediciones WHERE id = ? AND organization_id = ?',
       args: [id, organizationId],
     });
@@ -67,7 +67,7 @@ router.post('/', authMiddleware, async (req, res, next) => {
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
 
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: 'INSERT INTO mediciones (id, indicador_id, valor, fecha_medicion, observaciones, organization_id) VALUES (?, ?, ?, ?, ?, ?)',
       args: [id, indicador_id, valor, fecha_medicion || now, observaciones || null, organization_id]
     });
@@ -106,7 +106,7 @@ router.put('/:id', authMiddleware, async (req, res, next) => {
     const organizationId = req.user?.organization_id || req.user?.org_id || 2;
     
     // Verificar que la medición existe y pertenece a la organización
-    const existing = await tursoClient.execute({
+    const existing = await mongoClient.execute({
       sql: 'SELECT * FROM mediciones WHERE id = ? AND organization_id = ?',
       args: [id, organizationId],
     });
@@ -119,7 +119,7 @@ router.put('/:id', authMiddleware, async (req, res, next) => {
 
     const now = new Date().toISOString();
     
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `UPDATE mediciones 
             SET indicador_id = ?, valor = ?, fecha_medicion = ?, observaciones = ?, updated_at = ?
             WHERE id = ? AND organization_id = ?`,
@@ -157,7 +157,7 @@ router.delete('/:id', authMiddleware, async (req, res, next) => {
   try {
     const organizationId = req.user?.organization_id || req.user?.org_id || 2;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'DELETE FROM mediciones WHERE id = ? AND organization_id = ? RETURNING id',
       args: [id, organizationId],
     });
