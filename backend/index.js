@@ -45,6 +45,7 @@ const coordinacionRoutes = require('./routes/coordinacion.routes.js');
 const crmRoutes = require('./routes/crm.routes.js');
 const databaseRoutes = require('./routes/database.routes.js');
 const fileStructureRoutes = require('./routes/fileStructure.routes.js');
+const agentsRoutes = require('./routes/agents.routes.js');
 
 // Importar rutas RAG del nuevo sistema
 let ragRoutes = null;
@@ -123,7 +124,7 @@ app.use('/api/politica-calidad', politicaCalidadRoutes);
 app.use('/api/events', eventsRoutes);
 
 // Rutas de coordinación de agentes
-app.use('/api', coordinacionRoutes);
+app.use('/api/coordinacion', coordinacionRoutes);
 
 // Rutas de CRM
 app.use('/api/crm', crmRoutes);
@@ -133,6 +134,9 @@ app.use('/api/database', databaseRoutes);
 
 // Rutas de estructura de archivos
 app.use('/api/file-structure', fileStructureRoutes);
+
+// Rutas de agentes
+app.use('/api/agents', agentsRoutes);
 
 // Rutas de RAG (si está disponible)
 if (ragRoutes) {

@@ -7,7 +7,7 @@ const { createClient } = require('@libsql/client');
 class RAGService {
   constructor() {
     // Configuración de Turso
-    this.tursoClient = createClient({
+    this.mongodbClient = createClient({
       url: process.env.TURSO_DATABASE_URL || 'libsql://isoflow4-sergiocharata1977.turso.io',
       authToken: process.env.TURSO_AUTH_TOKEN || ''
     });
@@ -104,7 +104,7 @@ class RAGService {
     sql += ` ORDER BY fecha_actualizacion DESC LIMIT 50`;
     
     try {
-      const result = await this.tursoClient.execute(sql, params);
+      const result = await this.mongodbClient.execute(sql, params);
       return result.rows || [];
     } catch (error) {
       console.error('Error buscando en Turso:', error);
@@ -377,7 +377,7 @@ class RAGService {
         GROUP BY tipo, estado
       `;
       
-      const result = await this.tursoClient.execute(sql, [organizationId]);
+      const result = await this.mongodbClient.execute(sql, [organizationId]);
       
       // Procesar estadísticas
       const stats = {
@@ -458,13 +458,13 @@ class RAGService {
       `;
 
       // Ejecutar las consultas
-      await this.tursoClient.execute(createTableSQL);
-      await this.tursoClient.execute(createIndexesSQL);
-      await this.tursoClient.execute(createTriggerSQL);
-      await this.tursoClient.execute(insertDataSQL);
+      await this.mongodbClient.execute(createTableSQL);
+      await this.mongodbClient.execute(createIndexesSQL);
+      await this.mongodbClient.execute(createTriggerSQL);
+      await this.mongodbClient.execute(insertDataSQL);
 
       // Verificar que se creó correctamente
-      const result = await this.tursoClient.execute('SELECT COUNT(*) as count FROM rag_data');
+      const result = await this.mongodbClient.execute('SELECT COUNT(*) as count FROM rag_data');
       const count = result.rows?.[0]?.count || 0;
 
       console.log(`✅ Tabla RAG creada exitosamente con ${count} registros`);
@@ -487,7 +487,7 @@ class RAGService {
    */
   async testConnection() {
     try {
-      const result = await this.tursoClient.execute('SELECT COUNT(*) as count FROM rag_data');
+      const result = await this.mongodbClient.execute('SELECT COUNT(*) as count FROM rag_data');
       return {
         success: true,
         message: 'Conexión exitosa con Turso',

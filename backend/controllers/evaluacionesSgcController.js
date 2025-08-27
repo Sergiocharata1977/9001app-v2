@@ -1,4 +1,4 @@
-const tursoClient = require('../lib/tursoClient.js');
+const mongodbClient = require('../lib/mongodbClient.js');
 
 // ===============================================
 // CONTROLADOR EVALUACIONES SGC ESTANDARIZADO
@@ -20,7 +20,7 @@ const getEvaluaciones = async (req, res) => {
     console.log(`🔎 [Evaluaciones SGC] Obteniendo evaluaciones para organización: ${organization_id}`);
     
     // Consulta usando las vistas de compatibilidad o directamente las tablas SGC
-    const result = await tursoClient.execute({ 
+    const result = await mongodbClient.execute({ 
       sql: `SELECT 
               sp_evaluado.entidad_id as id,
               sp_evaluado.organization_id,
@@ -100,11 +100,11 @@ const createEvaluacion = async (req, res) => {
     const evaluacion_id = `EVAL_${Date.now()}_${empleado_id}`;
 
     // Iniciar transacción
-    await tursoClient.execute('BEGIN TRANSACTION');
+    await mongodbClient.execute('BEGIN TRANSACTION');
 
     try {
       // 1. Insertar participante evaluado
-      await tursoClient.execute({
+      await mongodbClient.execute({
         sql: `INSERT INTO sgc_personal_relaciones 
               (id, organization_id, entidad_tipo, entidad_id, personal_id, rol, asistio, observaciones, datos_adicionales, created_at, updated_at) 
               VALUES (?, ?, 'evaluacion', ?, ?, 'evaluado', 1, ?, ?, datetime('now'), datetime('now'))`,
@@ -123,7 +123,7 @@ const createEvaluacion = async (req, res) => {
       });
 
       // 2. Insertar participante evaluador
-      await tursoClient.execute({
+      await mongodbClient.execute({
         sql: `INSERT INTO sgc_personal_relaciones 
               (id, organization_id, entidad_tipo, entidad_id, personal_id, rol, asistio, observaciones, datos_adicionales, created_at, updated_at) 
               VALUES (?, ?, 'evaluacion', ?, ?, 'evaluador', 1, 'Evaluador responsable', ?, datetime('now'), datetime('now'))`,
@@ -146,7 +146,7 @@ const createEvaluacion = async (req, res) => {
           const nivel_cumplimiento = comp.puntaje >= 80 ? 'cumple_completo' : 
                                     comp.puntaje >= 60 ? 'cumple_parcial' : 'no_cumple';
           
-          await tursoClient.execute({
+          await mongodbClient.execute({
             sql: `INSERT INTO sgc_normas_relacionadas 
                   (id, organization_id, entidad_tipo, entidad_id, norma_id, punto_norma, tipo_relacion, nivel_cumplimiento, observaciones, datos_adicionales, created_at, updated_at) 
                   VALUES (?, ?, 'evaluacion', ?, ?, ?, 'competencia_evaluada', ?, ?, ?, datetime('now'), datetime('now'))`,
@@ -169,7 +169,7 @@ const createEvaluacion = async (req, res) => {
       }
 
       // Confirmar transacción
-      await tursoClient.execute('COMMIT');
+      await mongodbClient.execute('COMMIT');
 
       console.log(`✅ [Evaluaciones SGC] Evaluación creada exitosamente con ID: ${evaluacion_id}`);
 
@@ -189,7 +189,7 @@ const createEvaluacion = async (req, res) => {
 
     } catch (error) {
       // Revertir transacción en caso de error
-      await tursoClient.execute('ROLLBACK');
+      await mongodbClient.execute('ROLLBACK');
       throw error;
     }
 
@@ -217,7 +217,7 @@ const getEvaluacionById = async (req, res) => {
     }
 
     // Obtener la evaluación principal desde sgc_personal_relaciones
-    const evaluacionResult = await tursoClient.execute({
+    const evaluacionResult = await mongodbClient.execute({
       sql: `SELECT 
               sp_evaluado.entidad_id as id,
               sp_evaluado.organization_id,
@@ -255,7 +255,7 @@ const getEvaluacionById = async (req, res) => {
     }
 
     // Obtener los detalles de competencias desde sgc_normas_relacionadas
-    const competenciasResult = await tursoClient.execute({
+    const competenciasResult = await mongodbClient.execute({
       sql: `SELECT 
               snr.norma_id as competencia_id,
               CAST(JSON_EXTRACT(snr.datos_adicionales, '$.puntaje') as INTEGER) as puntaje,
@@ -305,7 +305,7 @@ const getEstadisticasEvaluaciones = async (req, res) => {
     }
 
     // Total de evaluaciones desde sgc_personal_relaciones
-    const totalResult = await tursoClient.execute({
+    const totalResult = await mongodbClient.execute({
       sql: `SELECT COUNT(DISTINCT entidad_id) as total 
             FROM sgc_personal_relaciones 
             WHERE entidad_tipo = 'evaluacion' 
@@ -315,7 +315,7 @@ const getEstadisticasEvaluaciones = async (req, res) => {
     });
 
     // Evaluaciones por mes (últimos 6 meses)
-    const porMesResult = await tursoClient.execute({
+    const porMesResult = await mongodbClient.execute({
       sql: `SELECT 
               strftime('%Y-%m', JSON_EXTRACT(datos_adicionales, '$.fecha_evaluacion')) as mes,
               COUNT(DISTINCT entidad_id) as cantidad
@@ -330,7 +330,7 @@ const getEstadisticasEvaluaciones = async (req, res) => {
     });
 
     // Promedio de puntajes por competencia desde sgc_normas_relacionadas
-    const promediosResult = await tursoClient.execute({
+    const promediosResult = await mongodbClient.execute({
       sql: `SELECT 
               c.nombre as competencia,
               AVG(CAST(JSON_EXTRACT(snr.datos_adicionales, '$.puntaje') as INTEGER)) as promedio,
@@ -377,7 +377,7 @@ const getParticipantesEvaluacion = async (req, res) => {
       });
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT 
               sp.*,
               p.nombres,
@@ -420,7 +420,7 @@ const getCompetenciasEvaluacion = async (req, res) => {
       });
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT 
               snr.*,
               c.nombre as competencia_nombre,

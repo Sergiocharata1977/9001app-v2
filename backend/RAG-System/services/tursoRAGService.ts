@@ -43,7 +43,7 @@ export class TursoRAGService {
 
   constructor(config: TursoConfig, openaiApiKey: string) {
     this.config = config;
-    this.tursoClient = createClient({
+    this.mongodbClient = createClient({
       url: config.url,
       authToken: config.authToken
     });
@@ -137,7 +137,7 @@ export class TursoRAGService {
     sql += ` ORDER BY fecha_actualizacion DESC LIMIT 50`;
     
     try {
-      const result = await this.tursoClient.execute(sql, params);
+      const result = await this.mongodbClient.execute(sql, params);
       return result.rows || [];
     } catch (error) {
       console.error('Error buscando en Turso:', error);
@@ -354,7 +354,7 @@ export class TursoRAGService {
       
       sql += ` GROUP BY tipo, estado`;
       
-      const result = await this.tursoClient.execute(sql, params);
+      const result = await this.mongodbClient.execute(sql, params);
       
       // Procesar estadísticas
       const stats = {

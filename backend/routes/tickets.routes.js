@@ -1,5 +1,5 @@
 const express = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongodbClient = require('../lib/mongodbClient.js');
 const authMiddleware = require('../middleware/authMiddleware.js');
 const { ensureTenant, secureQuery, logTenantOperation, checkPermission } = require('../middleware/tenantMiddleware.js');
 
@@ -18,7 +18,7 @@ router.get('/', async (req, res, next) => {
   try {
     const query = secureQuery(req);
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT * FROM ${TABLE_NAME} WHERE ${query.where()} ORDER BY created_at DESC`,
       args: query.args()
     });
@@ -70,7 +70,7 @@ router.post('/', async (req, res, next) => {
     const placeholders = keys.map(() => '?').join(', ');
     const fieldsString = keys.join(', ');
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `INSERT INTO ${TABLE_NAME} (${fieldsString}) VALUES (${placeholders}) RETURNING *`,
       args: values
     });
@@ -94,7 +94,7 @@ router.get('/:id', async (req, res, next) => {
   try {
     const query = secureQuery(req);
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT * FROM ${TABLE_NAME} WHERE id = ? AND ${query.where()}`,
       args: [id, ...query.args()]
     });
@@ -137,7 +137,7 @@ router.put('/:id', async (req, res, next) => {
     const values = Object.values(updateData);
     const setClause = keys.map(key => `${key} = ?`).join(', ');
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `UPDATE ${TABLE_NAME} SET ${setClause} WHERE id = ? AND ${query.where()} RETURNING *`,
       args: [...values, id, ...query.args()]
     });
@@ -166,7 +166,7 @@ router.delete('/:id', async (req, res, next) => {
 
     const query = secureQuery(req);
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `DELETE FROM ${TABLE_NAME} WHERE id = ? AND ${query.where()}`,
       args: [id, ...query.args()]
     });

@@ -1,4 +1,4 @@
-const tursoClient = require('../lib/tursoClient.js');
+const mongodbClient = require('../lib/mongodbClient.js');
 const { randomUUID } = require('crypto');
 
 // Función para registrar una acción en los logs de auditoría
@@ -17,7 +17,7 @@ const logAuditAction = async (userId, organizationId, action, resourceType, reso
     const ipAddress = req ? (req.ip || req.connection.remoteAddress || req.socket.remoteAddress) : null;
     const userAgent = req ? req.get('User-Agent') : null;
 
-    await tursoClient.execute({
+    await mongodbClient.execute({
       sql: `INSERT INTO audit_logs 
             (id, user_id, organization_id, action, resource_type, resource_id, details, ip_address, user_agent, timestamp) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -203,7 +203,7 @@ const getAuditLogs = async (organizationId, limit = 100, offset = 0, filters = {
     sql += ` ORDER BY al.timestamp DESC LIMIT ? OFFSET ?`;
     args.push(limit, offset);
     
-    const result = await tursoClient.execute({ sql, args });
+    const result = await mongodbClient.execute({ sql, args });
     return result.rows;
   } catch (error) {
     console.error('Error al obtener logs de auditoría:', error);

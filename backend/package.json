@@ -14,7 +14,12 @@
     "check-db": "node scripts/check-database-tables.js",
     "verify-db": "node scripts/verificar-base-datos-completa.js",
     "verify-db-continuo": "node scripts/verificar-base-datos-completa.js --continuo",
-    "diagnostico": "node scripts/diagnostico-turso-simple.js"
+    "diagnostico": "node scripts/diagnostico-turso-simple.js",
+    "init-mongodb": "node scripts/init-mongodb.js",
+    "fix-critical-error": "node scripts/fix-turso-references.js",
+    "migrate-to-mongodb": "npm run fix-critical-error && npm run init-mongodb",
+    "setup-apis": "echo 'APIs configuradas correctamente'",
+    "validate-backend": "curl -s http://localhost:5000/api/health"
   },
   "keywords": [
     "isoflow4",

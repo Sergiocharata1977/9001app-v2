@@ -1,4 +1,4 @@
-const tursoClient = require('../lib/tursoClient.js');
+const mongodbClient = require('../lib/mongodbClient.js');
 const { randomUUID  } = require('crypto');
 
 // ===============================================
@@ -10,7 +10,7 @@ const getAllAuditorias = async (req, res) => {
   try {
     console.log('🔍 Obteniendo auditorías con relaciones...');
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `
         SELECT 
           a.*,
@@ -71,7 +71,7 @@ const getAuditoriaById = async (req, res) => {
     console.log(`🔍 Obteniendo auditoría ${id} con relaciones...`);
     
     // Obtener auditoría principal
-    const auditoriaResult = await tursoClient.execute({
+    const auditoriaResult = await mongodbClient.execute({
       sql: `
         SELECT 
           a.*,
@@ -102,7 +102,7 @@ const getAuditoriaById = async (req, res) => {
     }
 
     // Obtener aspectos de la auditoría
-    const aspectosResult = await tursoClient.execute({
+    const aspectosResult = await mongodbClient.execute({
       sql: `
         SELECT 
           asp.*,
@@ -115,7 +115,7 @@ const getAuditoriaById = async (req, res) => {
     });
 
     // Obtener relaciones con otros registros
-    const relacionesResult = await tursoClient.execute({
+    const relacionesResult = await mongodbClient.execute({
       sql: `
         SELECT 
           r.*,
@@ -190,7 +190,7 @@ const createAuditoria = async (req, res) => {
     const organizationId = req.user?.organization_id || 2;
 
     // Crear auditoría principal
-    await tursoClient.execute({
+    await mongodbClient.execute({
       sql: `
         INSERT INTO auditorias (
           id, codigo, titulo, area, responsable_id, fecha_programada,
@@ -220,7 +220,7 @@ const createAuditoria = async (req, res) => {
       for (const aspecto of aspectos) {
         if (aspecto.proceso_nombre) {
           const aspectoId = randomUUID();
-          await tursoClient.execute({
+          await mongodbClient.execute({
             sql: `
               INSERT INTO auditoria_aspectos (
                 id, auditoria_id, proceso_id, proceso_nombre,
@@ -249,7 +249,7 @@ const createAuditoria = async (req, res) => {
       for (const relacion of relaciones) {
         if (relacion.destino_tipo && relacion.destino_id) {
           const relacionId = randomUUID();
-          await tursoClient.execute({
+          await mongodbClient.execute({
             sql: `
               INSERT INTO relaciones_sgc (
                 id, organization_id, origen_tipo, origen_id,
@@ -319,7 +319,7 @@ const updateAuditoria = async (req, res) => {
 
     const timestamp = new Date().toISOString();
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `
         UPDATE auditorias SET
           titulo = COALESCE(?, titulo),
@@ -384,7 +384,7 @@ const deleteAuditoria = async (req, res) => {
     const { id } = req.params;
     console.log(`🗑️ Eliminando auditoría ${id}...`);
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: 'DELETE FROM auditorias WHERE id = ? AND organization_id = ?',
       args: [id, req.user.organization_id]
     });
@@ -423,7 +423,7 @@ const getParticipantesSGC = async (req, res) => {
     const { auditoriaId } = req.params;
     console.log(`👥 Obteniendo participantes SGC de auditoría ${auditoriaId}...`);
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `
         SELECT 
           sp.*,
@@ -473,7 +473,7 @@ const addParticipanteSGC = async (req, res) => {
     const participanteId = randomUUID();
     const timestamp = new Date().toISOString();
 
-    await tursoClient.execute({
+    await mongodbClient.execute({
       sql: `
         INSERT INTO sgc_participantes (
           id, organization_id, entidad_tipo, entidad_id,
@@ -515,7 +515,7 @@ const getDocumentosSGC = async (req, res) => {
   try {
     const { auditoriaId } = req.params;
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `
         SELECT 
           sdr.*,
@@ -563,7 +563,7 @@ const addDocumentoSGC = async (req, res) => {
     const relacionId = randomUUID();
     const timestamp = new Date().toISOString();
 
-    await tursoClient.execute({
+    await mongodbClient.execute({
       sql: `
         INSERT INTO sgc_documentos_relacionados (
           id, organization_id, entidad_tipo, entidad_id,
@@ -606,7 +606,7 @@ const getNormasSGC = async (req, res) => {
   try {
     const { auditoriaId } = req.params;
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `
         SELECT 
           snr.*,
@@ -658,7 +658,7 @@ const addNormaSGC = async (req, res) => {
     const normaRelacionId = randomUUID();
     const timestamp = new Date().toISOString();
 
-    await tursoClient.execute({
+    await mongodbClient.execute({
       sql: `
         INSERT INTO sgc_normas_relacionadas (
           id, organization_id, entidad_tipo, entidad_id,
@@ -707,7 +707,7 @@ const getAspectos = async (req, res) => {
     const { auditoriaId } = req.params;
     console.log(`🔍 Obteniendo aspectos de auditoría ${auditoriaId}...`);
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `
         SELECT aa.*, p.nombre as proceso_original
         FROM auditoria_aspectos aa
@@ -761,7 +761,7 @@ const addAspecto = async (req, res) => {
     const aspectoId = randomUUID();
     const timestamp = new Date().toISOString();
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `
         INSERT INTO auditoria_aspectos (
           id, auditoria_id, proceso_id, proceso_nombre,
@@ -818,7 +818,7 @@ const updateAspecto = async (req, res) => {
       conformidad
     } = req.body;
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `
         UPDATE auditoria_aspectos SET
           proceso_id = ?,
@@ -870,7 +870,7 @@ const deleteAspecto = async (req, res) => {
     const { id } = req.params;
     console.log(`🗑️ Eliminando aspecto ${id}...`);
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: 'DELETE FROM auditoria_aspectos WHERE id = ?',
       args: [id]
     });
@@ -919,7 +919,7 @@ const addRelacion = async (req, res) => {
     }
 
     // Verificar que la auditoría existe
-    const auditoriaExists = await tursoClient.execute({
+    const auditoriaExists = await mongodbClient.execute({
       sql: 'SELECT id FROM auditorias WHERE id = ? AND organization_id = ?',
       args: [auditoriaId, req.user?.organization_id || 2]
     });
@@ -932,7 +932,7 @@ const addRelacion = async (req, res) => {
     }
 
     // Verificar que no existe ya la relación
-    const relacionExists = await tursoClient.execute({
+    const relacionExists = await mongodbClient.execute({
       sql: `
         SELECT id FROM relaciones_sgc 
         WHERE origen_tipo = 'auditoria' AND origen_id = ? 
@@ -952,7 +952,7 @@ const addRelacion = async (req, res) => {
     const relacionId = randomUUID();
     const timestamp = new Date().toISOString();
 
-    await tursoClient.execute({
+    await mongodbClient.execute({
       sql: `
         INSERT INTO relaciones_sgc (
           id, organization_id, origen_tipo, origen_id,
@@ -1003,7 +1003,7 @@ const getRelaciones = async (req, res) => {
     const { auditoriaId } = req.params;
     console.log(`🔗 Obteniendo relaciones de auditoría ${auditoriaId}...`);
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `
         SELECT 
           r.*,
@@ -1049,7 +1049,7 @@ const deleteRelacion = async (req, res) => {
     const { relacionId } = req.params;
     console.log(`🗑️ Eliminando relación ${relacionId}...`);
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `
         DELETE FROM relaciones_sgc 
         WHERE id = ? AND organization_id = ? AND origen_tipo = 'auditoria'
@@ -1116,7 +1116,7 @@ const getRegistrosRelacionables = async (req, res) => {
         });
     }
 
-    const result = await tursoClient.execute({ sql, args });
+    const result = await mongodbClient.execute({ sql, args });
 
     console.log(`✅ ${result.rows.length} registros de tipo ${tipo} encontrados`);
     

@@ -1,10 +1,10 @@
-const tursoClient = require('../../lib/tursoClient.js');
+const mongodbClient = require('../../lib/mongodbClient.js');
 
 async function checkTables() {
   try {
     console.log('📋 Verificando tablas existentes...\n');
     
-    const result = await tursoClient.execute('SELECT name FROM sqlite_master WHERE type="table" ORDER BY name');
+    const result = await mongodbClient.execute('SELECT name FROM sqlite_master WHERE type="table" ORDER BY name');
     
     console.log(`Total de tablas: ${result.rows.length}\n`);
     result.rows.forEach(row => {
@@ -13,7 +13,7 @@ async function checkTables() {
     
     // Verificar específicamente las tablas RAG
     console.log('\n🔍 Verificando tablas RAG específicamente...');
-    const ragTables = await tursoClient.execute('SELECT name FROM sqlite_master WHERE type="table" AND name LIKE "%rag%" ORDER BY name');
+    const ragTables = await mongodbClient.execute('SELECT name FROM sqlite_master WHERE type="table" AND name LIKE "%rag%" ORDER BY name');
     
     console.log(`Tablas RAG encontradas: ${ragTables.rows.length}`);
     ragTables.rows.forEach(table => {
