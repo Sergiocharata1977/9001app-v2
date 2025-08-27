@@ -1,0 +1,263 @@
+{
+  "collection": "rag_documents",
+  "schema": {
+    "organizationId": {
+      "type": "objectId",
+      "required": true,
+      "ref": "organizations",
+      "index": true
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "trim": true,
+      "maxlength": 200,
+      "index": true
+    },
+    "type": {
+      "type": "string",
+      "required": true,
+      "enum": ["procedure", "policy", "manual", "form", "record", "instruction", "plan", "report"],
+      "index": true
+    },
+    "category": {
+      "type": "string",
+      "required": true,
+      "enum": ["quality", "process", "product", "compliance", "training", "audit", "management"],
+      "index": true
+    },
+    "code": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "trim": true,
+      "maxlength": 50,
+      "index": true
+    },
+    "version": {
+      "type": "string",
+      "required": true,
+      "default": "1.0"
+    },
+    "status": {
+      "type": "string",
+      "required": true,
+      "enum": ["draft", "review", "approved", "active", "obsolete"],
+      "default": "draft",
+      "index": true
+    },
+    "content": {
+      "type": "object",
+      "properties": {
+        "text": { "type": "string" },
+        "html": { "type": "string" },
+        "markdown": { "type": "string" },
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "title": { "type": "string" },
+              "content": { "type": "string" },
+              "order": { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "properties": {
+        "description": { "type": "string", "maxlength": 500 },
+        "keywords": { "type": "array", "items": { "type": "string" } },
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "language": { "type": "string", "default": "es" },
+        "department": { "type": "string" },
+        "process": { "type": "string" },
+        "iso9001Clause": { "type": "string" },
+        "applicableTo": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "fileInfo": {
+      "type": "object",
+      "properties": {
+        "originalName": { "type": "string" },
+        "fileName": { "type": "string" },
+        "filePath": { "type": "string" },
+        "fileSize": { "type": "number" },
+        "mimeType": { "type": "string" },
+        "extension": { "type": "string" },
+        "checksum": { "type": "string" }
+      }
+    },
+    "embeddings": {
+      "type": "object",
+      "properties": {
+        "model": { "type": "string", "default": "text-embedding-ada-002" },
+        "dimensions": { "type": "number" },
+        "vectors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "chunkId": { "type": "string" },
+              "text": { "type": "string" },
+              "embedding": { "type": "array", "items": { "type": "number" } },
+              "startIndex": { "type": "number" },
+              "endIndex": { "type": "number" }
+            }
+          }
+        },
+        "lastUpdated": { "type": "date" }
+      }
+    },
+    "relationships": {
+      "type": "object",
+      "properties": {
+        "references": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "documentId": { "type": "objectId", "ref": "rag_documents" },
+              "type": { "type": "string", "enum": ["depends_on", "references", "supersedes", "related_to"] },
+              "description": { "type": "string" }
+            }
+          }
+        },
+        "processes": { "type": "array", "items": { "type": "string" } },
+        "audits": { "type": "array", "items": { "type": "objectId", "ref": "audits" } },
+        "trainings": { "type": "array", "items": { "type": "objectId", "ref": "trainings" } }
+      }
+    },
+    "accessControl": {
+      "type": "object",
+      "properties": {
+        "visibility": { "type": "string", "enum": ["public", "private", "restricted"], "default": "public" },
+        "roles": { "type": "array", "items": { "type": "string" } },
+        "departments": { "type": "array", "items": { "type": "string" } },
+        "users": { "type": "array", "items": { "type": "objectId", "ref": "users" } }
+      }
+    },
+    "workflow": {
+      "type": "object",
+      "properties": {
+        "currentStep": { "type": "string" },
+        "steps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "step": { "type": "string" },
+              "assignedTo": { "type": "objectId", "ref": "users" },
+              "status": { "type": "string", "enum": ["pending", "in-progress", "completed", "rejected"] },
+              "comments": { "type": "string" },
+              "completedAt": { "type": "date" }
+            }
+          }
+        }
+      }
+    },
+    "revisionHistory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "version": { "type": "string" },
+          "date": { "type": "date" },
+          "author": { "type": "objectId", "ref": "users" },
+          "changes": { "type": "string" },
+          "reason": { "type": "string" }
+        }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "properties": {
+        "views": { "type": "number", "default": 0 },
+        "downloads": { "type": "number", "default": 0 },
+        "searches": { "type": "number", "default": 0 },
+        "lastAccessed": { "type": "date" },
+        "popularity": { "type": "number", "default": 0 }
+      }
+    },
+    "compliance": {
+      "type": "object",
+      "properties": {
+        "retentionPeriod": { "type": "number" },
+        "retentionUnit": { "type": "string", "enum": ["days", "months", "years"] },
+        "disposalMethod": { "type": "string" },
+        "archivalRequired": { "type": "boolean", "default": false },
+        "regulatoryRequirements": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "createdBy": {
+      "type": "objectId",
+      "ref": "users",
+      "required": true
+    },
+    "approvedBy": {
+      "type": "objectId",
+      "ref": "users"
+    },
+    "approvedAt": {
+      "type": "date"
+    },
+    "createdAt": {
+      "type": "date",
+      "default": "now"
+    },
+    "updatedAt": {
+      "type": "date",
+      "default": "now"
+    }
+  },
+  "indexes": [
+    { "name": "organizationId_1", "keys": { "organizationId": 1 } },
+    { "name": "code_1", "keys": { "code": 1 }, "unique": true },
+    { "name": "type_1", "keys": { "type": 1 } },
+    { "name": "category_1", "keys": { "category": 1 } },
+    { "name": "status_1", "keys": { "status": 1 } },
+    { "name": "organizationId_status_1", "keys": { "organizationId": 1, "status": 1 } },
+    { "name": "type_category_1", "keys": { "type": 1, "category": 1 } },
+    { "name": "metadata_keywords_1", "keys": { "metadata.keywords": 1 } },
+    { "name": "metadata_tags_1", "keys": { "metadata.tags": 1 } },
+    { "name": "accessControl_visibility_1", "keys": { "accessControl.visibility": 1 } },
+    { "name": "usage_popularity_1", "keys": { "usage.popularity": -1 } },
+    { "name": "createdAt_1", "keys": { "createdAt": -1 } },
+    { "name": "content_text_text", "keys": { "content.text": "text" } }
+  ],
+  "validation": {
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["organizationId", "title", "type", "category", "code"],
+        "properties": {
+          "organizationId": {
+            "bsonType": "objectId"
+          },
+          "title": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "type": {
+            "enum": ["procedure", "policy", "manual", "form", "record", "instruction", "plan", "report"]
+          },
+          "category": {
+            "enum": ["quality", "process", "product", "compliance", "training", "audit", "management"]
+          },
+          "code": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "status": {
+            "enum": ["draft", "review", "approved", "active", "obsolete"]
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,315 @@
+{
+  "collection": "audits",
+  "schema": {
+    "organizationId": {
+      "type": "objectId",
+      "required": true,
+      "ref": "organizations",
+      "index": true
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "trim": true,
+      "maxlength": 200,
+      "index": true
+    },
+    "code": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "trim": true,
+      "maxlength": 50,
+      "index": true
+    },
+    "type": {
+      "type": "string",
+      "required": true,
+      "enum": ["internal", "external", "follow-up", "surveillance", "certification"],
+      "index": true
+    },
+    "category": {
+      "type": "string",
+      "required": true,
+      "enum": ["process", "product", "system", "compliance", "risk"],
+      "index": true
+    },
+    "status": {
+      "type": "string",
+      "required": true,
+      "enum": ["planned", "in-progress", "completed", "cancelled", "suspended"],
+      "default": "planned",
+      "index": true
+    },
+    "priority": {
+      "type": "string",
+      "required": true,
+      "enum": ["low", "medium", "high", "critical"],
+      "default": "medium",
+      "index": true
+    },
+    "description": {
+      "type": "string",
+      "trim": true,
+      "maxlength": 1000
+    },
+    "scope": {
+      "type": "object",
+      "properties": {
+        "description": { "type": "string", "required": true, "maxlength": 500 },
+        "processes": { "type": "array", "items": { "type": "string" } },
+        "departments": { "type": "array", "items": { "type": "string" } },
+        "locations": { "type": "array", "items": { "type": "string" } },
+        "exclusions": { "type": "string", "maxlength": 500 }
+      }
+    },
+    "objectives": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": { "type": "string", "required": true },
+          "type": { "type": "string", "enum": ["compliance", "effectiveness", "improvement", "risk"] },
+          "criteria": { "type": "string" }
+        }
+      }
+    },
+    "schedule": {
+      "type": "object",
+      "properties": {
+        "plannedStartDate": { "type": "date", "required": true },
+        "plannedEndDate": { "type": "date", "required": true },
+        "actualStartDate": { "type": "date" },
+        "actualEndDate": { "type": "date" },
+        "duration": { "type": "number" },
+        "timeSlots": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": { "type": "date" },
+              "startTime": { "type": "string" },
+              "endTime": { "type": "string" },
+              "activity": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "team": {
+      "type": "object",
+      "properties": {
+        "leadAuditor": {
+          "type": "object",
+          "properties": {
+            "userId": { "type": "objectId", "ref": "users", "required": true },
+            "name": { "type": "string" },
+            "certification": { "type": "string" },
+            "experience": { "type": "number" }
+          }
+        },
+        "auditors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "userId": { "type": "objectId", "ref": "users" },
+              "name": { "type": "string" },
+              "role": { "type": "string" },
+              "specialization": { "type": "string" }
+            }
+          }
+        },
+        "auditees": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "userId": { "type": "objectId", "ref": "users" },
+              "name": { "type": "string" },
+              "department": { "type": "string" },
+              "role": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "checklist": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "required": true },
+          "question": { "type": "string", "required": true },
+          "category": { "type": "string" },
+          "reference": { "type": "string" },
+          "criteria": { "type": "string" },
+          "evidence": { "type": "string" },
+          "status": { "type": "string", "enum": ["pending", "compliant", "non-compliant", "observation"] },
+          "notes": { "type": "string" },
+          "attachments": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "findings": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string", "required": true },
+          "title": { "type": "string", "required": true },
+          "description": { "type": "string", "required": true },
+          "type": { "type": "string", "enum": ["non-conformity", "observation", "opportunity", "strength"] },
+          "severity": { "type": "string", "enum": ["minor", "major", "critical"] },
+          "category": { "type": "string" },
+          "process": { "type": "string" },
+          "clause": { "type": "string" },
+          "evidence": { "type": "string" },
+          "rootCause": { "type": "string" },
+          "impact": { "type": "string" },
+          "status": { "type": "string", "enum": ["open", "in-progress", "closed", "verified"] },
+          "assignedTo": { "type": "objectId", "ref": "users" },
+          "dueDate": { "type": "date" },
+          "correctiveAction": { "type": "string" },
+          "verificationDate": { "type": "date" },
+          "verifiedBy": { "type": "objectId", "ref": "users" }
+        }
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": { "type": "string", "required": true },
+          "priority": { "type": "string", "enum": ["low", "medium", "high"] },
+          "category": { "type": "string" },
+          "assignedTo": { "type": "objectId", "ref": "users" },
+          "dueDate": { "type": "date" },
+          "status": { "type": "string", "enum": ["pending", "in-progress", "completed"] }
+        }
+      }
+    },
+    "report": {
+      "type": "object",
+      "properties": {
+        "executiveSummary": { "type": "string" },
+        "methodology": { "type": "string" },
+        "findingsSummary": {
+          "type": "object",
+          "properties": {
+            "totalFindings": { "type": "number" },
+            "nonConformities": { "type": "number" },
+            "observations": { "type": "number" },
+            "opportunities": { "type": "number" }
+          }
+        },
+        "conclusions": { "type": "string" },
+        "recommendations": { "type": "string" },
+        "attachments": { "type": "array", "items": { "type": "string" } },
+        "generatedAt": { "type": "date" },
+        "generatedBy": { "type": "objectId", "ref": "users" }
+      }
+    },
+    "compliance": {
+      "type": "object",
+      "properties": {
+        "iso9001": {
+          "type": "object",
+          "properties": {
+            "clauses": { "type": "array", "items": { "type": "string" } },
+            "requirements": { "type": "array", "items": { "type": "string" } },
+            "evidence": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "regulations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "requirements": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "duration": { "type": "number" },
+        "findingsCount": { "type": "number" },
+        "complianceRate": { "type": "number" },
+        "effectivenessScore": { "type": "number" }
+      }
+    },
+    "createdBy": {
+      "type": "objectId",
+      "ref": "users",
+      "required": true
+    },
+    "approvedBy": {
+      "type": "objectId",
+      "ref": "users"
+    },
+    "approvedAt": {
+      "type": "date"
+    },
+    "createdAt": {
+      "type": "date",
+      "default": "now"
+    },
+    "updatedAt": {
+      "type": "date",
+      "default": "now"
+    }
+  },
+  "indexes": [
+    { "name": "organizationId_1", "keys": { "organizationId": 1 } },
+    { "name": "code_1", "keys": { "code": 1 }, "unique": true },
+    { "name": "type_1", "keys": { "type": 1 } },
+    { "name": "status_1", "keys": { "status": 1 } },
+    { "name": "priority_1", "keys": { "priority": 1 } },
+    { "name": "organizationId_status_1", "keys": { "organizationId": 1, "status": 1 } },
+    { "name": "type_status_1", "keys": { "type": 1, "status": 1 } },
+    { "name": "schedule_plannedStartDate_1", "keys": { "schedule.plannedStartDate": 1 } },
+    { "name": "team_leadAuditor_userId_1", "keys": { "team.leadAuditor.userId": 1 } },
+    { "name": "findings_status_1", "keys": { "findings.status": 1 } },
+    { "name": "createdAt_1", "keys": { "createdAt": -1 } }
+  ],
+  "validation": {
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["organizationId", "title", "code", "type", "category"],
+        "properties": {
+          "organizationId": {
+            "bsonType": "objectId"
+          },
+          "title": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "code": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "type": {
+            "enum": ["internal", "external", "follow-up", "surveillance", "certification"]
+          },
+          "category": {
+            "enum": ["process", "product", "system", "compliance", "risk"]
+          },
+          "status": {
+            "enum": ["planned", "in-progress", "completed", "cancelled", "suspended"]
+          },
+          "priority": {
+            "enum": ["low", "medium", "high", "critical"]
+          }
+        }
+      }
+    }
+  }
+}

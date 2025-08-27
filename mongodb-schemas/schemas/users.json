@@ -1,0 +1,197 @@
+{
+  "collection": "users",
+  "schema": {
+    "username": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "trim": true,
+      "minlength": 3,
+      "maxlength": 50,
+      "index": true
+    },
+    "email": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "trim": true,
+      "lowercase": true,
+      "pattern": "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+      "index": true
+    },
+    "password": {
+      "type": "string",
+      "required": true,
+      "minlength": 8
+    },
+    "profile": {
+      "type": "object",
+      "properties": {
+        "firstName": { "type": "string", "required": true, "trim": true, "maxlength": 50 },
+        "lastName": { "type": "string", "required": true, "trim": true, "maxlength": 50 },
+        "avatar": { "type": "string", "maxlength": 200 },
+        "phone": { "type": "string", "maxlength": 20 },
+        "position": { "type": "string", "maxlength": 100 },
+        "department": { "type": "string", "maxlength": 100 },
+        "employeeId": { "type": "string", "maxlength": 50 }
+      }
+    },
+    "organizationId": {
+      "type": "objectId",
+      "required": true,
+      "ref": "organizations",
+      "index": true
+    },
+    "roles": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": ["super_admin", "admin", "manager", "user", "auditor", "trainer", "coordinator"]
+      },
+      "default": ["user"]
+    },
+    "permissions": {
+      "type": "object",
+      "properties": {
+        "organizations": {
+          "type": "array",
+          "items": { "type": "string" },
+          "enum": ["read", "write", "delete", "manage"]
+        },
+        "users": {
+          "type": "array",
+          "items": { "type": "string" },
+          "enum": ["read", "write", "delete", "manage"]
+        },
+        "audits": {
+          "type": "array",
+          "items": { "type": "string" },
+          "enum": ["read", "write", "delete", "manage", "approve"]
+        },
+        "documents": {
+          "type": "array",
+          "items": { "type": "string" },
+          "enum": ["read", "write", "delete", "manage", "approve"]
+        },
+        "processes": {
+          "type": "array",
+          "items": { "type": "string" },
+          "enum": ["read", "write", "delete", "manage"]
+        },
+        "crm": {
+          "type": "array",
+          "items": { "type": "string" },
+          "enum": ["read", "write", "delete", "manage"]
+        },
+        "training": {
+          "type": "array",
+          "items": { "type": "string" },
+          "enum": ["read", "write", "delete", "manage"]
+        },
+        "reports": {
+          "type": "array",
+          "items": { "type": "string" },
+          "enum": ["read", "generate", "export"]
+        }
+      }
+    },
+    "preferences": {
+      "type": "object",
+      "properties": {
+        "language": { "type": "string", "default": "es" },
+        "timezone": { "type": "string", "default": "America/Argentina/Buenos_Aires" },
+        "theme": { "type": "string", "enum": ["light", "dark", "auto"], "default": "auto" },
+        "notifications": {
+          "type": "object",
+          "properties": {
+            "email": { "type": "boolean", "default": true },
+            "push": { "type": "boolean", "default": true },
+            "sms": { "type": "boolean", "default": false }
+          }
+        }
+      }
+    },
+    "security": {
+      "type": "object",
+      "properties": {
+        "twoFactorEnabled": { "type": "boolean", "default": false },
+        "twoFactorSecret": { "type": "string" },
+        "lastPasswordChange": { "type": "date" },
+        "passwordExpiryDate": { "type": "date" },
+        "failedLoginAttempts": { "type": "number", "default": 0 },
+        "lockedUntil": { "type": "date" },
+        "sessionTokens": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "token": { "type": "string" },
+              "createdAt": { "type": "date" },
+              "expiresAt": { "type": "date" },
+              "ipAddress": { "type": "string" },
+              "userAgent": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "activity": {
+      "type": "object",
+      "properties": {
+        "lastLogin": { "type": "date" },
+        "lastActivity": { "type": "date" },
+        "loginCount": { "type": "number", "default": 0 },
+        "totalSessionTime": { "type": "number", "default": 0 }
+      }
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true,
+      "index": true
+    },
+    "createdAt": {
+      "type": "date",
+      "default": "now"
+    },
+    "updatedAt": {
+      "type": "date",
+      "default": "now"
+    }
+  },
+  "indexes": [
+    { "name": "username_1", "keys": { "username": 1 }, "unique": true },
+    { "name": "email_1", "keys": { "email": 1 }, "unique": true },
+    { "name": "organizationId_1", "keys": { "organizationId": 1 } },
+    { "name": "isActive_1", "keys": { "isActive": 1 } },
+    { "name": "roles_1", "keys": { "roles": 1 } },
+    { "name": "organizationId_isActive_1", "keys": { "organizationId": 1, "isActive": 1 } },
+    { "name": "lastLogin_1", "keys": { "activity.lastLogin": -1 } },
+    { "name": "createdAt_1", "keys": { "createdAt": -1 } }
+  ],
+  "validation": {
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["username", "email", "password", "organizationId"],
+        "properties": {
+          "username": {
+            "bsonType": "string",
+            "minLength": 3,
+            "maxLength": 50
+          },
+          "email": {
+            "bsonType": "string",
+            "pattern": "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
+          },
+          "password": {
+            "bsonType": "string",
+            "minLength": 8
+          },
+          "organizationId": {
+            "bsonType": "objectId"
+          }
+        }
+      }
+    }
+  }
+}

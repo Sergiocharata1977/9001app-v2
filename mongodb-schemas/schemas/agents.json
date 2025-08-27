@@ -1,0 +1,180 @@
+{
+  "collection": "agents",
+  "schema": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "trim": true,
+      "maxlength": 100,
+      "index": true
+    },
+    "type": {
+      "type": "string",
+      "required": true,
+      "enum": ["coordinator", "backend", "frontend", "tester", "documenter", "deployer", "rehabilitator", "database"],
+      "index": true
+    },
+    "organizationId": {
+      "type": "objectId",
+      "required": true,
+      "ref": "organizations",
+      "index": true
+    },
+    "status": {
+      "type": "string",
+      "required": true,
+      "enum": ["active", "inactive", "busy", "error", "maintenance"],
+      "default": "active",
+      "index": true
+    },
+    "configuration": {
+      "type": "object",
+      "properties": {
+        "version": { "type": "string", "default": "1.0.0" },
+        "priority": { "type": "number", "default": 1, "min": 1, "max": 10 },
+        "maxConcurrentTasks": { "type": "number", "default": 5 },
+        "timeout": { "type": "number", "default": 300000 },
+        "retryAttempts": { "type": "number", "default": 3 },
+        "autoRestart": { "type": "boolean", "default": true },
+        "healthCheckInterval": { "type": "number", "default": 30000 }
+      }
+    },
+    "capabilities": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "schema_design", "index_optimization", "query_optimization", "data_migration",
+          "api_development", "controller_migration", "service_integration",
+          "ui_adaptation", "component_migration", "state_management",
+          "test_creation", "test_execution", "coverage_analysis",
+          "documentation_generation", "api_documentation", "user_guides",
+          "deployment_configuration", "ci_cd_setup", "monitoring_setup",
+          "coordination_management", "task_distribution", "progress_tracking"
+        ]
+      }
+    },
+    "endpoints": {
+      "type": "object",
+      "properties": {
+        "health": { "type": "string" },
+        "status": { "type": "string" },
+        "tasks": { "type": "string" },
+        "results": { "type": "string" }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "properties": {
+        "tasksCompleted": { "type": "number", "default": 0 },
+        "tasksFailed": { "type": "number", "default": 0 },
+        "averageResponseTime": { "type": "number", "default": 0 },
+        "uptime": { "type": "number", "default": 0 },
+        "lastHealthCheck": { "type": "date" },
+        "cpuUsage": { "type": "number", "default": 0 },
+        "memoryUsage": { "type": "number", "default": 0 }
+      }
+    },
+    "currentTask": {
+      "type": "object",
+      "properties": {
+        "taskId": { "type": "string" },
+        "description": { "type": "string" },
+        "startedAt": { "type": "date" },
+        "estimatedCompletion": { "type": "date" },
+        "progress": { "type": "number", "min": 0, "max": 100, "default": 0 }
+      }
+    },
+    "taskHistory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "taskId": { "type": "string" },
+          "description": { "type": "string" },
+          "status": { "type": "string", "enum": ["completed", "failed", "cancelled"] },
+          "startedAt": { "type": "date" },
+          "completedAt": { "type": "date" },
+          "duration": { "type": "number" },
+          "result": { "type": "object" },
+          "error": { "type": "string" }
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "agentId": { "type": "objectId", "ref": "agents" },
+          "type": { "type": "string", "enum": ["required", "optional", "sequential"] },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "communication": {
+      "type": "object",
+      "properties": {
+        "protocol": { "type": "string", "default": "http" },
+        "port": { "type": "number", "default": 3000 },
+        "apiKey": { "type": "string" },
+        "webhookUrl": { "type": "string" },
+        "messageQueue": { "type": "string" }
+      }
+    },
+    "logs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": { "type": "date" },
+          "level": { "type": "string", "enum": ["debug", "info", "warn", "error"] },
+          "message": { "type": "string" },
+          "context": { "type": "object" }
+        }
+      }
+    },
+    "createdAt": {
+      "type": "date",
+      "default": "now"
+    },
+    "updatedAt": {
+      "type": "date",
+      "default": "now"
+    }
+  },
+  "indexes": [
+    { "name": "name_1", "keys": { "name": 1 } },
+    { "name": "type_1", "keys": { "type": 1 } },
+    { "name": "organizationId_1", "keys": { "organizationId": 1 } },
+    { "name": "status_1", "keys": { "status": 1 } },
+    { "name": "organizationId_status_1", "keys": { "organizationId": 1, "status": 1 } },
+    { "name": "type_status_1", "keys": { "type": 1, "status": 1 } },
+    { "name": "currentTask_taskId_1", "keys": { "currentTask.taskId": 1 } },
+    { "name": "createdAt_1", "keys": { "createdAt": -1 } }
+  ],
+  "validation": {
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["name", "type", "organizationId"],
+        "properties": {
+          "name": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "type": {
+            "enum": ["coordinator", "backend", "frontend", "tester", "documenter", "deployer", "rehabilitator", "database"]
+          },
+          "organizationId": {
+            "bsonType": "objectId"
+          },
+          "status": {
+            "enum": ["active", "inactive", "busy", "error", "maintenance"]
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,135 @@
+{
+  "collection": "organizations",
+  "schema": {
+    "name": {
+      "type": "string",
+      "required": true,
+      "trim": true,
+      "maxlength": 100,
+      "index": true
+    },
+    "description": {
+      "type": "string",
+      "trim": true,
+      "maxlength": 500
+    },
+    "address": {
+      "type": "object",
+      "properties": {
+        "street": { "type": "string", "maxlength": 200 },
+        "city": { "type": "string", "maxlength": 100 },
+        "state": { "type": "string", "maxlength": 100 },
+        "country": { "type": "string", "maxlength": 100 },
+        "postalCode": { "type": "string", "maxlength": 20 }
+      }
+    },
+    "contact": {
+      "type": "object",
+      "properties": {
+        "phone": { "type": "string", "maxlength": 20 },
+        "email": { 
+          "type": "string", 
+          "pattern": "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$",
+          "lowercase": true
+        },
+        "website": { "type": "string", "maxlength": 100 }
+      }
+    },
+    "iso9001": {
+      "type": "object",
+      "properties": {
+        "certificationNumber": { "type": "string", "maxlength": 50 },
+        "certificationDate": { "type": "date" },
+        "expiryDate": { "type": "date" },
+        "certificationBody": { "type": "string", "maxlength": 100 },
+        "scope": { "type": "string", "maxlength": 500 },
+        "status": {
+          "type": "string",
+          "enum": ["certified", "pending", "suspended", "expired"],
+          "default": "pending"
+        }
+      }
+    },
+    "settings": {
+      "type": "object",
+      "properties": {
+        "timezone": { "type": "string", "default": "America/Argentina/Buenos_Aires" },
+        "language": { "type": "string", "default": "es" },
+        "currency": { "type": "string", "default": "ARS" },
+        "dateFormat": { "type": "string", "default": "DD/MM/YYYY" },
+        "decimalSeparator": { "type": "string", "default": "," },
+        "thousandsSeparator": { "type": "string", "default": "." }
+      }
+    },
+    "features": {
+      "type": "object",
+      "properties": {
+        "multiAgent": { "type": "boolean", "default": true },
+        "ragSystem": { "type": "boolean", "default": true },
+        "auditSystem": { "type": "boolean", "default": true },
+        "crmAgro": { "type": "boolean", "default": true },
+        "trainingSystem": { "type": "boolean", "default": true },
+        "documentManagement": { "type": "boolean", "default": true }
+      }
+    },
+    "subscription": {
+      "type": "object",
+      "properties": {
+        "plan": {
+          "type": "string",
+          "enum": ["basic", "professional", "enterprise"],
+          "default": "basic"
+        },
+        "startDate": { "type": "date" },
+        "endDate": { "type": "date" },
+        "maxUsers": { "type": "number", "default": 10 },
+        "maxStorage": { "type": "number", "default": 1073741824 },
+        "isActive": { "type": "boolean", "default": true }
+      }
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true,
+      "index": true
+    },
+    "createdAt": {
+      "type": "date",
+      "default": "now"
+    },
+    "updatedAt": {
+      "type": "date",
+      "default": "now"
+    }
+  },
+  "indexes": [
+    { "name": "name_1", "keys": { "name": 1 } },
+    { "name": "isActive_1", "keys": { "isActive": 1 } },
+    { "name": "iso9001_status_1", "keys": { "iso9001.status": 1 } },
+    { "name": "subscription_plan_1", "keys": { "subscription.plan": 1 } },
+    { "name": "contact_email_1", "keys": { "contact.email": 1 } },
+    { "name": "createdAt_1", "keys": { "createdAt": -1 } }
+  ],
+  "validation": {
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["name"],
+        "properties": {
+          "name": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 100
+          },
+          "contact": {
+            "bsonType": "object",
+            "properties": {
+              "email": {
+                "pattern": "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

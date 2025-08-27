@@ -1,0 +1,310 @@
+{
+  "collection": "crm_agro",
+  "schema": {
+    "organizationId": {
+      "type": "objectId",
+      "required": true,
+      "ref": "organizations",
+      "index": true
+    },
+    "clientType": {
+      "type": "string",
+      "required": true,
+      "enum": ["producer", "distributor", "processor", "retailer", "consultant"],
+      "index": true
+    },
+    "basicInfo": {
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "required": true, "trim": true, "maxlength": 200 },
+        "legalName": { "type": "string", "trim": true, "maxlength": 200 },
+        "taxId": { "type": "string", "maxlength": 50 },
+        "registrationNumber": { "type": "string", "maxlength": 50 },
+        "website": { "type": "string", "maxlength": 100 }
+      }
+    },
+    "contact": {
+      "type": "object",
+      "properties": {
+        "primary": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string", "required": true, "trim": true, "maxlength": 100 },
+            "position": { "type": "string", "maxlength": 100 },
+            "email": { "type": "string", "lowercase": true },
+            "phone": { "type": "string", "maxlength": 20 },
+            "mobile": { "type": "string", "maxlength": 20 }
+          }
+        },
+        "secondary": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string", "trim": true, "maxlength": 100 },
+              "position": { "type": "string", "maxlength": 100 },
+              "email": { "type": "string", "lowercase": true },
+              "phone": { "type": "string", "maxlength": 20 },
+              "mobile": { "type": "string", "maxlength": 20 },
+              "isPrimary": { "type": "boolean", "default": false }
+            }
+          }
+        }
+      }
+    },
+    "addresses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "enum": ["billing", "shipping", "production", "office"] },
+          "street": { "type": "string", "maxlength": 200 },
+          "city": { "type": "string", "maxlength": 100 },
+          "state": { "type": "string", "maxlength": 100 },
+          "country": { "type": "string", "maxlength": 100 },
+          "postalCode": { "type": "string", "maxlength": 20 },
+          "coordinates": {
+            "type": "object",
+            "properties": {
+              "latitude": { "type": "number" },
+              "longitude": { "type": "number" }
+            }
+          },
+          "isDefault": { "type": "boolean", "default": false }
+        }
+      }
+    },
+    "agriculturalProfile": {
+      "type": "object",
+      "properties": {
+        "crops": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string", "required": true },
+              "variety": { "type": "string" },
+              "hectares": { "type": "number" },
+              "season": { "type": "string" },
+              "certification": { "type": "string" }
+            }
+          }
+        },
+        "livestock": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string" },
+              "breed": { "type": "string" },
+              "quantity": { "type": "number" },
+              "certification": { "type": "string" }
+            }
+          }
+        },
+        "equipment": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string" },
+              "model": { "type": "string" },
+              "year": { "type": "number" },
+              "capacity": { "type": "string" }
+            }
+          }
+        },
+        "certifications": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string" },
+              "issuer": { "type": "string" },
+              "issueDate": { "type": "date" },
+              "expiryDate": { "type": "date" },
+              "status": { "type": "string", "enum": ["active", "expired", "pending"] }
+            }
+          }
+        }
+      }
+    },
+    "businessInfo": {
+      "type": "object",
+      "properties": {
+        "annualRevenue": { "type": "number" },
+        "employeeCount": { "type": "number" },
+        "yearsInBusiness": { "type": "number" },
+        "businessModel": { "type": "string", "maxlength": 200 },
+        "targetMarkets": { "type": "array", "items": { "type": "string" } },
+        "competitors": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "salesHistory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": { "type": "date" },
+          "product": { "type": "string" },
+          "quantity": { "type": "number" },
+          "unit": { "type": "string" },
+          "price": { "type": "number" },
+          "total": { "type": "number" },
+          "status": { "type": "string", "enum": ["pending", "confirmed", "delivered", "cancelled"] }
+        }
+      }
+    },
+    "interactions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": { "type": "date" },
+          "type": { "type": "string", "enum": ["call", "email", "meeting", "visit", "proposal"] },
+          "subject": { "type": "string" },
+          "description": { "type": "string" },
+          "outcome": { "type": "string" },
+          "nextAction": { "type": "string" },
+          "assignedTo": { "type": "objectId", "ref": "users" }
+        }
+      }
+    },
+    "opportunities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "value": { "type": "number" },
+          "probability": { "type": "number", "min": 0, "max": 100 },
+          "stage": { "type": "string", "enum": ["prospecting", "qualification", "proposal", "negotiation", "closed"] },
+          "expectedCloseDate": { "type": "date" },
+          "assignedTo": { "type": "objectId", "ref": "users" }
+        }
+      }
+    },
+    "preferences": {
+      "type": "object",
+      "properties": {
+        "communication": {
+          "type": "object",
+          "properties": {
+            "preferredMethod": { "type": "string", "enum": ["email", "phone", "sms", "in-person"] },
+            "frequency": { "type": "string", "enum": ["daily", "weekly", "monthly", "quarterly"] },
+            "timeZone": { "type": "string" }
+          }
+        },
+        "products": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "category": { "type": "string" },
+              "interest": { "type": "string", "enum": ["high", "medium", "low"] },
+              "notes": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "required": true,
+      "enum": ["prospect", "lead", "customer", "inactive", "lost"],
+      "default": "prospect",
+      "index": true
+    },
+    "score": {
+      "type": "number",
+      "default": 0,
+      "min": 0,
+      "max": 100
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "notes": {
+      "type": "string",
+      "maxlength": 2000
+    },
+    "createdBy": {
+      "type": "objectId",
+      "ref": "users",
+      "required": true
+    },
+    "assignedTo": {
+      "type": "objectId",
+      "ref": "users"
+    },
+    "createdAt": {
+      "type": "date",
+      "default": "now"
+    },
+    "updatedAt": {
+      "type": "date",
+      "default": "now"
+    }
+  },
+  "indexes": [
+    { "name": "organizationId_1", "keys": { "organizationId": 1 } },
+    { "name": "clientType_1", "keys": { "clientType": 1 } },
+    { "name": "status_1", "keys": { "status": 1 } },
+    { "name": "organizationId_status_1", "keys": { "organizationId": 1, "status": 1 } },
+    { "name": "basicInfo_name_1", "keys": { "basicInfo.name": 1 } },
+    { "name": "contact_primary_email_1", "keys": { "contact.primary.email": 1 } },
+    { "name": "assignedTo_1", "keys": { "assignedTo": 1 } },
+    { "name": "score_1", "keys": { "score": -1 } },
+    { "name": "createdAt_1", "keys": { "createdAt": -1 } },
+    { "name": "addresses_coordinates_2dsphere", "keys": { "addresses.coordinates": "2dsphere" } }
+  ],
+  "validation": {
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["organizationId", "clientType", "basicInfo", "contact"],
+        "properties": {
+          "organizationId": {
+            "bsonType": "objectId"
+          },
+          "clientType": {
+            "enum": ["producer", "distributor", "processor", "retailer", "consultant"]
+          },
+          "basicInfo": {
+            "bsonType": "object",
+            "required": ["name"],
+            "properties": {
+              "name": {
+                "bsonType": "string",
+                "minLength": 1,
+                "maxLength": 200
+              }
+            }
+          },
+          "contact": {
+            "bsonType": "object",
+            "required": ["primary"],
+            "properties": {
+              "primary": {
+                "bsonType": "object",
+                "required": ["name"],
+                "properties": {
+                  "name": {
+                    "bsonType": "string",
+                    "minLength": 1,
+                    "maxLength": 100
+                  }
+                }
+              }
+            }
+          },
+          "status": {
+            "enum": ["prospect", "lead", "customer", "inactive", "lost"]
+          }
+        }
+      }
+    }
+  }
+}

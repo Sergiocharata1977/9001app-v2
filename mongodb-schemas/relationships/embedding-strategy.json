@@ -1,0 +1,421 @@
+{
+  "embedding_strategy": {
+    "overview": {
+      "description": "Estrategia de embedding para optimizar consultas frecuentes y reducir joins",
+      "principles": [
+        "Embed datos relacionados que se consultan juntos frecuentemente",
+        "Mantener referencias para relaciones complejas o cambiantes",
+        "Balancear entre normalización y denormalización",
+        "Considerar el tamaño del documento y límites de MongoDB"
+      ]
+    },
+    "organizations": {
+      "embed": [
+        {
+          "field": "settings",
+          "reason": "Configuraciones específicas de la organización que se consultan frecuentemente",
+          "benefits": ["Reduce consultas adicionales", "Mejora rendimiento de configuración"]
+        },
+        {
+          "field": "features",
+          "reason": "Características habilitadas que se verifican en cada operación",
+          "benefits": ["Control de acceso rápido", "Validación de funcionalidades"]
+        },
+        {
+          "field": "subscription",
+          "reason": "Información de suscripción necesaria para validaciones",
+          "benefits": ["Validación de límites", "Control de acceso por plan"]
+        }
+      ],
+      "reference": [
+        {
+          "field": "users",
+          "reason": "Relación uno a muchos que puede crecer significativamente",
+          "strategy": "Referencia con índices optimizados"
+        },
+        {
+          "field": "processes",
+          "reason": "Entidades complejas que pueden ser independientes",
+          "strategy": "Referencia con agregaciones cuando sea necesario"
+        }
+      ]
+    },
+    "users": {
+      "embed": [
+        {
+          "field": "profile",
+          "reason": "Información básica del perfil que se consulta frecuentemente",
+          "benefits": ["Reduce joins", "Mejora rendimiento de autenticación"]
+        },
+        {
+          "field": "preferences",
+          "reason": "Configuraciones de usuario que se aplican en cada sesión",
+          "benefits": ["Personalización inmediata", "Configuración de UI"]
+        },
+        {
+          "field": "activity",
+          "reason": "Datos de actividad que se actualizan frecuentemente",
+          "benefits": ["Tracking de actividad", "Métricas de uso"]
+        },
+        {
+          "field": "security",
+          "reason": "Información de seguridad necesaria para validaciones",
+          "benefits": ["Validación de sesiones", "Control de acceso"]
+        }
+      ],
+      "reference": [
+        {
+          "field": "organizationId",
+          "reason": "Relación con organización para multi-tenancy",
+          "strategy": "Referencia con índices compuestos"
+        },
+        {
+          "field": "personnel",
+          "reason": "Relación uno a uno con información de empleado",
+          "strategy": "Referencia con lookup cuando sea necesario"
+        }
+      ]
+    },
+    "agents": {
+      "embed": [
+        {
+          "field": "configuration",
+          "reason": "Configuración específica del agente que se consulta frecuentemente",
+          "benefits": ["Configuración rápida", "Control de comportamiento"]
+        },
+        {
+          "field": "performance",
+          "reason": "Métricas de rendimiento que se actualizan constantemente",
+          "benefits": ["Monitoreo en tiempo real", "Métricas de salud"]
+        },
+        {
+          "field": "currentTask",
+          "reason": "Tarea actual que se consulta en cada verificación de estado",
+          "benefits": ["Estado actualizado", "Control de progreso"]
+        },
+        {
+          "field": "communication",
+          "reason": "Configuración de comunicación necesaria para interacciones",
+          "benefits": ["Configuración de endpoints", "Protocolos de comunicación"]
+        }
+      ],
+      "reference": [
+        {
+          "field": "organizationId",
+          "reason": "Relación con organización para multi-tenancy",
+          "strategy": "Referencia con índices compuestos"
+        },
+        {
+          "field": "dependencies",
+          "reason": "Relaciones complejas con otros agentes",
+          "strategy": "Referencia con validaciones de integridad"
+        }
+      ]
+    },
+    "processes": {
+      "embed": [
+        {
+          "field": "workflow",
+          "reason": "Definición del workflow que se consulta para ejecución",
+          "benefits": ["Ejecución eficiente", "Validación de pasos"]
+        },
+        {
+          "field": "kpis",
+          "reason": "Indicadores asociados al proceso que se consultan juntos",
+          "benefits": ["Métricas integradas", "Reportes consolidados"]
+        },
+        {
+          "field": "risks",
+          "reason": "Riesgos identificados que se evalúan durante la ejecución",
+          "benefits": ["Evaluación de riesgos", "Alertas preventivas"]
+        },
+        {
+          "field": "resources",
+          "reason": "Recursos necesarios que se validan al iniciar el proceso",
+          "benefits": ["Validación de recursos", "Asignación eficiente"]
+        }
+      ],
+      "reference": [
+        {
+          "field": "organizationId",
+          "reason": "Relación con organización para multi-tenancy",
+          "strategy": "Referencia con índices compuestos"
+        },
+        {
+          "field": "createdBy",
+          "reason": "Relación con usuario creador",
+          "strategy": "Referencia con lookup para información completa"
+        }
+      ]
+    },
+    "crm_agro": {
+      "embed": [
+        {
+          "field": "basicInfo",
+          "reason": "Información básica del cliente que se consulta frecuentemente",
+          "benefits": ["Búsquedas rápidas", "Identificación inmediata"]
+        },
+        {
+          "field": "contact",
+          "reason": "Información de contacto necesaria para comunicaciones",
+          "benefits": ["Comunicación directa", "Gestión de contactos"]
+        },
+        {
+          "field": "agriculturalProfile",
+          "reason": "Perfil agrícola específico que define el tipo de cliente",
+          "benefits": ["Segmentación automática", "Ofertas personalizadas"]
+        },
+        {
+          "field": "preferences",
+          "reason": "Preferencias del cliente para personalización",
+          "benefits": ["Experiencia personalizada", "Recomendaciones"]
+        }
+      ],
+      "reference": [
+        {
+          "field": "organizationId",
+          "reason": "Relación con organización para multi-tenancy",
+          "strategy": "Referencia con índices compuestos"
+        },
+        {
+          "field": "salesHistory",
+          "reason": "Historial que puede crecer significativamente",
+          "strategy": "Referencia con agregaciones para análisis"
+        },
+        {
+          "field": "interactions",
+          "reason": "Interacciones que se acumulan con el tiempo",
+          "strategy": "Referencia con paginación para historial"
+        }
+      ]
+    },
+    "audits": {
+      "embed": [
+        {
+          "field": "scope",
+          "reason": "Alcance de la auditoría que se consulta durante la ejecución",
+          "benefits": ["Validación de alcance", "Planificación de auditoría"]
+        },
+        {
+          "field": "objectives",
+          "reason": "Objetivos que se evalúan durante la auditoría",
+          "benefits": ["Evaluación de objetivos", "Reportes de cumplimiento"]
+        },
+        {
+          "field": "schedule",
+          "reason": "Programación que se consulta para planificación",
+          "benefits": ["Planificación eficiente", "Gestión de calendario"]
+        },
+        {
+          "field": "team",
+          "reason": "Equipo de auditoría que se consulta frecuentemente",
+          "benefits": ["Asignación de tareas", "Comunicación del equipo"]
+        }
+      ],
+      "reference": [
+        {
+          "field": "organizationId",
+          "reason": "Relación con organización para multi-tenancy",
+          "strategy": "Referencia con índices compuestos"
+        },
+        {
+          "field": "findings",
+          "reason": "Hallazgos que pueden ser numerosos y complejos",
+          "strategy": "Referencia con agregaciones para análisis"
+        },
+        {
+          "field": "checklist",
+          "reason": "Checklist que puede ser extenso",
+          "strategy": "Referencia con paginación para gestión"
+        }
+      ]
+    },
+    "rag_documents": {
+      "embed": [
+        {
+          "field": "content",
+          "reason": "Contenido del documento necesario para búsquedas semánticas",
+          "benefits": ["Búsquedas eficientes", "RAG optimizado"]
+        },
+        {
+          "field": "metadata",
+          "reason": "Metadatos que se consultan para filtrado y búsqueda",
+          "benefits": ["Filtrado rápido", "Búsquedas por tags"]
+        },
+        {
+          "field": "embeddings",
+          "reason": "Vectores de embedding para búsquedas semánticas",
+          "benefits": ["Búsquedas vectoriales", "Similitud semántica"]
+        },
+        {
+          "field": "accessControl",
+          "reason": "Control de acceso que se valida en cada consulta",
+          "benefits": ["Validación de permisos", "Seguridad integrada"]
+        }
+      ],
+      "reference": [
+        {
+          "field": "organizationId",
+          "reason": "Relación con organización para multi-tenancy",
+          "strategy": "Referencia con índices compuestos"
+        },
+        {
+          "field": "relationships",
+          "reason": "Relaciones complejas con otros documentos",
+          "strategy": "Referencia con validaciones de integridad"
+        },
+        {
+          "field": "revisionHistory",
+          "reason": "Historial de revisiones que puede ser extenso",
+          "strategy": "Referencia con paginación para gestión"
+        }
+      ]
+    },
+    "personnel": {
+      "embed": [
+        {
+          "field": "personalInfo",
+          "reason": "Información personal que se consulta frecuentemente",
+          "benefits": ["Identificación rápida", "Perfil completo"]
+        },
+        {
+          "field": "employment",
+          "reason": "Información laboral necesaria para gestión de personal",
+          "benefits": ["Gestión de empleados", "Organigrama"]
+        },
+        {
+          "field": "contact",
+          "reason": "Información de contacto para comunicaciones",
+          "benefits": ["Comunicación directa", "Contacto de emergencia"]
+        }
+      ],
+      "reference": [
+        {
+          "field": "organizationId",
+          "reason": "Relación con organización para multi-tenancy",
+          "strategy": "Referencia con índices compuestos"
+        },
+        {
+          "field": "competencies",
+          "reason": "Competencias que pueden ser numerosas",
+          "strategy": "Referencia con agregaciones para análisis"
+        },
+        {
+          "field": "training",
+          "reason": "Historial de capacitaciones que crece con el tiempo",
+          "strategy": "Referencia con paginación para gestión"
+        },
+        {
+          "field": "performance",
+          "reason": "Evaluaciones de rendimiento que se acumulan",
+          "strategy": "Referencia con agregaciones para análisis"
+        }
+      ]
+    },
+    "trainings": {
+      "embed": [
+        {
+          "field": "content",
+          "reason": "Contenido de la capacitación que se consulta durante la ejecución",
+          "benefits": ["Ejecución eficiente", "Contenido integrado"]
+        },
+        {
+          "field": "delivery",
+          "reason": "Método de entrega que se consulta para planificación",
+          "benefits": ["Planificación de sesiones", "Configuración de plataforma"]
+        },
+        {
+          "field": "assessment",
+          "reason": "Configuración de evaluación que se aplica durante la capacitación",
+          "benefits": ["Evaluación integrada", "Criterios de aprobación"]
+        },
+        {
+          "field": "enrollment",
+          "reason": "Configuración de inscripción que se valida",
+          "benefits": ["Validación de inscripción", "Control de cupos"]
+        }
+      ],
+      "reference": [
+        {
+          "field": "organizationId",
+          "reason": "Relación con organización para multi-tenancy",
+          "strategy": "Referencia con índices compuestos"
+        },
+        {
+          "field": "instructors",
+          "reason": "Instructores que pueden variar",
+          "strategy": "Referencia con lookup para información completa"
+        },
+        {
+          "field": "scheduling",
+          "reason": "Programación que puede ser compleja",
+          "strategy": "Referencia con agregaciones para gestión"
+        }
+      ]
+    },
+    "indicators": {
+      "embed": [
+        {
+          "field": "targets",
+          "reason": "Objetivos que se consultan para evaluación",
+          "benefits": ["Evaluación automática", "Comparación con objetivos"]
+        },
+        {
+          "field": "calculation",
+          "reason": "Método de cálculo que se aplica para computar el indicador",
+          "benefits": ["Cálculo automático", "Fórmulas integradas"]
+        },
+        {
+          "field": "thresholds",
+          "reason": "Umbrales que se evalúan para alertas",
+          "benefits": ["Alertas automáticas", "Notificaciones"]
+        },
+        {
+          "field": "reporting",
+          "reason": "Configuración de reportes que se aplica",
+          "benefits": ["Reportes automáticos", "Visualización"]
+        }
+      ],
+      "reference": [
+        {
+          "field": "organizationId",
+          "reason": "Relación con organización para multi-tenancy",
+          "strategy": "Referencia con índices compuestos"
+        },
+        {
+          "field": "history",
+          "reason": "Historial que crece con el tiempo",
+          "strategy": "Referencia con agregaciones para análisis"
+        },
+        {
+          "field": "ownership",
+          "reason": "Propietario que puede cambiar",
+          "strategy": "Referencia con lookup para información completa"
+        }
+      ]
+    }
+  },
+  "embedding_guidelines": {
+    "when_to_embed": [
+      "Datos que se consultan juntos frecuentemente",
+      "Información que no cambia con frecuencia",
+      "Datos pequeños que no exceden el límite de documento",
+      "Información necesaria para validaciones rápidas",
+      "Configuraciones específicas de la entidad"
+    ],
+    "when_to_reference": [
+      "Relaciones uno a muchos que pueden crecer significativamente",
+      "Datos que cambian frecuentemente",
+      "Información que puede ser independiente",
+      "Entidades complejas que requieren gestión separada",
+      "Datos que pueden exceder el límite de documento"
+    ],
+    "best_practices": [
+      "Mantener consistencia en la estrategia de embedding",
+      "Documentar las decisiones de embedding",
+      "Monitorear el tamaño de los documentos",
+      "Revisar periódicamente la estrategia de embedding",
+      "Considerar el impacto en las consultas de agregación"
+    ]
+  }
+}

@@ -1,0 +1,118 @@
+{
+  "name": "9001app-v2-mongodb-schemas",
+  "version": "1.0.0",
+  "description": "Esquemas MongoDB optimizados para sistema multi-agente de gestión ISO 9001:2015",
+  "main": "index.js",
+  "scripts": {
+    "generate-schemas": "node scripts/generate-schemas.js",
+    "validate-schemas": "node scripts/validate-schemas.js",
+    "optimize-indexes": "node scripts/optimize-indexes.js",
+    "generate-docs": "node scripts/generate-docs.js",
+    "create-performance-indexes": "node scripts/create-performance-indexes.js",
+    "validate-relationships": "node scripts/validate-relationships.js",
+    "generate-strategies": "node scripts/generate-strategies.js",
+    "create-tech-docs": "node scripts/create-tech-docs.js",
+    "setup-database": "node scripts/setup-database.js",
+    "migrate-data": "node scripts/migrate-data.js",
+    "backup-schemas": "node scripts/backup-schemas.js",
+    "test-performance": "node scripts/test-performance.js",
+    "monitor-health": "node scripts/monitor-health.js",
+    "cleanup-old-data": "node scripts/cleanup-old-data.js",
+    "validate-compliance": "node scripts/validate-compliance.js",
+    "generate-reports": "node scripts/generate-reports.js",
+    "setup-security": "node scripts/setup-security.js",
+    "configure-sharding": "node scripts/configure-sharding.js",
+    "setup-backup": "node scripts/setup-backup.js",
+    "install": "npm install && npm run generate-schemas",
+    "build": "npm run validate-schemas && npm run optimize-indexes",
+    "deploy": "npm run setup-database && npm run create-performance-indexes",
+    "test": "npm run test-performance && npm run validate-compliance",
+    "docs": "npm run generate-docs && npm run create-tech-docs",
+    "maintenance": "npm run monitor-health && npm run cleanup-old-data",
+    "full-setup": "npm run install && npm run build && npm run deploy && npm run test"
+  },
+  "keywords": [
+    "mongodb",
+    "iso9001",
+    "quality-management",
+    "multi-agent",
+    "agriculture",
+    "crm",
+    "audit-system",
+    "rag-system",
+    "document-management",
+    "performance-optimization"
+  ],
+  "author": "9001app-v2 Team",
+  "license": "MIT",
+  "dependencies": {
+    "mongodb": "^5.7.0",
+    "mongoose": "^7.5.0",
+    "ajv": "^8.12.0",
+    "jsonschema": "^1.4.1",
+    "dotenv": "^16.3.1",
+    "commander": "^11.1.0",
+    "chalk": "^4.1.2",
+    "ora": "^5.4.1",
+    "table": "^6.8.1",
+    "yaml": "^2.3.4",
+    "fs-extra": "^11.1.1",
+    "glob": "^10.3.10",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "nodemon": "^3.0.2",
+    "eslint": "^8.55.0",
+    "prettier": "^3.1.0",
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.0",
+    "ts-node": "^10.9.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sergiocharata1977/9001app-v2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Sergiocharata1977/9001app-v2/issues"
+  },
+  "homepage": "https://github.com/Sergiocharata1977/9001app-v2#readme",
+  "config": {
+    "mongodb": {
+      "uri": "mongodb+srv://9001app-v2:jFIIJY5D4PoWicU8@9001app-v2.xqydf2m.mongodb.net/?retryWrites=true&w=majority&appName=9001app-v2",
+      "database": "9001app-v2",
+      "options": {
+        "useNewUrlParser": true,
+        "useUnifiedTopology": true,
+        "maxPoolSize": 10,
+        "serverSelectionTimeoutMS": 5000,
+        "socketTimeoutMS": 45000
+      }
+    },
+    "schemas": {
+      "version": "1.0.0",
+      "validation": {
+        "strict": true,
+        "warnOnUnknown": true
+      }
+    },
+    "performance": {
+      "targets": {
+        "queryTime": 100,
+        "throughput": 1000,
+        "availability": 99.9
+      }
+    },
+    "security": {
+      "encryption": true,
+      "backup": true,
+      "audit": true
+    }
+  }
+}
