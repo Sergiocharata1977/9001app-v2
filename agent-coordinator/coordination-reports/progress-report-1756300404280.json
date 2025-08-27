@@ -1,0 +1,75 @@
+{
+  "timestamp": "2025-08-27T13:13:24.280Z",
+  "systemMetrics": {
+    "totalAgents": 8,
+    "activeAgents": 1,
+    "failedAgents": 0,
+    "totalTasks": 0,
+    "completedTasks": 0,
+    "failedTasks": 0,
+    "systemHealth": 12.5,
+    "currentPhase": "planning",
+    "isRunning": false
+  },
+  "agents": [
+    {
+      "id": "agent-1",
+      "name": "Coordinador Principal",
+      "status": "active",
+      "progress": 100,
+      "lastActivity": "2025-08-27T13:13:24.276Z"
+    },
+    {
+      "id": "agent-2",
+      "name": "Arquitecto de Base de Datos MongoDB",
+      "status": "pending",
+      "progress": 0,
+      "lastActivity": "2025-08-27T13:13:24.276Z"
+    },
+    {
+      "id": "agent-3",
+      "name": "Configurador de Backend",
+      "status": "pending",
+      "progress": 0,
+      "lastActivity": "2025-08-27T13:13:24.276Z"
+    },
+    {
+      "id": "agent-4",
+      "name": "Adaptador de Frontend",
+      "status": "pending",
+      "progress": 0,
+      "lastActivity": "2025-08-27T13:13:24.276Z"
+    },
+    {
+      "id": "agent-5",
+      "name": "Tester de Calidad",
+      "status": "pending",
+      "progress": 0,
+      "lastActivity": "2025-08-27T13:13:24.276Z"
+    },
+    {
+      "id": "agent-6",
+      "name": "Documentador",
+      "status": "pending",
+      "progress": 0,
+      "lastActivity": "2025-08-27T13:13:24.276Z"
+    },
+    {
+      "id": "agent-7",
+      "name": "Desplegador",
+      "status": "pending",
+      "progress": 0,
+      "lastActivity": "2025-08-27T13:13:24.276Z"
+    },
+    {
+      "id": "agent-8",
+      "name": "Rehabilitador de Sistema de Agentes",
+      "status": "pending",
+      "progress": 0,
+      "lastActivity": "2025-08-27T13:13:24.276Z"
+    }
+  ],
+  "tasks": [],
+  "currentPhase": "planning",
+  "isRunning": false
+}
