@@ -1,11 +1,11 @@
-const tursoClient = require('../../lib/tursoClient.js');
+const mongodbClient = require('../../lib/mongodbClient.js');
 
 async function generarMapaDatabase() {
   console.log('🗄️ Generando mapa de base de datos...\n');
   
   try {
     // Obtener todas las tablas
-    const tablasResult = await tursoClient.execute(`
+    const tablasResult = await mongodbClient.execute(`
       SELECT name, sql FROM sqlite_master 
       WHERE type='table' AND name NOT LIKE 'sqlite_%'
       ORDER BY name
@@ -24,14 +24,14 @@ async function generarMapaDatabase() {
       console.log(`📋 Procesando tabla: ${nombreTabla}`);
       
       // Obtener estructura de la tabla
-      const estructuraResult = await tursoClient.execute(`PRAGMA table_info(${nombreTabla})`);
+      const estructuraResult = await mongodbClient.execute(`PRAGMA table_info(${nombreTabla})`);
       
       // Obtener estadísticas básicas
-      const countResult = await tursoClient.execute(`SELECT COUNT(*) as total FROM ${nombreTabla}`);
+      const countResult = await mongodbClient.execute(`SELECT COUNT(*) as total FROM ${nombreTabla}`);
       const totalRegistros = countResult.rows[0].total;
       
       // Obtener índices de la tabla
-      const indicesResult = await tursoClient.execute(`
+      const indicesResult = await mongodbClient.execute(`
         SELECT name, sql FROM sqlite_master 
         WHERE type='index' AND tbl_name = ?
         ORDER BY name
@@ -79,7 +79,7 @@ async function generarMapaDatabase() {
 }
 
 async function contarIndices() {
-  const result = await tursoClient.execute(`
+  const result = await mongodbClient.execute(`
     SELECT COUNT(*) as total FROM sqlite_master 
     WHERE type='index' AND name NOT LIKE 'sqlite_%'
   `);
@@ -87,7 +87,7 @@ async function contarIndices() {
 }
 
 async function calcularTamañoAproximado() {
-  const result = await tursoClient.execute(`
+  const result = await mongodbClient.execute(`
     SELECT SUM(length(quote(name)) + length(quote(sql))) as tamaño
     FROM sqlite_master 
     WHERE type='table'
@@ -141,7 +141,7 @@ ${generarIndicesCriticos(mapa)}
 
 ## 📝 **NOTAS PARA IA**
 - Base de datos: **Turso (SQLite)** en la nube
-- Conexión: \`backend/lib/tursoClient.js\`
+- Conexión: \`backend/lib/mongodbClient.js\`
 - Patrón: Una tabla por entidad principal
 - Índices optimizados para consultas frecuentes
 - Sistema de coordinación: tabla \`coordinacion_tareas\`

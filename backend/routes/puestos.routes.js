@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongodbClient = require('../lib/mongodbClient.js');
 const crypto = require('crypto');
 const { logTenantOperation, checkPermission } = require('../middleware/tenantMiddleware.js');
 const ActivityLogService = require('../services/activityLogService.js');
@@ -16,7 +16,7 @@ router.get('/', async (req, res, next) => {
     const organizationId = req.user?.organization_id || req.organizationId;
     console.log('🔓 Obteniendo puestos para organización:', organizationId);
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT * FROM puestos WHERE organization_id = ? ORDER BY created_at DESC`,
       args: [String(organizationId)]
     });
@@ -36,7 +36,7 @@ router.get('/:id', async (req, res, next) => {
     const organizationId = req.user?.organization_id || req.organizationId;
     console.log(`🔓 Obteniendo puesto ${id} para organización:`, organizationId);
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT * FROM puestos WHERE id = ? AND organization_id = ?`,
       args: [id, String(organizationId)]
     });
@@ -84,7 +84,7 @@ router.post('/', async (req, res, next) => {
 
     // Verificar si ya existe un puesto con el mismo nombre en la organización
     console.log('🔍 Verificando si existe puesto:', { nombre, organization_id: organizationId });
-    const existente = await tursoClient.execute({
+    const existente = await mongodbClient.execute({
       sql: `SELECT id FROM puestos WHERE nombre = ? AND organization_id = ?`,
       args: [nombre, organizationId]
     });
@@ -123,10 +123,10 @@ router.post('/', async (req, res, next) => {
       now
     ];
 
-    await tursoClient.execute({ sql, args });
+    await mongodbClient.execute({ sql, args });
 
     // Obtener el puesto recién creado
-    const nuevoPuesto = await tursoClient.execute({
+    const nuevoPuesto = await mongodbClient.execute({
       sql: `SELECT * FROM puestos WHERE id = ? AND organization_id = ?`,
       args: [id, organizationId]
     });
@@ -175,7 +175,7 @@ router.put('/:id', async (req, res, next) => {
     }
 
     // Verificar si ya existe otro puesto con el mismo nombre en la organización
-    const existente = await tursoClient.execute({
+    const existente = await mongodbClient.execute({
       sql: `SELECT id FROM puestos WHERE nombre = ? AND id != ? AND organization_id = ?`,
       args: [nombre, id, organizationId]
     });
@@ -186,7 +186,7 @@ router.put('/:id', async (req, res, next) => {
 
     const now = new Date().toISOString();
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `UPDATE puestos 
             SET nombre = ?, descripcion_responsabilidades = ?, requisitos_experiencia = ?, 
                 requisitos_formacion = ?, updated_at = ?, updated_by = ?
@@ -229,7 +229,7 @@ router.delete('/:id', async (req, res, next) => {
     const organizationId = String(req.user?.organization_id);
     const usuario = req.user || { id: null, nombre: 'Sistema' };
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `DELETE FROM puestos WHERE id = ? AND organization_id = ?`,
       args: [id, organizationId]
     });

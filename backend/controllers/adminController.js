@@ -1,4 +1,4 @@
-const executeQuery = require('../lib/tursoClient.js');
+const executeQuery = require('../lib/mongodbClient.js');
 const bcrypt = require('bcrypt');
 const { randomUUID  } = require('crypto');
 

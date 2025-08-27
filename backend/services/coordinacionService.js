@@ -1,4 +1,4 @@
-const tursoClient = require('../lib/tursoClient.js');
+const mongodbClient = require('../lib/mongodbClient.js');
 
 class CoordinacionService {
   
@@ -12,7 +12,7 @@ class CoordinacionService {
         LIMIT ? OFFSET ?
       `;
       
-      const result = await tursoClient.execute(query, [organizationId, limit, offset]);
+      const result = await mongodbClient.execute(query, [organizationId, limit, offset]);
       return result.rows;
     } catch (error) {
       console.error('Error obteniendo tareas:', error);
@@ -28,7 +28,7 @@ class CoordinacionService {
         WHERE organization_id = ? AND tarea_numero = ?
       `;
       
-      const result = await tursoClient.execute(query, [organizationId, tareaNumero]);
+      const result = await mongodbClient.execute(query, [organizationId, tareaNumero]);
       return result.rows[0] || null;
     } catch (error) {
       console.error('Error obteniendo tarea:', error);
@@ -40,13 +40,13 @@ class CoordinacionService {
   async obtenerEstadisticas(organizationId = 2) {
     try {
       // Total tareas
-      const totalQuery = await tursoClient.execute(
+      const totalQuery = await mongodbClient.execute(
         'SELECT COUNT(*) as total FROM coordinacion_tareas WHERE organization_id = ?',
         [organizationId]
       );
       
       // Por estado
-      const estadoQuery = await tursoClient.execute(`
+      const estadoQuery = await mongodbClient.execute(`
         SELECT estado, COUNT(*) as count 
         FROM coordinacion_tareas 
         WHERE organization_id = ? 
@@ -54,7 +54,7 @@ class CoordinacionService {
       `, [organizationId]);
       
       // Por módulo
-      const moduloQuery = await tursoClient.execute(`
+      const moduloQuery = await mongodbClient.execute(`
         SELECT modulo, COUNT(*) as count 
         FROM coordinacion_tareas 
         WHERE organization_id = ? 
@@ -62,7 +62,7 @@ class CoordinacionService {
       `, [organizationId]);
       
       // Por prioridad
-      const prioridadQuery = await tursoClient.execute(`
+      const prioridadQuery = await mongodbClient.execute(`
         SELECT prioridad, COUNT(*) as count 
         FROM coordinacion_tareas 
         WHERE organization_id = ? 
@@ -70,7 +70,7 @@ class CoordinacionService {
       `, [organizationId]);
       
       // Tiempo total
-      const tiempoQuery = await tursoClient.execute(`
+      const tiempoQuery = await mongodbClient.execute(`
         SELECT 
           SUM(tiempo_real) as tiempo_total,
           AVG(tiempo_real) as tiempo_promedio,
@@ -132,7 +132,7 @@ class CoordinacionService {
       `;
       
       const searchTerm = `%${texto}%`;
-      const result = await tursoClient.execute(query, [
+      const result = await mongodbClient.execute(query, [
         organizationId, 
         searchTerm, 
         searchTerm, 
@@ -158,7 +158,7 @@ class CoordinacionService {
         LIMIT ?
       `;
       
-      const result = await tursoClient.execute(query, [organizationId, modulo, limit]);
+      const result = await mongodbClient.execute(query, [organizationId, modulo, limit]);
       return result.rows;
     } catch (error) {
       console.error('Error obteniendo tareas por módulo:', error);
@@ -176,7 +176,7 @@ class CoordinacionService {
         LIMIT ?
       `;
       
-      const result = await tursoClient.execute(query, [organizationId, estado, limit]);
+      const result = await mongodbClient.execute(query, [organizationId, estado, limit]);
       return result.rows;
     } catch (error) {
       console.error('Error obteniendo tareas por estado:', error);
@@ -213,7 +213,7 @@ class CoordinacionService {
         tareaData.tiempo_real || 120
       ];
       
-      const result = await tursoClient.execute(query, params);
+      const result = await mongodbClient.execute(query, params);
       return result.lastInsertRowid;
     } catch (error) {
       console.error('Error creando tarea:', error);
@@ -252,7 +252,7 @@ class CoordinacionService {
         tareaNumero
       ];
       
-      const result = await tursoClient.execute(query, params);
+      const result = await mongodbClient.execute(query, params);
       return result.changes > 0;
     } catch (error) {
       console.error('Error actualizando tarea:', error);
@@ -268,7 +268,7 @@ class CoordinacionService {
         WHERE organization_id = ? AND tarea_numero = ?
       `;
       
-      const result = await tursoClient.execute(query, [organizationId, tareaNumero]);
+      const result = await mongodbClient.execute(query, [organizationId, tareaNumero]);
       return result.changes > 0;
     } catch (error) {
       console.error('Error eliminando tarea:', error);
@@ -285,7 +285,7 @@ class CoordinacionService {
         WHERE organization_id = ?
       `;
       
-      const result = await tursoClient.execute(query, [organizationId]);
+      const result = await mongodbClient.execute(query, [organizationId]);
       const maxNumero = result.rows[0].max_numero || 0;
       return maxNumero + 1;
     } catch (error) {

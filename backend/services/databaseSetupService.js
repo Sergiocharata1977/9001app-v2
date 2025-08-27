@@ -1,8 +1,8 @@
-const tursoClient = require('../lib/tursoClient');
+const mongodbClient = require('../lib/mongodbClient');
 
 class DatabaseSetupService {
     constructor() {
-        this.tursoClient = tursoClient;
+        this.mongodbClient = mongodbClient;
     }
 
     /**
@@ -16,7 +16,7 @@ class DatabaseSetupService {
 
             const query = `CREATE TABLE IF NOT EXISTS ${tableName} (${columnDefinitions})`;
             
-            const result = await this.tursoClient.execute(query);
+            const result = await this.mongodbClient.execute(query);
             return {
                 success: true,
                 message: `Tabla ${tableName} creada exitosamente`,
@@ -40,7 +40,7 @@ class DatabaseSetupService {
             const columnList = Array.isArray(columns) ? columns.join(', ') : columns;
             const query = `CREATE INDEX IF NOT EXISTS ${indexName} ON ${tableName} (${columnList})`;
             
-            const result = await this.tursoClient.execute(query);
+            const result = await this.mongodbClient.execute(query);
             return {
                 success: true,
                 message: `Índice ${indexName} creado exitosamente`,
@@ -67,7 +67,7 @@ class DatabaseSetupService {
             
             const query = `INSERT INTO ${tableName} (${columns.join(', ')}) VALUES (${placeholders})`;
             
-            const result = await this.tursoClient.execute(query, values);
+            const result = await this.mongodbClient.execute(query, values);
             return {
                 success: true,
                 message: `Datos insertados en ${tableName} exitosamente`,
@@ -89,7 +89,7 @@ class DatabaseSetupService {
     async tableExists(tableName) {
         try {
             const query = `SELECT name FROM sqlite_master WHERE type='table' AND name=?`;
-            const result = await this.tursoClient.query(query, [tableName]);
+            const result = await this.mongodbClient.query(query, [tableName]);
             return {
                 exists: result.length > 0,
                 success: true,
@@ -112,7 +112,7 @@ class DatabaseSetupService {
     async getTableStructure(tableName) {
         try {
             const query = `PRAGMA table_info(${tableName})`;
-            const result = await this.tursoClient.query(query);
+            const result = await this.mongodbClient.query(query);
             return {
                 success: true,
                 structure: result,

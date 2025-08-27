@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const tursoClient = require('../lib/tursoClient.js');
+const mongodbClient = require('../lib/mongodbClient.js');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'tu_secreto_jwt_super_secreto';
 
@@ -18,7 +18,7 @@ const simpleAuth = async (req, res, next) => {
     const decoded = jwt.verify(token, JWT_SECRET);
     
     // Obtener usuario básico
-    const userResult = await tursoClient.execute({
+    const userResult = await mongodbClient.execute({
       sql: `SELECT u.id, u.name, u.email, u.role, u.organization_id, 
              o.name as organization_name 
              FROM usuarios u 

@@ -1,5 +1,5 @@
 const express = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongodbClient = require('../lib/mongodbClient.js');
 const authMiddleware = require('../middleware/authMiddleware.js');
 
 const router = express.Router();
@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
   try {
     console.log('🔄 [RelacionesRoutes] Obteniendo todas las relaciones...');
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT * FROM relaciones_sgc WHERE organization_id = ? ORDER BY fecha_creacion DESC`,
       args: [req.user.organization_id]
     });
@@ -39,7 +39,7 @@ router.get('/origen/:tipo', async (req, res) => {
     const { tipo } = req.params;
     console.log(`🔄 [RelacionesRoutes] Obteniendo relaciones de origen: ${tipo}`);
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT * FROM relaciones_sgc 
             WHERE organization_id = ? AND origen_tipo = ? 
             ORDER BY fecha_creacion DESC`,
@@ -68,7 +68,7 @@ router.get('/destino/:tipo', async (req, res) => {
     const { tipo } = req.params;
     console.log(`🔄 [RelacionesRoutes] Obteniendo relaciones de destino: ${tipo}`);
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT * FROM relaciones_sgc 
             WHERE organization_id = ? AND destino_tipo = ? 
             ORDER BY fecha_creacion DESC`,
@@ -97,7 +97,7 @@ router.get('/relacion', async (req, res) => {
     const { origenTipo, origenId, destinoTipo, destinoId } = req.query;
     console.log(`🔄 [RelacionesRoutes] Obteniendo relación: ${origenTipo}:${origenId} -> ${destinoTipo}:${destinoId}`);
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT * FROM relaciones_sgc 
             WHERE organization_id = ? 
             AND origen_tipo = ? AND origen_id = ? 
@@ -134,7 +134,7 @@ router.get('/entidades-relacionadas', async (req, res) => {
     console.log(`🔄 [RelacionesRoutes] Obteniendo ${destinoTipo} relacionados con ${origenTipo}:${origenId}`);
     
     // Obtener IDs de entidades relacionadas
-    const relacionesResult = await tursoClient.execute({
+    const relacionesResult = await mongodbClient.execute({
       sql: `SELECT destino_id FROM relaciones_sgc 
             WHERE organization_id = ? 
             AND origen_tipo = ? AND origen_id = ? 
@@ -157,14 +157,14 @@ router.get('/entidades-relacionadas', async (req, res) => {
     let entidadesResult;
     switch (destinoTipo) {
       case 'personal':
-        entidadesResult = await tursoClient.execute({
+        entidadesResult = await mongodbClient.execute({
           sql: `SELECT * FROM personal WHERE id IN (${placeholders}) AND organization_id = ?`,
           args: [...destinoIds, req.user.organization_id]
         });
         break;
       case 'puesto':
       case 'puestos':
-        entidadesResult = await tursoClient.execute({
+        entidadesResult = await mongodbClient.execute({
           sql: `SELECT 
                   id,
                   organization_id,
@@ -183,19 +183,19 @@ router.get('/entidades-relacionadas', async (req, res) => {
         break;
       case 'departamento':
       case 'departamentos':
-        entidadesResult = await tursoClient.execute({
+        entidadesResult = await mongodbClient.execute({
           sql: `SELECT * FROM departamentos WHERE id IN (${placeholders}) AND organization_id = ?`,
           args: [...destinoIds, req.user.organization_id]
         });
         break;
       case 'competencias':
-        entidadesResult = await tursoClient.execute({
+        entidadesResult = await mongodbClient.execute({
           sql: `SELECT * FROM competencias WHERE id IN (${placeholders}) AND organization_id = ?`,
           args: [...destinoIds, req.user.organization_id]
         });
         break;
       case 'evaluaciones':
-        entidadesResult = await tursoClient.execute({
+        entidadesResult = await mongodbClient.execute({
           sql: `SELECT * FROM evaluaciones WHERE id IN (${placeholders}) AND organization_id = ?`,
           args: [...destinoIds, req.user.organization_id]
         });
@@ -253,7 +253,7 @@ router.post('/', async (req, res) => {
     }
 
     // Verificar que no exista la relación
-    const existingResult = await tursoClient.execute({
+    const existingResult = await mongodbClient.execute({
       sql: `SELECT id FROM relaciones_sgc 
             WHERE organization_id = ? 
             AND origen_tipo = ? AND origen_id = ? 
@@ -269,7 +269,7 @@ router.post('/', async (req, res) => {
     }
 
     // Crear la relación
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `INSERT INTO relaciones_sgc 
             (organization_id, origen_tipo, origen_id, destino_tipo, destino_id, descripcion, usuario_creador, fecha_creacion) 
             VALUES (?, ?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)`,
@@ -309,7 +309,7 @@ router.put('/:id', async (req, res) => {
 
     console.log(`🔄 [RelacionesRoutes] Actualizando relación ${id}`);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `UPDATE relaciones_sgc 
             SET descripcion = ?, usuario_creador = ? 
             WHERE id = ? AND organization_id = ?`,
@@ -344,7 +344,7 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     console.log(`🔄 [RelacionesRoutes] Eliminando relación ${id}`);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `DELETE FROM relaciones_sgc WHERE id = ? AND organization_id = ?`,
       args: [id, req.user.organization_id]
     });

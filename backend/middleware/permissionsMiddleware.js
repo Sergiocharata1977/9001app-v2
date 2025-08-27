@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const tursoClient = require('../lib/tursoClient.js');
+const mongodbClient = require('../lib/mongodbClient.js');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
 
@@ -15,7 +15,7 @@ const authenticate = async (req, res, next) => {
     const decoded = jwt.verify(token, JWT_SECRET);
     
     // Obtener información completa del usuario y organización
-    const userResult = await tursoClient.execute({
+    const userResult = await mongodbClient.execute({
       sql: `SELECT u.id, u.name, u.email, u.role, u.organization_id, 
              o.name as organization_name, o.plan, o.max_users
              FROM usuarios u 
@@ -79,9 +79,9 @@ const checkFeatureAccess = (requiredFeature) => {
       }
 
       // Verificar si la feature está habilitada para la organización
-      const tursoClient = require('../lib/tursoClient.js');
+      const tursoClient = require('../lib/mongodbClient.js');
       
-      const featureEnabled = await tursoClient.execute({
+      const featureEnabled = await mongodbClient.execute({
         sql: `
           SELECT is_enabled FROM organization_feature 
           WHERE organization_id = ? AND feature_name = ? AND is_enabled = 1
@@ -97,7 +97,7 @@ const checkFeatureAccess = (requiredFeature) => {
       }
 
       // Verificar si el usuario tiene permiso específico para esta feature
-      const userPermission = await tursoClient.execute({
+      const userPermission = await mongodbClient.execute({
         sql: `
           SELECT 1 FROM user_feature_permissions 
           WHERE organization_id = ? AND user_id = ? AND feature_name = ? AND is_active = 1

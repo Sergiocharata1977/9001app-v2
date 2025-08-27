@@ -1,11 +1,11 @@
-const tursoClient = require('../lib/tursoClient.js');
+const mongodbClient = require('../lib/mongodbClient.js');
 const { randomUUID } = require('crypto');
 
 // GET /api/capacitaciones - Obtener todas las capacitaciones
 const getAllCapacitaciones = async (req, res) => {
   try {
     console.log('📋 Obteniendo todas las capacitaciones...');
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: 'SELECT * FROM capacitaciones WHERE organization_id = ? ORDER BY created_at DESC',
       args: [req.user?.organization_id || 1]
     });
@@ -29,7 +29,7 @@ const getCapacitacionById = async (req, res) => {
     const { id } = req.params;
     console.log(`🔍 Buscando capacitación con ID: ${id}`);
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: 'SELECT * FROM capacitaciones WHERE id = ? AND organization_id = ?',
       args: [id, req.user?.organization_id || 1]
     });
@@ -87,7 +87,7 @@ const createCapacitacion = async (req, res) => {
       });
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `INSERT INTO capacitaciones (
         nombre, descripcion, instructor, fecha_inicio, fecha_fin, 
         duracion_horas, modalidad, estado, ubicacion, costo, 
@@ -146,7 +146,7 @@ const updateCapacitacion = async (req, res) => {
     console.log(`🔄 Actualizando capacitación con ID: ${id}`);
 
     // Verificar que la capacitación existe
-    const existingResult = await tursoClient.execute({
+    const existingResult = await mongodbClient.execute({
       sql: 'SELECT id FROM capacitaciones WHERE id = ? AND organization_id = ?',
       args: [id, req.user?.organization_id || 1]
     });
@@ -158,7 +158,7 @@ const updateCapacitacion = async (req, res) => {
       });
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `UPDATE capacitaciones SET 
         nombre = ?, descripcion = ?, instructor = ?, fecha_inicio = ?, fecha_fin = ?,
         duracion_horas = ?, modalidad = ?, estado = ?, ubicacion = ?, costo = ?,
@@ -197,7 +197,7 @@ const deleteCapacitacion = async (req, res) => {
     console.log(`🗑️ Eliminando capacitación con ID: ${id}`);
 
     // Verificar que la capacitación existe
-    const existingResult = await tursoClient.execute({
+    const existingResult = await mongodbClient.execute({
       sql: 'SELECT id, nombre FROM capacitaciones WHERE id = ? AND organization_id = ?',
       args: [id, req.user?.organization_id || 1]
     });
@@ -210,7 +210,7 @@ const deleteCapacitacion = async (req, res) => {
     }
 
     // Eliminar capacitación
-    await tursoClient.execute({
+    await mongodbClient.execute({
       sql: 'DELETE FROM capacitaciones WHERE id = ? AND organization_id = ?',
       args: [id, req.user?.organization_id || 1]
     });
@@ -237,7 +237,7 @@ const getTemasByCapacitacion = async (req, res) => {
     const { id } = req.params;
     console.log(`📚 Obteniendo temas de capacitación ID: ${id}`);
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: 'SELECT * FROM temas_capacitacion WHERE capacitacion_id = ? ORDER BY orden ASC',
       args: [id]
     });
@@ -269,7 +269,7 @@ const createTema = async (req, res) => {
       });
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `INSERT INTO temas_capacitacion (capacitacion_id, titulo, descripcion, orden, created_at) 
             VALUES (?, ?, ?, ?, datetime("now", "localtime")) RETURNING *`,
       args: [id, titulo, descripcion, orden]
@@ -297,7 +297,7 @@ const getAsistentesByCapacitacion = async (req, res) => {
     const { id } = req.params;
     console.log(`👥 Obteniendo asistentes de capacitación ID: ${id}`);
     
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT ca.*, e.nombre as empleado_nombre, e.apellido as empleado_apellido 
             FROM capacitacion_asistentes ca 
             JOIN empleados e ON ca.empleado_id = e.id 
@@ -333,7 +333,7 @@ const addAsistente = async (req, res) => {
     }
 
     // Verificar que el empleado no esté ya inscrito
-    const existingResult = await tursoClient.execute({
+    const existingResult = await mongodbClient.execute({
       sql: 'SELECT id FROM capacitacion_asistentes WHERE capacitacion_id = ? AND empleado_id = ?',
       args: [id, empleado_id]
     });
@@ -345,7 +345,7 @@ const addAsistente = async (req, res) => {
       });
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `INSERT INTO capacitacion_asistentes (capacitacion_id, empleado_id, estado, fecha_inscripcion) 
             VALUES (?, ?, 'inscrito', datetime("now", "localtime")) RETURNING *`,
       args: [id, empleado_id]

@@ -1,4 +1,4 @@
-const tursoClient = require('../../lib/tursoClient.js');
+const mongodbClient = require('../../lib/mongodbClient.js');
 
 async function addMissingColumns() {
   try {
@@ -20,7 +20,7 @@ async function addMissingColumns() {
     ];
     
     // Obtener las columnas existentes
-    const tableInfo = await tursoClient.execute("PRAGMA table_info(acciones)");
+    const tableInfo = await mongodbClient.execute("PRAGMA table_info(acciones)");
     const existingColumns = tableInfo.rows.map(row => row.name);
     
     console.log('📊 Columnas existentes:', existingColumns);
@@ -29,7 +29,7 @@ async function addMissingColumns() {
     for (const column of columnsToAdd) {
       if (!existingColumns.includes(column.name)) {
         try {
-          await tursoClient.execute(`ALTER TABLE acciones ADD COLUMN ${column.name} ${column.type}`);
+          await mongodbClient.execute(`ALTER TABLE acciones ADD COLUMN ${column.name} ${column.type}`);
           console.log(`✅ Columna ${column.name} agregada correctamente`);
         } catch (error) {
           console.log(`⚠️ Error al agregar columna ${column.name}:`, error.message);
@@ -41,7 +41,7 @@ async function addMissingColumns() {
     
     // Verificar la estructura final
     console.log('🔍 Verificando estructura final de la tabla...');
-    const finalTableInfo = await tursoClient.execute("PRAGMA table_info(acciones)");
+    const finalTableInfo = await mongodbClient.execute("PRAGMA table_info(acciones)");
     console.log('📊 Columnas finales en la tabla acciones:');
     finalTableInfo.rows.forEach(row => {
       console.log(`  - ${row.name} (${row.type})`);

@@ -114,7 +114,7 @@ ${generarSeccionArchivos(mapa.docs, 'docs-esenciales')}
 
 ## 🔍 **ARCHIVOS CRÍTICOS**
 - **Configuración:** \`frontend/src/config/\`, \`backend/config/\`
-- **Base de Datos:** \`backend/lib/tursoClient.js\`
+- **Base de Datos:** \`backend/lib/mongodbClient.js\`
 - **Rutas Principales:** \`frontend/src/routes/AppRoutes.jsx\`
 - **Menús:** \`frontend/src/components/menu/MainMenuCards.jsx\`
 - **Autenticación:** \`backend/middleware/authMiddleware.js\`

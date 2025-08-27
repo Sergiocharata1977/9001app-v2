@@ -1,5 +1,5 @@
 const express = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongodbClient = require('../lib/mongodbClient.js');
 const { auditMiddleware, auditActions, resourceTypes } = require('../middleware/auditMiddleware.js');
 const authMiddleware = require('../middleware/authMiddleware.js');
 const crypto = require('crypto');
@@ -47,7 +47,7 @@ router.get('/check-tables', async (req, res) => {
 
     for (const table of tables) {
       try {
-        const result = await tursoClient.execute({
+        const result = await mongodbClient.execute({
           sql: `SELECT COUNT(*) as count FROM ${table}`
         });
         results[table] = {
@@ -90,7 +90,7 @@ router.get('/contactos', async (req, res) => {
     const orgId = req.user?.organization_id;
     console.log('📋 Obteniendo contactos para organización:', orgId);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT * FROM crm_contactos 
             WHERE organization_id = ? AND is_active = 1
             ORDER BY nombre, apellidos`,
@@ -124,7 +124,7 @@ router.get('/contactos/:id', async (req, res) => {
 
     console.log(`🔍 Obteniendo contacto ${id}`);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT * FROM crm_contactos 
             WHERE id = ? AND organization_id = ? AND is_active = 1`,
       args: [id, orgId]
@@ -168,7 +168,7 @@ router.post('/contactos', async (req, res) => {
 
     console.log('➕ Creando nuevo contacto:', nombre);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `INSERT INTO crm_contactos (
         id, organization_id, nombre, apellidos, cargo, empresa, telefono, email,
         direccion, ciudad, estado, zona_geografica, tipo_contacto, fuente_contacto,
@@ -213,7 +213,7 @@ router.put('/contactos/:id', async (req, res) => {
 
     console.log(`✏️ Actualizando contacto ${id}`);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `UPDATE crm_contactos SET 
         nombre = ?, apellidos = ?, cargo = ?, empresa = ?, telefono = ?, email = ?,
         direccion = ?, ciudad = ?, estado = ?, zona_geografica = ?, tipo_contacto = ?,
@@ -252,7 +252,7 @@ router.delete('/contactos/:id', async (req, res) => {
 
     console.log(`🗑️ Eliminando contacto ${id}`);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `UPDATE crm_contactos SET is_active = 0, updated_at = ?, updated_by = ?
             WHERE id = ? AND organization_id = ?`,
       args: [new Date().toISOString(), req.user?.nombre, id, orgId]
@@ -319,7 +319,7 @@ router.get('/clientes-agro', async (req, res) => {
 
     sql += ` ORDER BY ca.created_at DESC`;
 
-    const result = await tursoClient.execute({ sql, args });
+    const result = await mongodbClient.execute({ sql, args });
 
     console.log(`✅ Encontrados ${result.rows.length} clientes agro`);
 
@@ -347,7 +347,7 @@ router.get('/clientes-agro/:id', async (req, res) => {
 
     console.log(`🔍 Obteniendo cliente agro ${id}`);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT ca.*, 
             c.nombre as contacto_nombre, c.apellidos as contacto_apellidos, c.email as contacto_email,
             (v.nombres || ' ' || v.apellidos) as vendedor_nombre, v.email as vendedor_email,
@@ -402,7 +402,7 @@ router.post('/clientes-agro', async (req, res) => {
 
     console.log('➕ Creando nuevo cliente agro:', razon_social);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `INSERT INTO clientes_agro (
         id, organization_id, contacto_id, razon_social, rfc, tipo_cliente, categoria_agro,
         zona_geografica, region, clima_zona, tipo_suelo, direccion, ciudad, estado,
@@ -453,7 +453,7 @@ router.put('/clientes-agro/:id', async (req, res) => {
 
     console.log(`✏️ Actualizando cliente agro ${id}`);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `UPDATE clientes_agro SET
         contacto_id = ?, razon_social = ?, rfc = ?, tipo_cliente = ?, categoria_agro = ?,
         zona_geografica = ?, region = ?, clima_zona = ?, tipo_suelo = ?, direccion = ?,
@@ -496,7 +496,7 @@ router.delete('/clientes-agro/:id', async (req, res) => {
 
     console.log(`🗑️ Eliminando cliente agro ${id}`);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `UPDATE clientes_agro SET is_active = 0, updated_at = ?, updated_by = ?
         WHERE id = ? AND organization_id = ?`,
       args: [new Date().toISOString(), req.user?.nombre, id, orgId]
@@ -531,7 +531,7 @@ router.get('/cultivos-cliente/:clienteId', async (req, res) => {
 
     console.log(`🌾 Obteniendo cultivos del cliente ${clienteId}`);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT * FROM crm_cultivos_cliente 
             WHERE cliente_id = ? AND organization_id = ? AND is_active = 1
             ORDER BY fecha_siembra DESC`,
@@ -571,7 +571,7 @@ router.post('/cultivos-cliente', async (req, res) => {
 
     console.log('🌱 Creando nuevo cultivo:', nombre_cultivo);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `INSERT INTO crm_cultivos_cliente (
         id, organization_id, cliente_id, nombre_cultivo, variedad, superficie,
         fecha_siembra, fecha_cosecha_esperada, rendimiento_anterior,
@@ -612,7 +612,7 @@ router.get('/vendedores', async (req, res) => {
     const orgId = req.user?.organization_id;
     console.log('👥 Obteniendo vendedores para organización:', orgId);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT id, nombres, apellidos, email, telefono 
             FROM personal 
             WHERE organization_id = ? AND is_active = 1
@@ -644,7 +644,7 @@ router.get('/tecnicos', async (req, res) => {
     const orgId = req.user?.organization_id;
     console.log('👨‍🔬 Obteniendo técnicos para organización:', orgId);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT id, nombres, apellidos, email, telefono 
             FROM personal 
             WHERE organization_id = ? AND is_active = 1
@@ -676,7 +676,7 @@ router.get('/puestos', async (req, res) => {
     const orgId = req.user?.organization_id;
     console.log('💼 Obteniendo puestos para organización:', orgId);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT id, nombre, descripcion 
             FROM puestos 
             WHERE organization_id = ? 
@@ -709,7 +709,7 @@ router.get('/personal/puesto/:puestoId', async (req, res) => {
     const { puestoId } = req.params;
     console.log('👥 Obteniendo personal para puesto:', puestoId, 'organización:', orgId);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT p.id, p.nombres, p.apellidos, p.email, p.telefono, p.puesto
             FROM personal p
             JOIN relaciones_sgc r ON p.id = r.origen_id
@@ -749,7 +749,7 @@ router.get('/analisis-riesgo', async (req, res) => {
     const orgId = req.user?.organization_id;
     console.log('🛡️ Obteniendo análisis de riesgo para organización:', orgId);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT ar.*, 
             c.nombre as cliente_nombre,
             c.tipo_cliente,
@@ -786,7 +786,7 @@ router.get('/analisis-riesgo/:id', async (req, res) => {
     const { id } = req.params;
     console.log('🛡️ Obteniendo análisis de riesgo:', id, 'organización:', orgId);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT ar.*, 
             c.nombre as cliente_nombre,
             c.tipo_cliente,
@@ -828,7 +828,7 @@ router.get('/analisis-riesgo/cliente/:clienteId', async (req, res) => {
     const { clienteId } = req.params;
     console.log('🛡️ Obteniendo análisis de riesgo para cliente:', clienteId, 'organización:', orgId);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT ar.*, 
             c.nombre as cliente_nombre,
             c.tipo_cliente,
@@ -866,7 +866,7 @@ router.post('/analisis-riesgo', async (req, res) => {
     const data = req.body;
     console.log('🛡️ Creando análisis de riesgo para organización:', orgId);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `INSERT INTO crm_analisis_riesgo (
         organization_id, cliente_id, fecha_analisis, periodo_analisis,
         puntaje_riesgo, categoria_riesgo, capacidad_pago, ingresos_mensuales,
@@ -910,7 +910,7 @@ router.put('/analisis-riesgo/:id', async (req, res) => {
     const data = req.body;
     console.log('🛡️ Actualizando análisis de riesgo:', id, 'organización:', orgId);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `UPDATE crm_analisis_riesgo SET
         fecha_analisis = ?, periodo_analisis = ?, puntaje_riesgo = ?,
         categoria_riesgo = ?, capacidad_pago = ?, ingresos_mensuales = ?,
@@ -958,7 +958,7 @@ router.delete('/analisis-riesgo/:id', async (req, res) => {
     const { id } = req.params;
     console.log('🛡️ Eliminando análisis de riesgo:', id, 'organización:', orgId);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `UPDATE crm_analisis_riesgo SET is_active = 0, updated_at = CURRENT_TIMESTAMP
             WHERE id = ? AND organization_id = ?`,
       args: [id, orgId]
@@ -998,7 +998,7 @@ router.get('/clientes', async (req, res) => {
     const orgId = req.user?.organization_id;
     console.log('📋 Obteniendo clientes legacy para organización:', orgId);
 
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `SELECT c.*, 
             (v.nombres || ' ' || v.apellidos) as vendedor_nombre, v.email as vendedor_email,
             (s.nombres || ' ' || s.apellidos) as supervisor_nombre

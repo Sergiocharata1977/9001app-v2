@@ -5,7 +5,7 @@
  * Sistema para consultas directas a tablas específicas
  */
 
-const tursoClient = require('../lib/tursoClient.js');
+const mongodbClient = require('../lib/mongodbClient.js');
 
 class DirectQuerySystem {
   static async queryPersonal(organizationId = 1) {
@@ -19,7 +19,7 @@ class DirectQuerySystem {
         ORDER BY nombres, apellidos
       `;
       
-      const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+      const result = await mongodbClient.execute({ sql: query, args: [organizationId] });
       return result.rows;
     } catch (error) {
       console.error('Error consultando personal:', error);
@@ -38,7 +38,7 @@ class DirectQuerySystem {
         ORDER BY codigo
       `;
       
-      const result = await tursoClient.execute(query);
+      const result = await mongodbClient.execute(query);
       return result.rows;
     } catch (error) {
       console.error('Error consultando normas:', error);
@@ -56,7 +56,7 @@ class DirectQuerySystem {
         ORDER BY nombre
       `;
       
-      const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+      const result = await mongodbClient.execute({ sql: query, args: [organizationId] });
       return result.rows;
     } catch (error) {
       console.error('Error consultando procesos:', error);
@@ -74,7 +74,7 @@ class DirectQuerySystem {
         ORDER BY nombre
       `;
       
-      const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+      const result = await mongodbClient.execute({ sql: query, args: [organizationId] });
       return result.rows;
     } catch (error) {
       console.error('Error consultando indicadores:', error);

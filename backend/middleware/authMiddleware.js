@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const tursoClient = require('../lib/tursoClient.js');
+const mongodbClient = require('../lib/mongodbClient.js');
 
 // Unificar secreto con el usado al firmar en authController (fallback-secret)
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
@@ -37,19 +37,15 @@ const authMiddleware = async (req, res, next) => {
     console.log('👤 User ID from token:', userId);
     
     // Obtener usuario actual de la base de datos
-    const userResult = await tursoClient.execute({
-      sql: `SELECT id, organization_id, name, email, role, is_active 
-            FROM usuarios 
-            WHERE id = ? AND is_active = 1`,
-      args: [userId]
+    const user = await mongodbClient.findOne('usuarios', { 
+      _id: userId, 
+      is_active: 1 
     });
 
-    if (userResult.rows.length === 0) {
+    if (!user) {
       console.log('❌ DEBUG - Usuario no encontrado en BD');
       return res.status(401).json({ message: 'Usuario no válido o inactivo.' });
     }
-
-    const user = userResult.rows[0];
     console.log('👤 User from DB:', user);
 
     // Agregar usuario al request para uso en controladores

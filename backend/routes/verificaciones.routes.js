@@ -1,5 +1,5 @@
 const { Router } = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongodbClient = require('../lib/mongodbClient.js');
 const crypto = require('crypto');
 
 const router = Router();
@@ -8,7 +8,7 @@ const router = Router();
 router.get('/hallazgo/:hallazgoId', async (req, res) => {
   const { hallazgoId } = req.params;
   try {
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: 'SELECT * FROM verificaciones WHERE hallazgoId = ? ORDER BY fechaVerificacion ASC',
       args: [hallazgoId],
     });
@@ -23,7 +23,7 @@ router.get('/hallazgo/:hallazgoId', async (req, res) => {
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
     try {
-      const result = await tursoClient.execute({
+      const result = await mongodbClient.execute({
         sql: 'SELECT * FROM verificaciones WHERE id = ?',
         args: [id],
       });
@@ -55,7 +55,7 @@ router.post('/', async (req, res) => {
 
   // Verificar que el hallazgo exista
   try {
-    const hallazgoExists = await tursoClient.execute({
+    const hallazgoExists = await mongodbClient.execute({
         sql: 'SELECT id FROM hallazgos WHERE id = ?',
         args: [hallazgoId]
     });
@@ -65,7 +65,7 @@ router.post('/', async (req, res) => {
 
     const id = crypto.randomUUID();
     
-    await tursoClient.execute({
+    await mongodbClient.execute({
       sql: `INSERT INTO verificaciones (
               id, hallazgoId, responsableVerificacion, fechaVerificacion,
               resultadoVerificacion, comentarios, estadoHallazgo
@@ -76,7 +76,7 @@ router.post('/', async (req, res) => {
       ],
     });
 
-    const newVerificacionResult = await tursoClient.execute({
+    const newVerificacionResult = await mongodbClient.execute({
         sql: 'SELECT * FROM verificaciones WHERE id = ?',
         args: [id]
     });
@@ -119,7 +119,7 @@ router.put('/:id', async (req, res) => {
   sqlArgs.push(id);
 
   try {
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: `UPDATE verificaciones SET ${sqlSetParts.join(', ')} WHERE id = ?`,
       args: sqlArgs,
     });
@@ -128,7 +128,7 @@ router.put('/:id', async (req, res) => {
         return res.status(404).json({ error: 'Verificación no encontrada.' });
     }
 
-    const updatedVerificacionResult = await tursoClient.execute({
+    const updatedVerificacionResult = await mongodbClient.execute({
         sql: 'SELECT * FROM verificaciones WHERE id = ?',
         args: [id]
     });
@@ -144,7 +144,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await tursoClient.execute({
+    const result = await mongodbClient.execute({
       sql: 'DELETE FROM verificaciones WHERE id = ?',
       args: [id],
     });
