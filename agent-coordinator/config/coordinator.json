@@ -1,0 +1,11 @@
+{
+  "port": 8000,
+  "logLevel": "info",
+  "monitoringInterval": 30000,
+  "healthCheckInterval": 60000,
+  "reportInterval": 3600000,
+  "agentTimeout": 300000,
+  "maxRetries": 3,
+  "autoRestart": true,
+  "backupInterval": 86400000
+}

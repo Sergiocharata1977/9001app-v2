@@ -19,7 +19,15 @@
     "structure": "npm run build && node dist/index.js structure",
     "api": "npm run build && node dist/index.js api",
     "web": "npm run build && node dist/index.js web",
-    "status": "npm run build && node dist/index.js status"
+    "status": "npm run build && node dist/index.js status",
+    "coordinate": "npm run build && node dist/commands/coordinate-simple.js start",
+    "monitor": "npm run build && node dist/commands/coordinate-simple.js dashboard",
+    "reports": "npm run build && node dist/commands/coordinate-simple.js report",
+    "validate": "npm run build && node dist/commands/coordinate-simple.js status",
+    "assign-tasks": "npm run build && node dist/commands/coordinate-simple.js start",
+    "check-status": "npm run build && node dist/commands/coordinate-simple.js status",
+    "integrate": "npm run build && node dist/commands/coordinate-simple.js start",
+    "final-docs": "npm run build && node dist/commands/coordinate-simple.js report"
   },
   "keywords": [
     "agent-coordinator",
