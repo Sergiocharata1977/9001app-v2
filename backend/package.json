@@ -1,7 +1,7 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "description": "Backend para ISOFlow4",
+  "description": "Backend para ISOFlow4 con Sistema de Agentes de IA",
   "main": "dist/index.js",
   "scripts": {
     "start": "node dist/index.js",
@@ -14,12 +14,19 @@
     "check-db": "node scripts/check-database-tables.js",
     "verify-db": "node scripts/verificar-base-datos-completa.js",
     "verify-db-continuo": "node scripts/verificar-base-datos-completa.js --continuo",
-    "diagnostico": "node scripts/diagnostico-turso-simple.js"
+    "diagnostico": "node scripts/diagnostico-turso-simple.js",
+    "migrate": "ts-node src/scripts/migrate.ts",
+    "seed": "ts-node src/scripts/seed.ts",
+    "test-system": "ts-node src/scripts/test-system.ts",
+    "dev": "ts-node src/scripts/dev-server.ts"
   },
   "keywords": [
     "isoflow4",
     "backend",
-    "api"
+    "api",
+    "ai-agents",
+    "mongodb",
+    "typescript"
   ],
   "author": "",
   "license": "ISC",
@@ -31,6 +38,16 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/mongodb": "^4.0.6",
     "@types/node": "^24.3.0",
+    "@types/socket.io": "^3.0.2",
+    "@types/bull": "^4.10.0",
+    "@types/redis": "^4.0.11",
+    "@types/winston": "^2.4.4",
+    "@types/passport": "^1.0.12",
+    "@types/passport-jwt": "^3.0.8",
+    "@types/passport-local": "^1.0.35",
+    "@types/express-rate-limit": "^6.0.0",
+    "@types/multer": "^1.4.7",
+    "@types/node-cron": "^3.0.7",
     "axios": "^1.11.0",
     "bcrypt": "^6.0.0",
     "bcryptjs": "^2.4.3",
@@ -46,7 +63,29 @@
     "node-cron": "^4.2.1",
     "react-day-picker": "^9.8.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "socket.io": "^4.7.4",
+    "redis": "^4.6.10",
+    "bull": "^4.12.0",
+    "winston": "^3.11.0",
+    "passport": "^0.7.0",
+    "passport-jwt": "^4.0.1",
+    "passport-local": "^1.0.0",
+    "joi": "^17.11.0",
+    "compression": "^1.7.4",
+    "express-validator": "^7.0.1",
+    "openai": "^4.20.1",
+    "zod": "^3.22.4",
+    "uuid": "^9.0.1",
+    "lodash": "^4.17.21",
+    "moment": "^2.29.4",
+    "node-cache": "^5.1.2",
+    "express-async-errors": "^3.1.1",
+    "express-winston": "^4.2.0",
+    "winston-daily-rotate-file": "^4.7.1",
+    "prom-client": "^15.1.0",
+    "elasticsearch": "^16.7.3",
+    "@sentry/node": "^7.77.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.1.0",
@@ -57,6 +96,13 @@
     "nodemon": "^3.0.0",
     "prettier": "^3.0.0",
     "supertest": "^6.3.3",
-    "ts-node-dev": "^2.0.0"
+    "ts-node-dev": "^2.0.0",
+    "@types/jest": "^29.5.8",
+    "@types/supertest": "^2.0.16",
+    "@types/uuid": "^9.0.7",
+    "@types/lodash": "^4.14.202",
+    "@types/moment": "^2.13.0",
+    "@types/compression": "^1.7.5",
+    "@types/joi": "^17.2.3"
   }
 }
