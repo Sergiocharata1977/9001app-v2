@@ -1,0 +1,432 @@
+// Constantes para el sistema de tareas
+export const TASK_CONSTANTS = {
+  // Tipos de tareas
+  TASK_TYPES: {
+    MIGRATION: 'migration',
+    VALIDATION: 'validation',
+    TRANSFORMATION: 'transformation',
+    BACKUP: 'backup',
+    RESTORE: 'restore',
+    CLEANUP: 'cleanup',
+    OPTIMIZATION: 'optimization',
+    MONITORING: 'monitoring',
+    SECURITY: 'security',
+    PERFORMANCE: 'performance',
+    RESOURCE: 'resource',
+    COMMUNICATION: 'communication',
+    WORKFLOW: 'workflow',
+    DATABASE: 'database',
+    API: 'api',
+    WEB: 'web',
+    SYSTEM: 'system',
+    CUSTOM: 'custom'
+  },
+
+  // Estados de tareas
+  TASK_STATUS: {
+    PENDING: 'pending',
+    QUEUED: 'queued',
+    RUNNING: 'running',
+    COMPLETED: 'completed',
+    FAILED: 'failed',
+    CANCELLED: 'cancelled',
+    TIMEOUT: 'timeout',
+    RETRY: 'retry',
+    ROLLBACK: 'rollback',
+    RECOVERY: 'recovery'
+  },
+
+  // Prioridades de tareas
+  TASK_PRIORITY: {
+    CRITICAL: 'critical',
+    HIGH: 'high',
+    MEDIUM: 'medium',
+    LOW: 'low',
+    BACKGROUND: 'background'
+  },
+
+  // Tipos de cola
+  QUEUE_TYPES: {
+    PRIORITY: 'priority',
+    FIFO: 'fifo',
+    LIFO: 'lifo',
+    ROUND_ROBIN: 'round_robin',
+    WEIGHTED: 'weighted',
+    DEADLINE: 'deadline',
+    BATCH: 'batch',
+    STREAM: 'stream'
+  },
+
+  // Tipos de programador
+  SCHEDULER_TYPES: {
+    SIMPLE: 'simple',
+    ADVANCED: 'advanced',
+    ADAPTIVE: 'adaptive',
+    PREDICTIVE: 'predictive',
+    MACHINE_LEARNING: 'machine_learning',
+    FUZZY_LOGIC: 'fuzzy_logic',
+    GENETIC_ALGORITHM: 'genetic_algorithm',
+    NEURAL_NETWORK: 'neural_network',
+    REINFORCEMENT_LEARNING: 'reinforcement_learning',
+    SWARM_INTELLIGENCE: 'swarm_intelligence'
+  },
+
+  // Tipos de ejecutor
+  EXECUTOR_TYPES: {
+    SEQUENTIAL: 'sequential',
+    PARALLEL: 'parallel',
+    DISTRIBUTED: 'distributed',
+    CLUSTER: 'cluster',
+    GRID: 'grid',
+    CLOUD: 'cloud',
+    EDGE: 'edge',
+    FOG: 'fog',
+    HYBRID: 'hybrid',
+    ADAPTIVE: 'adaptive'
+  },
+
+  // Estados de trabajador
+  WORKER_STATUS: {
+    IDLE: 'idle',
+    BUSY: 'busy',
+    OFFLINE: 'offline',
+    ERROR: 'error',
+    MAINTENANCE: 'maintenance',
+    SCALING: 'scaling',
+    FAILOVER: 'failover',
+    RECOVERY: 'recovery'
+  },
+
+  // Configuración por defecto
+  DEFAULT_CONFIG: {
+    MAX_CONCURRENT_TASKS: 10,
+    MAX_QUEUE_SIZE: 1000,
+    MAX_RETRY_ATTEMPTS: 3,
+    RETRY_DELAY: 5000, // 5 segundos
+    TASK_TIMEOUT: 300000, // 5 minutos
+    HEARTBEAT_INTERVAL: 30000, // 30 segundos
+    CLEANUP_INTERVAL: 300000, // 5 minutos
+    MONITORING_INTERVAL: 60000, // 1 minuto
+    LOGGING_ENABLED: true,
+    METRICS_ENABLED: true,
+    ALERTS_ENABLED: true,
+    BACKUP_ENABLED: true,
+    RECOVERY_ENABLED: true,
+    SCALING_ENABLED: true,
+    OPTIMIZATION_ENABLED: true,
+    SECURITY_ENABLED: true,
+    PERFORMANCE_ENABLED: true,
+    RESOURCE_ENABLED: true,
+    COMMUNICATION_ENABLED: true,
+    WORKFLOW_ENABLED: true,
+    DATABASE_ENABLED: true,
+    API_ENABLED: true,
+    WEB_ENABLED: true,
+    SYSTEM_ENABLED: true,
+    CUSTOM_ENABLED: true
+  },
+
+  // Límites del sistema
+  SYSTEM_LIMITS: {
+    MAX_TASKS_PER_AGENT: 100,
+    MAX_TASKS_PER_WORKER: 50,
+    MAX_TASKS_PER_QUEUE: 10000,
+    MAX_TASKS_PER_SCHEDULER: 1000,
+    MAX_TASKS_PER_EXECUTOR: 500,
+    MAX_WORKERS_PER_EXECUTOR: 100,
+    MAX_QUEUES_PER_SYSTEM: 100,
+    MAX_SCHEDULERS_PER_SYSTEM: 50,
+    MAX_EXECUTORS_PER_SYSTEM: 20,
+    MAX_TASK_TYPES: 100,
+    MAX_TASK_PRIORITIES: 10,
+    MAX_QUEUE_TYPES: 10,
+    MAX_SCHEDULER_TYPES: 10,
+    MAX_EXECUTOR_TYPES: 10,
+    MAX_WORKER_STATUS: 10,
+    MAX_RETRY_ATTEMPTS: 10,
+    MAX_TASK_TIMEOUT: 3600000, // 1 hora
+    MAX_HEARTBEAT_INTERVAL: 300000, // 5 minutos
+    MAX_CLEANUP_INTERVAL: 3600000, // 1 hora
+    MAX_MONITORING_INTERVAL: 300000, // 5 minutos
+    MAX_TASK_SIZE: 1073741824, // 1 GB
+    MAX_TASK_MEMORY: 1073741824, // 1 GB
+    MAX_TASK_CPU: 100, // 100%
+    MAX_TASK_DISK: 10737418240, // 10 GB
+    MAX_TASK_NETWORK: 104857600, // 100 MB
+    MAX_TASK_DURATION: 86400000, // 24 horas
+    MAX_TASK_FREQUENCY: 1000, // 1000 tareas por segundo
+    MAX_TASK_THROUGHPUT: 10000, // 10000 tareas por minuto
+    MAX_TASK_LATENCY: 1000, // 1 segundo
+    MAX_TASK_ERROR_RATE: 0.1, // 10%
+    MAX_TASK_SUCCESS_RATE: 0.99, // 99%
+    MAX_TASK_AVAILABILITY: 0.999, // 99.9%
+    MAX_TASK_RELIABILITY: 0.9999, // 99.99%
+    MAX_TASK_SCALABILITY: 1000, // 1000x
+    MAX_TASK_EFFICIENCY: 0.95, // 95%
+    MAX_TASK_OPTIMIZATION: 0.9, // 90%
+    MAX_TASK_SECURITY: 0.9999, // 99.99%
+    MAX_TASK_PERFORMANCE: 0.99, // 99%
+    MAX_TASK_RESOURCE: 0.95, // 95%
+    MAX_TASK_COMMUNICATION: 0.99, // 99%
+    MAX_TASK_WORKFLOW: 0.99, // 99%
+    MAX_TASK_DATABASE: 0.999, // 99.9%
+    MAX_TASK_API: 0.99, // 99%
+    MAX_TASK_WEB: 0.99, // 99%
+    MAX_TASK_SYSTEM: 0.999, // 99.9%
+    MAX_TASK_CUSTOM: 0.95 // 95%
+  },
+
+  // Timeouts
+  TIMEOUTS: {
+    TASK_CREATION: 10000, // 10 segundos
+    TASK_QUEUING: 5000, // 5 segundos
+    TASK_SCHEDULING: 10000, // 10 segundos
+    TASK_EXECUTION: 300000, // 5 minutos
+    TASK_COMPLETION: 60000, // 1 minuto
+    TASK_CANCELLATION: 10000, // 10 segundos
+    TASK_RETRY: 5000, // 5 segundos
+    TASK_ROLLBACK: 30000, // 30 segundos
+    TASK_RECOVERY: 60000, // 1 minuto
+    TASK_MONITORING: 30000, // 30 segundos
+    TASK_CLEANUP: 300000, // 5 minutos
+    TASK_BACKUP: 300000, // 5 minutos
+    TASK_RESTORE: 600000, // 10 minutos
+    TASK_OPTIMIZATION: 600000, // 10 minutos
+    TASK_SECURITY: 300000, // 5 minutos
+    TASK_PERFORMANCE: 300000, // 5 minutos
+    TASK_RESOURCE: 300000, // 5 minutos
+    TASK_COMMUNICATION: 300000, // 5 minutos
+    TASK_WORKFLOW: 300000, // 5 minutos
+    TASK_DATABASE: 600000, // 10 minutos
+    TASK_API: 300000, // 5 minutos
+    TASK_WEB: 300000, // 5 minutos
+    TASK_SYSTEM: 600000, // 10 minutos
+    TASK_CUSTOM: 300000, // 5 minutos
+    WORKER_HEARTBEAT: 30000, // 30 segundos
+    WORKER_REGISTRATION: 10000, // 10 segundos
+    WORKER_DEREGISTRATION: 10000, // 10 segundos
+    QUEUE_PROCESSING: 1000, // 1 segundo
+    SCHEDULER_PROCESSING: 5000, // 5 segundos
+    EXECUTOR_PROCESSING: 10000, // 10 segundos
+    MONITOR_PROCESSING: 30000, // 30 segundos
+    CLEANUP_PROCESSING: 300000, // 5 minutos
+    BACKUP_PROCESSING: 300000, // 5 minutos
+    RESTORE_PROCESSING: 600000, // 10 minutos
+    OPTIMIZATION_PROCESSING: 600000, // 10 minutos
+    SECURITY_PROCESSING: 300000, // 5 minutos
+    PERFORMANCE_PROCESSING: 300000, // 5 minutos
+    RESOURCE_PROCESSING: 300000, // 5 minutos
+    COMMUNICATION_PROCESSING: 300000, // 5 minutos
+    WORKFLOW_PROCESSING: 300000, // 5 minutos
+    DATABASE_PROCESSING: 600000, // 10 minutos
+    API_PROCESSING: 300000, // 5 minutos
+    WEB_PROCESSING: 300000, // 5 minutos
+    SYSTEM_PROCESSING: 600000, // 10 minutos
+    CUSTOM_PROCESSING: 300000 // 5 minutos
+  },
+
+  // Intervalos
+  INTERVALS: {
+    TASK_MONITORING: 60000, // 1 minuto
+    TASK_CLEANUP: 300000, // 5 minutos
+    TASK_BACKUP: 3600000, // 1 hora
+    TASK_RESTORE: 86400000, // 24 horas
+    TASK_OPTIMIZATION: 1800000, // 30 minutos
+    TASK_SECURITY: 300000, // 5 minutos
+    TASK_PERFORMANCE: 300000, // 5 minutos
+    TASK_RESOURCE: 120000, // 2 minutos
+    TASK_COMMUNICATION: 60000, // 1 minuto
+    TASK_WORKFLOW: 120000, // 2 minutos
+    TASK_DATABASE: 300000, // 5 minutos
+    TASK_API: 120000, // 2 minutos
+    TASK_WEB: 120000, // 2 minutos
+    TASK_SYSTEM: 600000, // 10 minutos
+    TASK_CUSTOM: 300000, // 5 minutos
+    WORKER_HEARTBEAT: 30000, // 30 segundos
+    QUEUE_PROCESSING: 1000, // 1 segundo
+    SCHEDULER_PROCESSING: 5000, // 5 segundos
+    EXECUTOR_PROCESSING: 10000, // 10 segundos
+    MONITOR_PROCESSING: 30000, // 30 segundos
+    CLEANUP_PROCESSING: 300000, // 5 minutos
+    BACKUP_PROCESSING: 3600000, // 1 hora
+    RESTORE_PROCESSING: 86400000, // 24 horas
+    OPTIMIZATION_PROCESSING: 1800000, // 30 minutos
+    SECURITY_PROCESSING: 300000, // 5 minutos
+    PERFORMANCE_PROCESSING: 300000, // 5 minutos
+    RESOURCE_PROCESSING: 120000, // 2 minutos
+    COMMUNICATION_PROCESSING: 60000, // 1 minuto
+    WORKFLOW_PROCESSING: 120000, // 2 minutos
+    DATABASE_PROCESSING: 300000, // 5 minutos
+    API_PROCESSING: 120000, // 2 minutos
+    WEB_PROCESSING: 120000, // 2 minutos
+    SYSTEM_PROCESSING: 600000, // 10 minutos
+    CUSTOM_PROCESSING: 300000 // 5 minutos
+  },
+
+  // Códigos de error
+  ERROR_CODES: {
+    TASK_CREATION_FAILED: 'TASK_CREATION_FAILED',
+    TASK_QUEUING_FAILED: 'TASK_QUEUING_FAILED',
+    TASK_SCHEDULING_FAILED: 'TASK_SCHEDULING_FAILED',
+    TASK_EXECUTION_FAILED: 'TASK_EXECUTION_FAILED',
+    TASK_COMPLETION_FAILED: 'TASK_COMPLETION_FAILED',
+    TASK_CANCELLATION_FAILED: 'TASK_CANCELLATION_FAILED',
+    TASK_RETRY_FAILED: 'TASK_RETRY_FAILED',
+    TASK_ROLLBACK_FAILED: 'TASK_ROLLBACK_FAILED',
+    TASK_RECOVERY_FAILED: 'TASK_RECOVERY_FAILED',
+    TASK_MONITORING_FAILED: 'TASK_MONITORING_FAILED',
+    TASK_CLEANUP_FAILED: 'TASK_CLEANUP_FAILED',
+    TASK_BACKUP_FAILED: 'TASK_BACKUP_FAILED',
+    TASK_RESTORE_FAILED: 'TASK_RESTORE_FAILED',
+    TASK_OPTIMIZATION_FAILED: 'TASK_OPTIMIZATION_FAILED',
+    TASK_SECURITY_FAILED: 'TASK_SECURITY_FAILED',
+    TASK_PERFORMANCE_FAILED: 'TASK_PERFORMANCE_FAILED',
+    TASK_RESOURCE_FAILED: 'TASK_RESOURCE_FAILED',
+    TASK_COMMUNICATION_FAILED: 'TASK_COMMUNICATION_FAILED',
+    TASK_WORKFLOW_FAILED: 'TASK_WORKFLOW_FAILED',
+    TASK_DATABASE_FAILED: 'TASK_DATABASE_FAILED',
+    TASK_API_FAILED: 'TASK_API_FAILED',
+    TASK_WEB_FAILED: 'TASK_WEB_FAILED',
+    TASK_SYSTEM_FAILED: 'TASK_SYSTEM_FAILED',
+    TASK_CUSTOM_FAILED: 'TASK_CUSTOM_FAILED',
+    WORKER_HEARTBEAT_FAILED: 'WORKER_HEARTBEAT_FAILED',
+    WORKER_REGISTRATION_FAILED: 'WORKER_REGISTRATION_FAILED',
+    WORKER_DEREGISTRATION_FAILED: 'WORKER_DEREGISTRATION_FAILED',
+    QUEUE_PROCESSING_FAILED: 'QUEUE_PROCESSING_FAILED',
+    SCHEDULER_PROCESSING_FAILED: 'SCHEDULER_PROCESSING_FAILED',
+    EXECUTOR_PROCESSING_FAILED: 'EXECUTOR_PROCESSING_FAILED',
+    MONITOR_PROCESSING_FAILED: 'MONITOR_PROCESSING_FAILED',
+    CLEANUP_PROCESSING_FAILED: 'CLEANUP_PROCESSING_FAILED',
+    BACKUP_PROCESSING_FAILED: 'BACKUP_PROCESSING_FAILED',
+    RESTORE_PROCESSING_FAILED: 'RESTORE_PROCESSING_FAILED',
+    OPTIMIZATION_PROCESSING_FAILED: 'OPTIMIZATION_PROCESSING_FAILED',
+    SECURITY_PROCESSING_FAILED: 'SECURITY_PROCESSING_FAILED',
+    PERFORMANCE_PROCESSING_FAILED: 'PERFORMANCE_PROCESSING_FAILED',
+    RESOURCE_PROCESSING_FAILED: 'RESOURCE_PROCESSING_FAILED',
+    COMMUNICATION_PROCESSING_FAILED: 'COMMUNICATION_PROCESSING_FAILED',
+    WORKFLOW_PROCESSING_FAILED: 'WORKFLOW_PROCESSING_FAILED',
+    DATABASE_PROCESSING_FAILED: 'DATABASE_PROCESSING_FAILED',
+    API_PROCESSING_FAILED: 'API_PROCESSING_FAILED',
+    WEB_PROCESSING_FAILED: 'WEB_PROCESSING_FAILED',
+    SYSTEM_PROCESSING_FAILED: 'SYSTEM_PROCESSING_FAILED',
+    CUSTOM_PROCESSING_FAILED: 'CUSTOM_PROCESSING_FAILED',
+    TASK_LIMIT_EXCEEDED: 'TASK_LIMIT_EXCEEDED',
+    QUEUE_LIMIT_EXCEEDED: 'QUEUE_LIMIT_EXCEEDED',
+    SCHEDULER_LIMIT_EXCEEDED: 'SCHEDULER_LIMIT_EXCEEDED',
+    EXECUTOR_LIMIT_EXCEEDED: 'EXECUTOR_LIMIT_EXCEEDED',
+    WORKER_LIMIT_EXCEEDED: 'WORKER_LIMIT_EXCEEDED',
+    RESOURCE_LIMIT_EXCEEDED: 'RESOURCE_LIMIT_EXCEEDED',
+    MEMORY_LIMIT_EXCEEDED: 'MEMORY_LIMIT_EXCEEDED',
+    CPU_LIMIT_EXCEEDED: 'CPU_LIMIT_EXCEEDED',
+    DISK_LIMIT_EXCEEDED: 'DISK_LIMIT_EXCEEDED',
+    NETWORK_LIMIT_EXCEEDED: 'NETWORK_LIMIT_EXCEEDED',
+    TIMEOUT_LIMIT_EXCEEDED: 'TIMEOUT_LIMIT_EXCEEDED',
+    RETRY_LIMIT_EXCEEDED: 'RETRY_LIMIT_EXCEEDED',
+    CONFIGURATION_ERROR: 'CONFIGURATION_ERROR',
+    RESOURCE_EXHAUSTED: 'RESOURCE_EXHAUSTED',
+    PERMISSION_DENIED: 'PERMISSION_DENIED',
+    INVALID_TASK: 'INVALID_TASK',
+    INVALID_QUEUE: 'INVALID_QUEUE',
+    INVALID_SCHEDULER: 'INVALID_SCHEDULER',
+    INVALID_EXECUTOR: 'INVALID_EXECUTOR',
+    INVALID_WORKER: 'INVALID_WORKER',
+    INVALID_PRIORITY: 'INVALID_PRIORITY',
+    INVALID_STATUS: 'INVALID_STATUS',
+    INVALID_TYPE: 'INVALID_TYPE',
+    INVALID_CONFIG: 'INVALID_CONFIG',
+    INVALID_LIMIT: 'INVALID_LIMIT',
+    INVALID_TIMEOUT: 'INVALID_TIMEOUT',
+    INVALID_INTERVAL: 'INVALID_INTERVAL',
+    INVALID_ERROR: 'INVALID_ERROR',
+    INVALID_EVENT: 'INVALID_EVENT'
+  },
+
+  // Eventos del sistema
+  EVENTS: {
+    TASK_CREATED: 'task_created',
+    TASK_QUEUED: 'task_queued',
+    TASK_SCHEDULED: 'task_scheduled',
+    TASK_STARTED: 'task_started',
+    TASK_COMPLETED: 'task_completed',
+    TASK_FAILED: 'task_failed',
+    TASK_CANCELLED: 'task_cancelled',
+    TASK_TIMEOUT: 'task_timeout',
+    TASK_RETRY: 'task_retry',
+    TASK_ROLLBACK: 'task_rollback',
+    TASK_RECOVERY: 'task_recovery',
+    TASK_MONITORED: 'task_monitored',
+    TASK_CLEANED: 'task_cleaned',
+    TASK_BACKED_UP: 'task_backed_up',
+    TASK_RESTORED: 'task_restored',
+    TASK_OPTIMIZED: 'task_optimized',
+    TASK_SECURED: 'task_secured',
+    TASK_PERFORMED: 'task_performed',
+    TASK_RESOURCED: 'task_resourced',
+    TASK_COMMUNICATED: 'task_communicated',
+    TASK_WORKFLOWED: 'task_workflowed',
+    TASK_DATABASED: 'task_databased',
+    TASK_APIED: 'task_apied',
+    TASK_WEBED: 'task_webed',
+    TASK_SYSTEMED: 'task_systemed',
+    TASK_CUSTOMED: 'task_customed',
+    WORKER_HEARTBEAT: 'worker_heartbeat',
+    WORKER_REGISTERED: 'worker_registered',
+    WORKER_DEREGISTERED: 'worker_deregistered',
+    QUEUE_PROCESSED: 'queue_processed',
+    SCHEDULER_PROCESSED: 'scheduler_processed',
+    EXECUTOR_PROCESSED: 'executor_processed',
+    MONITOR_PROCESSED: 'monitor_processed',
+    CLEANUP_PROCESSED: 'cleanup_processed',
+    BACKUP_PROCESSED: 'backup_processed',
+    RESTORE_PROCESSED: 'restore_processed',
+    OPTIMIZATION_PROCESSED: 'optimization_processed',
+    SECURITY_PROCESSED: 'security_processed',
+    PERFORMANCE_PROCESSED: 'performance_processed',
+    RESOURCE_PROCESSED: 'resource_processed',
+    COMMUNICATION_PROCESSED: 'communication_processed',
+    WORKFLOW_PROCESSED: 'workflow_processed',
+    DATABASE_PROCESSED: 'database_processed',
+    API_PROCESSED: 'api_processed',
+    WEB_PROCESSED: 'web_processed',
+    SYSTEM_PROCESSED: 'system_processed',
+    CUSTOM_PROCESSED: 'custom_processed',
+    TASK_LIMIT_EXCEEDED: 'task_limit_exceeded',
+    QUEUE_LIMIT_EXCEEDED: 'queue_limit_exceeded',
+    SCHEDULER_LIMIT_EXCEEDED: 'scheduler_limit_exceeded',
+    EXECUTOR_LIMIT_EXCEEDED: 'executor_limit_exceeded',
+    WORKER_LIMIT_EXCEEDED: 'worker_limit_exceeded',
+    RESOURCE_LIMIT_EXCEEDED: 'resource_limit_exceeded',
+    MEMORY_LIMIT_EXCEEDED: 'memory_limit_exceeded',
+    CPU_LIMIT_EXCEEDED: 'cpu_limit_exceeded',
+    DISK_LIMIT_EXCEEDED: 'disk_limit_exceeded',
+    NETWORK_LIMIT_EXCEEDED: 'network_limit_exceeded',
+    TIMEOUT_LIMIT_EXCEEDED: 'timeout_limit_exceeded',
+    RETRY_LIMIT_EXCEEDED: 'retry_limit_exceeded',
+    CONFIGURATION_ERROR: 'configuration_error',
+    RESOURCE_EXHAUSTED: 'resource_exhausted',
+    PERMISSION_DENIED: 'permission_denied',
+    INVALID_TASK: 'invalid_task',
+    INVALID_QUEUE: 'invalid_queue',
+    INVALID_SCHEDULER: 'invalid_scheduler',
+    INVALID_EXECUTOR: 'invalid_executor',
+    INVALID_WORKER: 'invalid_worker',
+    INVALID_PRIORITY: 'invalid_priority',
+    INVALID_STATUS: 'invalid_status',
+    INVALID_TYPE: 'invalid_type',
+    INVALID_CONFIG: 'invalid_config',
+    INVALID_LIMIT: 'invalid_limit',
+    INVALID_TIMEOUT: 'invalid_timeout',
+    INVALID_INTERVAL: 'invalid_interval',
+    INVALID_ERROR: 'invalid_error',
+    INVALID_EVENT: 'invalid_event'
+  }
+} as const;
+
+// Exportar tipos derivados de las constantes
+export type TaskType = typeof TASK_CONSTANTS.TASK_TYPES[keyof typeof TASK_CONSTANTS.TASK_TYPES];
+export type TaskStatus = typeof TASK_CONSTANTS.TASK_STATUS[keyof typeof TASK_CONSTANTS.TASK_STATUS];
+export type TaskPriority = typeof TASK_CONSTANTS.TASK_PRIORITY[keyof typeof TASK_CONSTANTS.TASK_PRIORITY];
+export type QueueType = typeof TASK_CONSTANTS.QUEUE_TYPES[keyof typeof TASK_CONSTANTS.QUEUE_TYPES];
+export type SchedulerType = typeof TASK_CONSTANTS.SCHEDULER_TYPES[keyof typeof TASK_CONSTANTS.SCHEDULER_TYPES];
+export type ExecutorType = typeof TASK_CONSTANTS.EXECUTOR_TYPES[keyof typeof TASK_CONSTANTS.EXECUTOR_TYPES];
+export type WorkerStatus = typeof TASK_CONSTANTS.WORKER_STATUS[keyof typeof TASK_CONSTANTS.WORKER_STATUS];
