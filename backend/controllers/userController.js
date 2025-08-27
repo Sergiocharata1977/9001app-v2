@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 const { randomUUID } = require('crypto');
 
 /**
@@ -23,7 +23,7 @@ const getOrganizationUsers = async (req, res) => {
 
     console.log(`👥 Obteniendo usuarios para organización ${organizationId}`);
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT u.id, u.name, u.email, u.role, u.organization_id, u.created_at, u.last_login,
              o.name as organization_name, o.plan
              FROM usuarios u 
@@ -88,7 +88,7 @@ const createOrganizationUser = async (req, res) => {
     }
 
     // Verificar si el email ya existe
-    const existingUser = await tursoClient.execute({
+    const existingUser = await mongoClient.execute({
       sql: 'SELECT id FROM usuarios WHERE email = ?',
       args: [email]
     });
@@ -101,7 +101,7 @@ const createOrganizationUser = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     // Crear usuario
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO usuarios (name, email, password_hash, role, organization_id, created_at) 
             VALUES (?, ?, ?, ?, ?, ?)`,
       args: [name, email, hashedPassword, role, organizationId, new Date().toISOString()]
@@ -110,7 +110,7 @@ const createOrganizationUser = async (req, res) => {
     const userId = Number(result.lastInsertRowid);
 
     // Obtener el usuario completo creado
-    const newUserResult = await tursoClient.execute({
+    const newUserResult = await mongoClient.execute({
       sql: `SELECT u.id, u.name, u.email, u.role, u.organization_id, u.created_at,
              o.name as organization_name, o.plan
              FROM usuarios u 
@@ -153,7 +153,7 @@ const updateOrganizationUser = async (req, res) => {
     console.log(`✏️ ${currentUser.email} actualizando usuario ID: ${userId}`);
 
     // Obtener el usuario a editar
-    const userResult = await tursoClient.execute({
+    const userResult = await mongoClient.execute({
       sql: 'SELECT * FROM usuarios WHERE id = ?',
       args: [userId]
     });
@@ -180,7 +180,7 @@ const updateOrganizationUser = async (req, res) => {
 
     if (email) {
       // Verificar que el email no exista para otro usuario
-      const emailCheck = await tursoClient.execute({
+      const emailCheck = await mongoClient.execute({
         sql: 'SELECT id FROM usuarios WHERE email = ? AND id != ?',
         args: [email, userId]
       });
@@ -219,13 +219,13 @@ const updateOrganizationUser = async (req, res) => {
     args.push(userId);
 
     // Ejecutar actualización
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `UPDATE usuarios SET ${updates.join(', ')} WHERE id = ?`,
       args
     });
 
     // Obtener usuario actualizado
-    const updatedUserResult = await tursoClient.execute({
+    const updatedUserResult = await mongoClient.execute({
       sql: `SELECT u.id, u.name, u.email, u.role, u.organization_id, u.created_at, u.updated_at,
              o.name as organization_name, o.plan
              FROM usuarios u 
@@ -268,7 +268,7 @@ const deleteOrganizationUser = async (req, res) => {
     console.log(`🗑️ ${currentUser.email} eliminando usuario ID: ${userId}`);
 
     // Obtener el usuario a eliminar
-    const userResult = await tursoClient.execute({
+    const userResult = await mongoClient.execute({
       sql: 'SELECT * FROM usuarios WHERE id = ?',
       args: [userId]
     });
@@ -290,13 +290,13 @@ const deleteOrganizationUser = async (req, res) => {
     }
 
     // Eliminar tokens de refresh del usuario
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: 'DELETE FROM refresh_tokens WHERE user_id = ?',
       args: [userId]
     });
 
     // Eliminar usuario
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: 'DELETE FROM usuarios WHERE id = ?',
       args: [userId]
     });
@@ -334,7 +334,7 @@ const getAllOrganizations = async (req, res) => {
       return res.status(403).json({ message: 'Solo el super administrador puede ver todas las organizaciones' });
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT o.id, o.name, o.plan, o.max_users, o.created_at,
              COUNT(u.id) as user_count,
              COUNT(CASE WHEN u.role = 'admin' THEN 1 END) as admin_count
@@ -396,7 +396,7 @@ const createOrganization = async (req, res) => {
     }
 
     // Verificar si la organización ya existe
-    const existingOrg = await tursoClient.execute({
+    const existingOrg = await mongoClient.execute({
       sql: 'SELECT id FROM organizations WHERE name = ?',
       args: [name]
     });
@@ -406,7 +406,7 @@ const createOrganization = async (req, res) => {
     }
 
     // Verificar si el email del admin ya existe
-    const existingAdmin = await tursoClient.execute({
+    const existingAdmin = await mongoClient.execute({
       sql: 'SELECT id FROM usuarios WHERE email = ?',
       args: [adminEmail]
     });
@@ -424,7 +424,7 @@ const createOrganization = async (req, res) => {
     }
 
     // Crear organización
-    const orgResult = await tursoClient.execute({
+    const orgResult = await mongoClient.execute({
       sql: 'INSERT INTO organizations (name, plan, max_users, created_at) VALUES (?, ?, ?, ?)',
       args: [name, organizationPlan, maxUsersForPlan, new Date().toISOString()]
     });
@@ -434,7 +434,7 @@ const createOrganization = async (req, res) => {
     // Crear admin de la organización
     const hashedPassword = await bcrypt.hash(adminPassword, 10);
     
-    const adminResult = await tursoClient.execute({
+    const adminResult = await mongoClient.execute({
       sql: `INSERT INTO usuarios (name, email, password_hash, role, organization_id, created_at) 
             VALUES (?, ?, ?, ?, ?, ?)`,
       args: [adminName, adminEmail, hashedPassword, 'admin', organizationId, new Date().toISOString()]
@@ -448,7 +448,7 @@ const createOrganization = async (req, res) => {
       ['personal_management', 'department_management', 'position_management', 'process_management', 'document_management', 'basic_dashboard', 'objectives_management', 'indicators_management', 'audit_management', 'findings_management', 'corrective_actions', 'advanced_dashboard', 'ai_assistant'];
 
     for (const feature of features) {
-      await tursoClient.execute({
+      await mongoClient.execute({
         sql: 'INSERT INTO organization_features (organization_id, feature_name, is_enabled) VALUES (?, ?, ?)',
         args: [organizationId, feature, true]
       });
@@ -497,7 +497,7 @@ const updateOrganizationPlan = async (req, res) => {
     }
 
     // Obtener organización actual
-    const orgResult = await tursoClient.execute({
+    const orgResult = await mongoClient.execute({
       sql: 'SELECT * FROM organizations WHERE id = ?',
       args: [organizationId]
     });
@@ -531,7 +531,7 @@ const updateOrganizationPlan = async (req, res) => {
     args.push(organizationId);
 
     // Actualizar organización
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `UPDATE organizations SET ${updates.join(', ')} WHERE id = ?`,
       args
     });
@@ -539,7 +539,7 @@ const updateOrganizationPlan = async (req, res) => {
     // Si cambió el plan, actualizar features
     if (plan && plan !== organization.plan) {
       // Eliminar features actuales
-      await tursoClient.execute({
+      await mongoClient.execute({
         sql: 'DELETE FROM organization_features WHERE organization_id = ?',
         args: [organizationId]
       });
@@ -550,7 +550,7 @@ const updateOrganizationPlan = async (req, res) => {
         ['personal_management', 'department_management', 'position_management', 'process_management', 'document_management', 'basic_dashboard', 'objectives_management', 'indicators_management', 'audit_management', 'findings_management', 'corrective_actions', 'advanced_dashboard', 'ai_assistant'];
 
       for (const feature of features) {
-        await tursoClient.execute({
+        await mongoClient.execute({
           sql: 'INSERT INTO organization_features (organization_id, feature_name, is_enabled) VALUES (?, ?, ?)',
           args: [organizationId, feature, true]
         });

@@ -1,4 +1,4 @@
-const tursoClient = require('../../lib/tursoClient.js');
+const mongoClient = require('../../lib/mongoClient.js');
 
 async function checkTableStructure() {
   console.log('🔍 Verificando estructura de tablas...\n');
@@ -22,7 +22,7 @@ async function checkTableStructure() {
   for (const table of tables) {
     try {
       console.log(`📋 Tabla: ${table}`);
-      const result = await tursoClient.execute(`PRAGMA table_info(${table})`);
+      const result = await mongoClient.execute(`PRAGMA table_info(${table})`);
       
       if (result.rows.length > 0) {
         console.log('   Columnas:');

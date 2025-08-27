@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { TursoRAGService } from '../services/tursoRAGService';
+import { MongoDBRAGService } from '../services/mongodbRAGService';
 
 interface RAGQueryRequest {
   question: string;
@@ -10,21 +10,21 @@ interface RAGQueryRequest {
 }
 
 /**
- * Controlador para el sistema RAG con Turso e IA
+ * Controlador para el sistema RAG con MongoDB e IA
  */
-export class TursoRAGController {
-  private ragService: TursoRAGService;
+export class MongoDBRAGController {
+  private ragService: MongoDBRAGService;
 
   constructor() {
-    // Configuración de Turso desde variables de entorno
-    const tursoConfig = {
-      url: process.env.TURSO_DATABASE_URL || 'libsql://isoflow4-sergiocharata1977.turso.io',
+    // Configuración de MongoDB desde variables de entorno
+    const mongodbConfig = {
+      url: process.env.TURSO_DATABASE_URL || 'libsql://isoflow4-sergiocharata1977.mongodb.io',
       authToken: process.env.TURSO_AUTH_TOKEN || ''
     };
 
     const openaiApiKey = process.env.OPENAI_API_KEY || '';
     
-    this.ragService = new TursoRAGService(tursoConfig, openaiApiKey);
+    this.ragService = new MongoDBRAGService(mongodbConfig, openaiApiKey);
   }
 
   /**
@@ -103,7 +103,7 @@ export class TursoRAGController {
         data: {
           ...stats,
           timestamp: new Date().toISOString(),
-          system: 'Turso RAG System'
+          system: 'MongoDB RAG System'
         }
       });
 
@@ -118,11 +118,11 @@ export class TursoRAGController {
   }
 
   /**
-   * Prueba de conectividad con Turso
+   * Prueba de conectividad con MongoDB
    */
   async testConnection(req: Request, res: Response): Promise<void> {
     try {
-      console.log('🔍 Probando conectividad con Turso...');
+      console.log('🔍 Probando conectividad con MongoDB...');
 
       // Intentar una consulta simple
       const testResult = await this.ragService.processQuery({
@@ -133,7 +133,7 @@ export class TursoRAGController {
 
       res.json({
         success: true,
-        message: 'Conexión exitosa con Turso',
+        message: 'Conexión exitosa con MongoDB',
         data: {
           processingTime: testResult.processingTime,
           timestamp: testResult.timestamp
@@ -141,10 +141,10 @@ export class TursoRAGController {
       });
 
     } catch (error) {
-      console.error('❌ Error de conectividad con Turso:', error);
+      console.error('❌ Error de conectividad con MongoDB:', error);
       res.status(500).json({
         success: false,
-        error: 'Error de conectividad con Turso',
+        error: 'Error de conectividad con MongoDB',
         details: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
     }

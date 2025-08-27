@@ -1,4 +1,4 @@
-const tursoClient = require('../../lib/tursoClient.js');
+const mongoClient = require('../../lib/mongoClient.js');
 
 /**
  * Modelo RAG para el Sistema SGC ISO 9001
@@ -28,10 +28,10 @@ class RAGDataModel {
       
       if (organizationId) {
         query += ` WHERE a.organization_id = ?`;
-        const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+        const result = await mongoClient.execute({ sql: query, args: [organizationId] });
         return result.rows;
       } else {
-        const result = await tursoClient.execute(query);
+        const result = await mongoClient.execute(query);
         return result.rows;
       }
     } catch (error) {
@@ -61,10 +61,10 @@ class RAGDataModel {
       
       if (organizationId) {
         query += ` WHERE a.organization_id = ?`;
-        const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+        const result = await mongoClient.execute({ sql: query, args: [organizationId] });
         return result.rows;
       } else {
-        const result = await tursoClient.execute(query);
+        const result = await mongoClient.execute(query);
         return result.rows;
       }
     } catch (error) {
@@ -94,10 +94,10 @@ class RAGDataModel {
       
       if (organizationId) {
         query += ` WHERE c.organization_id = ?`;
-        const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+        const result = await mongoClient.execute({ sql: query, args: [organizationId] });
         return result.rows;
       } else {
-        const result = await tursoClient.execute(query);
+        const result = await mongoClient.execute(query);
         return result.rows;
       }
     } catch (error) {
@@ -127,10 +127,10 @@ class RAGDataModel {
       
       if (organizationId) {
         query += ` WHERE c.organization_id = ?`;
-        const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+        const result = await mongoClient.execute({ sql: query, args: [organizationId] });
         return result.rows;
       } else {
-        const result = await tursoClient.execute(query);
+        const result = await mongoClient.execute(query);
         return result.rows;
       }
     } catch (error) {
@@ -160,10 +160,10 @@ class RAGDataModel {
       
       if (organizationId) {
         query += ` WHERE d.organization_id = ?`;
-        const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+        const result = await mongoClient.execute({ sql: query, args: [organizationId] });
         return result.rows;
       } else {
-        const result = await tursoClient.execute(query);
+        const result = await mongoClient.execute(query);
         return result.rows;
       }
     } catch (error) {
@@ -193,10 +193,10 @@ class RAGDataModel {
       
       if (organizationId) {
         query += ` WHERE d.organization_id = ?`;
-        const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+        const result = await mongoClient.execute({ sql: query, args: [organizationId] });
         return result.rows;
       } else {
-        const result = await tursoClient.execute(query);
+        const result = await mongoClient.execute(query);
         return result.rows;
       }
     } catch (error) {
@@ -226,10 +226,10 @@ class RAGDataModel {
       
       if (organizationId) {
         query += ` WHERE e.organization_id = ?`;
-        const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+        const result = await mongoClient.execute({ sql: query, args: [organizationId] });
         return result.rows;
       } else {
-        const result = await tursoClient.execute(query);
+        const result = await mongoClient.execute(query);
         return result.rows;
       }
     } catch (error) {
@@ -259,10 +259,10 @@ class RAGDataModel {
       
       if (organizationId) {
         query += ` WHERE h.organization_id = ?`;
-        const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+        const result = await mongoClient.execute({ sql: query, args: [organizationId] });
         return result.rows;
       } else {
-        const result = await tursoClient.execute(query);
+        const result = await mongoClient.execute(query);
         return result.rows;
       }
     } catch (error) {
@@ -292,10 +292,10 @@ class RAGDataModel {
       
       if (organizationId) {
         query += ` WHERE i.organization_id = ?`;
-        const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+        const result = await mongoClient.execute({ sql: query, args: [organizationId] });
         return result.rows;
       } else {
-        const result = await tursoClient.execute(query);
+        const result = await mongoClient.execute(query);
         return result.rows;
       }
     } catch (error) {
@@ -325,10 +325,10 @@ class RAGDataModel {
       
       if (organizationId) {
         query += ` WHERE m.organization_id = ?`;
-        const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+        const result = await mongoClient.execute({ sql: query, args: [organizationId] });
         return result.rows;
       } else {
-        const result = await tursoClient.execute(query);
+        const result = await mongoClient.execute(query);
         return result.rows;
       }
     } catch (error) {
@@ -358,10 +358,10 @@ class RAGDataModel {
       
       if (organizationId) {
         query += ` WHERE m.organization_id = ?`;
-        const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+        const result = await mongoClient.execute({ sql: query, args: [organizationId] });
         return result.rows;
       } else {
-        const result = await tursoClient.execute(query);
+        const result = await mongoClient.execute(query);
         return result.rows;
       }
     } catch (error) {
@@ -391,10 +391,10 @@ class RAGDataModel {
       
       if (organizationId) {
         query += ` WHERE n.organization_id = ? OR n.organization_id = 0`;
-        const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+        const result = await mongoClient.execute({ sql: query, args: [organizationId] });
         return result.rows;
       } else {
-        const result = await tursoClient.execute(query);
+        const result = await mongoClient.execute(query);
         return result.rows;
       }
     } catch (error) {
@@ -424,10 +424,10 @@ class RAGDataModel {
       
       if (organizationId) {
         query += ` WHERE p.organization_id = ?`;
-        const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+        const result = await mongoClient.execute({ sql: query, args: [organizationId] });
         return result.rows;
       } else {
-        const result = await tursoClient.execute(query);
+        const result = await mongoClient.execute(query);
         return result.rows;
       }
     } catch (error) {
@@ -457,10 +457,10 @@ class RAGDataModel {
       
       if (organizationId) {
         query += ` WHERE p.organization_id = ?`;
-        const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+        const result = await mongoClient.execute({ sql: query, args: [organizationId] });
         return result.rows;
       } else {
-        const result = await tursoClient.execute(query);
+        const result = await mongoClient.execute(query);
         return result.rows;
       }
     } catch (error) {
@@ -490,10 +490,10 @@ class RAGDataModel {
       
       if (organizationId) {
         query += ` WHERE oc.organization_id = ?`;
-        const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+        const result = await mongoClient.execute({ sql: query, args: [organizationId] });
         return result.rows;
       } else {
-        const result = await tursoClient.execute(query);
+        const result = await mongoClient.execute(query);
         return result.rows;
       }
     } catch (error) {
@@ -523,10 +523,10 @@ class RAGDataModel {
       
       if (organizationId) {
         query += ` WHERE p.organization_id = ?`;
-        const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+        const result = await mongoClient.execute({ sql: query, args: [organizationId] });
         return result.rows;
       } else {
-        const result = await tursoClient.execute(query);
+        const result = await mongoClient.execute(query);
         return result.rows;
       }
     } catch (error) {
@@ -556,10 +556,10 @@ class RAGDataModel {
       
       if (organizationId) {
         query += ` WHERE p.organization_id = ?`;
-        const result = await tursoClient.execute({ sql: query, args: [organizationId] });
+        const result = await mongoClient.execute({ sql: query, args: [organizationId] });
         return result.rows;
       } else {
-        const result = await tursoClient.execute(query);
+        const result = await mongoClient.execute(query);
         return result.rows;
       }
     } catch (error) {

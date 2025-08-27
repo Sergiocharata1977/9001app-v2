@@ -1,5 +1,5 @@
 const express = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 const ActivityLogService = require('../services/activityLogService.js');
 const authMiddleware = require('../middleware/authMiddleware.js');
 const crypto = require('crypto');
@@ -12,7 +12,7 @@ router.get('/', authMiddleware, async (req, res, next) => {
     const organizationId = req.user?.organization_id || req.user?.org_id || 2; // Valor por defecto
     console.log('📋 Obteniendo todas las capacitaciones para organización:', organizationId);
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'SELECT * FROM capacitaciones WHERE organization_id = ? ORDER BY created_at DESC',
       args: [organizationId]
     });
@@ -36,7 +36,7 @@ router.get('/:id', authMiddleware, async (req, res, next) => {
     const organizationId = req.user?.organization_id || req.user?.org_id || 2;
     console.log(`🔍 Obteniendo capacitación ${id} para organización ${organizationId}`);
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'SELECT * FROM capacitaciones WHERE id = ? AND organization_id = ?',
       args: [id, organizationId],
     });
@@ -67,7 +67,7 @@ router.post('/', authMiddleware, async (req, res, next) => {
     const id = crypto.randomUUID();
     const now = new Date().toISOString();
 
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: 'INSERT INTO capacitaciones (id, titulo, descripcion, fecha_programada, estado, organization_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       args: [id, titulo, descripcion || null, fecha_programada || null, estado || 'programada', organization_id, now, now]
     });
@@ -106,7 +106,7 @@ router.put('/:id', authMiddleware, async (req, res, next) => {
     const organizationId = req.user?.organization_id || req.user?.org_id || 2;
     
     // Verificar que la capacitación existe y pertenece a la organización
-    const existing = await tursoClient.execute({
+    const existing = await mongoClient.execute({
       sql: 'SELECT * FROM capacitaciones WHERE id = ? AND organization_id = ?',
       args: [id, organizationId],
     });
@@ -119,7 +119,7 @@ router.put('/:id', authMiddleware, async (req, res, next) => {
 
     const now = new Date().toISOString();
     
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `UPDATE capacitaciones 
             SET titulo = ?, descripcion = ?, fecha_programada = ?, estado = ?, updated_at = ?
             WHERE id = ? AND organization_id = ?`,
@@ -157,7 +157,7 @@ router.delete('/:id', authMiddleware, async (req, res, next) => {
   try {
     const organizationId = req.user?.organization_id || req.user?.org_id || 2;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'DELETE FROM capacitaciones WHERE id = ? AND organization_id = ? RETURNING id',
       args: [id, organizationId],
     });

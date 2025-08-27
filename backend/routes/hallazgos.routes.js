@@ -1,5 +1,5 @@
 const express = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 const authMiddleware = require('../middleware/authMiddleware.js');
 
 const router = express.Router();
@@ -28,7 +28,7 @@ router.get('/search', async (req, res) => {
     const limitValue = parseInt(limit);
 
     // Query optimizada con paginación
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `
         SELECT 
           h.*,
@@ -45,7 +45,7 @@ router.get('/search', async (req, res) => {
     });
 
     // Query para obtener total de registros
-    const countResult = await tursoClient.execute({
+    const countResult = await mongoClient.execute({
       sql: `
         SELECT COUNT(*) as total
         FROM hallazgos h
@@ -82,7 +82,7 @@ router.get('/search', async (req, res) => {
 // Obtener estadísticas SGC de hallazgos
 router.get('/stats', async (req, res) => {
   try {
-    const result = await tursoClient.execute(`
+    const result = await mongoClient.execute(`
       SELECT 
         COUNT(*) as total_hallazgos,
         COUNT(CASE WHEN estado = 'deteccion' THEN 1 END) as en_deteccion,
@@ -128,7 +128,7 @@ router.get('/recent', async (req, res) => {
   try {
     const { limit = 10 } = req.query;
     
-    const result = await tursoClient.execute(`
+    const result = await mongoClient.execute(`
       SELECT 
         h.*,
         COALESCE(participantes.total, 0) as total_participantes,
@@ -181,7 +181,7 @@ router.get('/recent', async (req, res) => {
 // Exportar hallazgos con datos SGC
 router.get('/export', async (req, res) => {
   try {
-    const result = await tursoClient.execute(`
+    const result = await mongoClient.execute(`
       SELECT 
         h.numeroHallazgo,
         h.titulo,
@@ -252,7 +252,7 @@ router.get('/', async (req, res) => {
     const whereClause = whereConditions.join(' AND ');
     
     // Query optimizada con paginación
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `
         SELECT 
           h.*,
@@ -269,7 +269,7 @@ router.get('/', async (req, res) => {
     });
 
     // Query para obtener total de registros
-    const countResult = await tursoClient.execute({
+    const countResult = await mongoClient.execute({
       sql: `
         SELECT COUNT(*) as total
         FROM hallazgos h
@@ -314,7 +314,7 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params;
     
     // Query simplificada para obtener datos básicos del hallazgo
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `
         SELECT 
           h.*,
@@ -337,7 +337,7 @@ router.get('/:id', async (req, res) => {
 
     // Obtener datos SGC por separado para evitar consultas complejas
     const [participantesResult, documentosResult, normasResult] = await Promise.all([
-      tursoClient.execute({
+      mongoClient.execute({
         sql: `
           SELECT 
             COUNT(*) as total,
@@ -348,7 +348,7 @@ router.get('/:id', async (req, res) => {
         `,
         args: [id]
       }),
-      tursoClient.execute({
+      mongoClient.execute({
         sql: `
           SELECT 
             COUNT(*) as total,
@@ -358,7 +358,7 @@ router.get('/:id', async (req, res) => {
         `,
         args: [id]
       }),
-      tursoClient.execute({
+      mongoClient.execute({
         sql: `
           SELECT COUNT(*) as total
           FROM sgc_normas_relacionadas 
@@ -427,7 +427,7 @@ router.post('/', async (req, res) => {
     const hallazgoId = `HALL_${Date.now()}`;
     
     // Generar número de hallazgo automático
-    const countResult = await tursoClient.execute(`
+    const countResult = await mongoClient.execute(`
       SELECT COUNT(*) as count 
       FROM hallazgos 
       WHERE strftime('%Y', created_at) = strftime('%Y', 'now')
@@ -437,7 +437,7 @@ router.post('/', async (req, res) => {
     const numeroHallazgo = `HAL-${new Date().getFullYear()}-${String(count + 1).padStart(3, '0')}`;
 
     // Insertar hallazgo
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `
         INSERT INTO hallazgos (
           id, organization_id, numeroHallazgo, titulo, descripcion,
@@ -455,7 +455,7 @@ router.post('/', async (req, res) => {
 
     // Crear participantes SGC si hay responsable
     if (responsable_id) {
-      await tursoClient.execute({
+      await mongoClient.execute({
         sql: `
           INSERT INTO sgc_personal_relaciones (
             id, organization_id, entidad_tipo, entidad_id, personal_id, rol,
@@ -468,7 +468,7 @@ router.post('/', async (req, res) => {
 
     // Crear auditor SGC si hay auditor
     if (auditor_id) {
-      await tursoClient.execute({
+      await mongoClient.execute({
         sql: `
           INSERT INTO sgc_personal_relaciones (
             id, organization_id, entidad_tipo, entidad_id, personal_id, rol,
@@ -484,7 +484,7 @@ router.post('/', async (req, res) => {
       const tipoRelacion = categoria === 'no_conformidad' ? 'no_conformidad' : 
                           categoria === 'oportunidad_mejora' ? 'oportunidad_mejora' : 'observacion';
                           
-      await tursoClient.execute({
+      await mongoClient.execute({
         sql: `
           INSERT INTO sgc_normas_relacionadas (
             id, organization_id, entidad_tipo, entidad_id, norma_id,
@@ -500,7 +500,7 @@ router.post('/', async (req, res) => {
     }
 
     // Obtener el hallazgo creado con datos SGC
-    const newHallazgo = await tursoClient.execute({
+    const newHallazgo = await mongoClient.execute({
       sql: `
         SELECT h.*, (resp.nombres || ' ' || resp.apellidos) as responsable_nombre
         FROM hallazgos h
@@ -532,7 +532,7 @@ router.put('/:id', async (req, res) => {
     const updateData = req.body;
 
     // Verificar que el hallazgo existe
-    const existingHallazgo = await tursoClient.execute({
+    const existingHallazgo = await mongoClient.execute({
       sql: 'SELECT id FROM hallazgos WHERE id = ? AND is_active = 1',
       args: [id]
     });
@@ -574,7 +574,7 @@ router.put('/:id', async (req, res) => {
     updateValues.push(id);
 
     // Actualizar hallazgo
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `UPDATE hallazgos SET ${updateFields.join(', ')} WHERE id = ?`,
       args: updateValues
     });
@@ -582,7 +582,7 @@ router.put('/:id', async (req, res) => {
     // Actualizar participantes SGC si cambió el responsable
     if (updateData.responsable_id !== undefined) {
       // Eliminar participante anterior
-      await tursoClient.execute({
+      await mongoClient.execute({
         sql: `
           UPDATE sgc_personal_relaciones 
           SET is_active = 0 
@@ -593,7 +593,7 @@ router.put('/:id', async (req, res) => {
 
       // Crear nuevo participante si hay responsable
       if (updateData.responsable_id) {
-        await tursoClient.execute({
+        await mongoClient.execute({
           sql: `
             INSERT OR REPLACE INTO sgc_personal_relaciones (
               id, organization_id, entidad_tipo, entidad_id, personal_id, rol,
@@ -606,7 +606,7 @@ router.put('/:id', async (req, res) => {
     }
 
     // Obtener hallazgo actualizado
-    const updatedHallazgo = await tursoClient.execute({
+    const updatedHallazgo = await mongoClient.execute({
       sql: `
         SELECT h.*, (resp.nombres || ' ' || resp.apellidos) as responsable_nombre
         FROM hallazgos h
@@ -645,7 +645,7 @@ router.put('/:id/estado', async (req, res) => {
     }
 
     // Actualizar estado
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `
         UPDATE hallazgos 
         SET estado = ?, updated_at = CURRENT_TIMESTAMP
@@ -657,7 +657,7 @@ router.put('/:id/estado', async (req, res) => {
     // Actualizar nivel de cumplimiento en normas SGC
     const nivelCumplimiento = estado === 'verificacion_cierre' || estado.includes('finalizado') ? 'cumple' : 'en_proceso';
     
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `
         UPDATE sgc_normas_relacionadas 
         SET nivel_cumplimiento = ?, updated_at = CURRENT_TIMESTAMP
@@ -686,7 +686,7 @@ router.delete('/:id', async (req, res) => {
     const { id } = req.params;
     
     // Verificar que el hallazgo existe
-    const existingHallazgo = await tursoClient.execute({
+    const existingHallazgo = await mongoClient.execute({
       sql: 'SELECT id FROM hallazgos WHERE id = ? AND is_active = 1',
       args: [id]
     });
@@ -699,7 +699,7 @@ router.delete('/:id', async (req, res) => {
     }
 
     // Soft delete del hallazgo
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `
         UPDATE hallazgos 
         SET is_active = 0, updated_at = CURRENT_TIMESTAMP 
@@ -709,7 +709,7 @@ router.delete('/:id', async (req, res) => {
     });
 
     // Soft delete de datos SGC relacionados
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `
         UPDATE sgc_personal_relaciones 
         SET is_active = 0, updated_at = CURRENT_TIMESTAMP 
@@ -718,7 +718,7 @@ router.delete('/:id', async (req, res) => {
       args: [id]
     });
 
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `
         UPDATE sgc_documentos_relacionados 
         SET is_active = 0, updated_at = CURRENT_TIMESTAMP 
@@ -727,7 +727,7 @@ router.delete('/:id', async (req, res) => {
       args: [id]
     });
 
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `
         UPDATE sgc_normas_relacionadas 
         SET is_active = 0, updated_at = CURRENT_TIMESTAMP 
@@ -759,7 +759,7 @@ router.get('/:id/participantes', async (req, res) => {
   try {
     const { id } = req.params;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `
         SELECT 
           p.*,
@@ -794,7 +794,7 @@ router.get('/:id/documentos', async (req, res) => {
   try {
     const { id } = req.params;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `
         SELECT 
           d.*,
@@ -829,7 +829,7 @@ router.get('/:id/normas', async (req, res) => {
   try {
     const { id } = req.params;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `
         SELECT 
           n.*,
@@ -872,7 +872,7 @@ router.post('/:id/participantes', async (req, res) => {
 
     const participanteId = `PART_HAL_${id}_${rol.toUpperCase()}_${Date.now()}`;
 
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `
         INSERT INTO sgc_personal_relaciones (
           id, organization_id, entidad_tipo, entidad_id, personal_id, rol,
@@ -899,7 +899,7 @@ router.post('/:id/participantes', async (req, res) => {
 // Health check
 router.get('/health', async (req, res) => {
   try {
-    const result = await tursoClient.execute('SELECT COUNT(*) as count FROM hallazgos WHERE is_active = 1');
+    const result = await mongoClient.execute('SELECT COUNT(*) as count FROM hallazgos WHERE is_active = 1');
     
     res.json({ 
       status: 'OK', 

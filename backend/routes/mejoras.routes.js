@@ -1,5 +1,5 @@
 const { Router  } = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 const { randomUUID  } = require('crypto');
 const { ensureTenant, secureQuery, requireRole  } = require('../middleware/tenantMiddleware.js');
 
@@ -102,7 +102,7 @@ router.post('/', requireRole('manager'), async (req, res) => {
       fecha_deteccion, proceso_id, requisito_incumplido || null, req.user.organization_id
     ];
 
-    await tursoClient.execute({ sql, args });
+    await mongoClient.execute({ sql, args });
 
     const newHallazgoResult = await secureQuery(
       'SELECT * FROM hallazgos WHERE id = ? AND organization_id = ?',
@@ -206,7 +206,7 @@ router.put('/:id', requireRole('manager'), async (req, res) => {
   console.log(`[PUT /hallazgos/${id}] With arguments:`, sqlArgs);
 
   try {
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql,
       args: sqlArgs,
     });
@@ -237,7 +237,7 @@ router.put('/orden', requireRole('manager'), async (req, res) => {
       args: [index, id, req.user.organization_id],
     }));
 
-    await tursoClient.batch(statements, 'write');
+    await mongoClient.batch(statements, 'write');
 
     res.status(200).json({ message: 'Orden de hallazgos actualizado correctamente.' });
   } catch (error) {
@@ -256,7 +256,7 @@ router.put('/:id/estado', requireRole('manager'), async (req, res) => {
   }
 
   try {
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'UPDATE hallazgos SET estado = ? WHERE id = ? AND organization_id = ?',
       args: [estado, id, req.user.organization_id],
     });
@@ -282,7 +282,7 @@ router.delete('/:id', requireRole('admin'), async (req, res) => {
   const { id } = req.params;
   
   try {
-    const result = await tursoClient.execute({ 
+    const result = await mongoClient.execute({ 
       sql: 'DELETE FROM hallazgos WHERE id = ? AND organization_id = ?', 
       args: [id, req.user.organization_id] 
     });

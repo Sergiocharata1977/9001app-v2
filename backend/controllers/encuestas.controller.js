@@ -1,9 +1,9 @@
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 // GET /api/encuestas - Listar todas las encuestas
 const getEncuestas = async (req, res) => {
   try {
-    const result = await tursoClient.execute(`
+    const result = await mongoClient.execute(`
       SELECT * FROM encuestas
       ORDER BY fecha_creacion DESC
     `);
@@ -23,7 +23,7 @@ const createEncuesta = async (req, res) => {
   }
 
   try {
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO encuestas (titulo, descripcion, preguntas, estado, creador) 
             VALUES (?, ?, ?, ?, ?)`, 
       args: [
@@ -37,7 +37,7 @@ const createEncuesta = async (req, res) => {
 
     const newId = result.lastInsertRowid;
     if (newId) {
-      const newEncuestaResult = await tursoClient.execute({
+      const newEncuestaResult = await mongoClient.execute({
         sql: 'SELECT * FROM encuestas WHERE id = ?',
         args: [newId],
       });
@@ -55,7 +55,7 @@ const createEncuesta = async (req, res) => {
 const getEncuesta = async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'SELECT * FROM encuestas WHERE id = ?',
       args: [id],
     });
@@ -80,7 +80,7 @@ const updateEncuesta = async (req, res) => {
   }
 
   try {
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `UPDATE encuestas SET 
               titulo = ?, descripcion = ?, preguntas = ?, estado = ?
             WHERE id = ?`,
@@ -97,7 +97,7 @@ const updateEncuesta = async (req, res) => {
       return res.status(404).json({ message: 'Encuesta no encontrada.' });
     }
 
-    const updatedEncuestaResult = await tursoClient.execute({
+    const updatedEncuestaResult = await mongoClient.execute({
       sql: 'SELECT * FROM encuestas WHERE id = ?',
       args: [id],
     });
@@ -113,7 +113,7 @@ const updateEncuesta = async (req, res) => {
 const deleteEncuesta = async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'DELETE FROM encuestas WHERE id = ?',
       args: [id],
     });
@@ -138,7 +138,7 @@ const addRespuesta = async (req, res) => {
   }
 
   try {
-    const encuestaResult = await tursoClient.execute({
+    const encuestaResult = await mongoClient.execute({
       sql: 'SELECT id, estado FROM encuestas WHERE id = ?',
       args: [id],
     });
@@ -151,7 +151,7 @@ const addRespuesta = async (req, res) => {
       return res.status(400).json({ message: 'La encuesta no está activa para recibir respuestas.' });
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO encuestas_respuestas (encuesta_id, respuestas, respondente_id) 
             VALUES (?, ?, ?)`,
       args: [

@@ -3,10 +3,10 @@ const path = require('path');
 
 /**
  * Script de instalación y configuración del Sistema RAG
- * Configura todo el sistema RAG con Turso desde cero
+ * Configura todo el sistema RAG con MongoDB desde cero
  */
 
-console.log('🚀 Instalando Sistema RAG con Turso...');
+console.log('🚀 Instalando Sistema RAG con MongoDB...');
 
 // 1. Verificar que existan los archivos necesarios
 const requiredFiles = [
@@ -14,7 +14,7 @@ const requiredFiles = [
   'backend/controllers/ragController.js',
   'backend/routes/rag.routes.js',
   'frontend/src/components/assistant/RAGChat.tsx',
-  'backend/scripts/permanentes/create-rag-table-turso.sql'
+  'backend/scripts/permanentes/create-rag-table-mongodb.sql'
 ];
 
 console.log('📋 Verificando archivos necesarios...');
@@ -28,11 +28,11 @@ for (const file of requiredFiles) {
 
 // 2. Crear archivo de configuración de variables de entorno
 const envConfig = `
-# Configuración para Sistema RAG con Turso
+# Configuración para Sistema RAG con MongoDB
 # Agregar estas variables a tu archivo .env
 
-# Configuración de Turso
-TURSO_DATABASE_URL=libsql://isoflow4-sergiocharata1977.turso.io
+# Configuración de MongoDB
+TURSO_DATABASE_URL=libsql://isoflow4-sergiocharata1977.mongodb.io
 TURSO_AUTH_TOKEN=tu_token_aqui
 
 # Configuración adicional para RAG
@@ -66,7 +66,7 @@ console.log('✅ Archivo de integración de rutas creado');
 const testScript = `
 // Script de prueba para el sistema RAG
 const testRAGSystem = async () => {
-  console.log('🧪 Probando sistema RAG con Turso...');
+  console.log('🧪 Probando sistema RAG con MongoDB...');
   
   const testQueries = [
     '¿Cuáles son los indicadores de calidad más importantes?',
@@ -123,10 +123,10 @@ console.log('✅ Script de prueba RAG creado');
 
 // 5. Crear documentación completa
 const documentation = `
-# Sistema RAG con Turso - Guía de Instalación
+# Sistema RAG con MongoDB - Guía de Instalación
 
 ## Descripción
-Sistema de Retrieval Augmented Generation (RAG) que integra con la base de datos Turso para proporcionar respuestas inteligentes sobre el Sistema de Gestión de Calidad ISO 9001.
+Sistema de Retrieval Augmented Generation (RAG) que integra con la base de datos MongoDB para proporcionar respuestas inteligentes sobre el Sistema de Gestión de Calidad ISO 9001.
 
 ## Características
 - ✅ Consulta RAG con búsqueda semántica
@@ -134,27 +134,27 @@ Sistema de Retrieval Augmented Generation (RAG) que integra con la base de datos
 - ✅ Análisis de insights y tendencias
 - ✅ Sugerencias de consultas relacionadas
 - ✅ Estadísticas en tiempo real
-- ✅ Integración completa con Turso Database
+- ✅ Integración completa con MongoDB Database
 
 ## Instalación Paso a Paso
 
 ### 1. Instalar Dependencias
 \`\`\`bash
 cd backend
-npm install @libsql/client
+npm install mongodb/client
 \`\`\`
 
 ### 2. Configurar Variables de Entorno
 Agregar al archivo .env del backend:
 \`\`\`
-TURSO_DATABASE_URL=libsql://isoflow4-sergiocharata1977.turso.io
+TURSO_DATABASE_URL=libsql://isoflow4-sergiocharata1977.mongodb.io
 TURSO_AUTH_TOKEN=tu_token_aqui
 \`\`\`
 
-### 3. Crear Tabla RAG en Turso
+### 3. Crear Tabla RAG en MongoDB
 \`\`\`bash
-# Conectar a Turso y ejecutar el script de migración
-npx turso db shell isoflow4 < backend/scripts/permanentes/create-rag-table-turso.sql
+# Conectar a MongoDB y ejecutar el script de migración
+npx mongodb db shell isoflow4 < backend/scripts/permanentes/create-rag-table-mongodb.sql
 \`\`\`
 
 ### 4. Integrar Rutas en el Servidor
@@ -196,7 +196,7 @@ Procesa una consulta RAG
 Obtiene estadísticas del sistema RAG
 
 ### GET /api/rag/test-connection
-Prueba la conectividad con Turso
+Prueba la conectividad con MongoDB
 
 ### POST /api/rag/semantic-search
 Búsqueda semántica avanzada
@@ -270,11 +270,11 @@ node backend/scripts/temporales/test-rag-system.js
 
 ## Troubleshooting
 
-### Error de Conexión con Turso
+### Error de Conexión con MongoDB
 1. Verificar TURSO_DATABASE_URL y TURSO_AUTH_TOKEN
 2. Comprobar conectividad de red
 3. Verificar permisos de la base de datos
-4. Ejecutar: \`npx turso db shell isoflow4\`
+4. Ejecutar: \`npx mongodb db shell isoflow4\`
 
 ### Error de Autenticación
 1. Verificar que el token esté en localStorage
@@ -282,7 +282,7 @@ node backend/scripts/temporales/test-rag-system.js
 3. Verificar que las rutas estén protegidas
 
 ### Baja Confianza en Respuestas
-1. Revisar calidad de datos en Turso
+1. Revisar calidad de datos en MongoDB
 2. Ajustar parámetros de búsqueda
 3. Mejorar estructura de datos RAG
 4. Agregar más datos de ejemplo
@@ -304,7 +304,7 @@ backend/
 │   └── rag.routes.js          # Rutas API
 └── scripts/
     └── permanentes/
-        ├── create-rag-table-turso.sql  # Migración SQL
+        ├── create-rag-table-mongodb.sql  # Migración SQL
         └── install-rag-system.js       # Script de instalación
 
 frontend/
@@ -392,10 +392,10 @@ const verifyInstallation = async () => {
       }
     },
     {
-      name: 'Verificar conectividad con Turso',
+      name: 'Verificar conectividad con MongoDB',
       check: async () => {
         try {
-          const { createClient } = require('@libsql/client');
+          const { createClient } = require('mongodb/client');
           const client = createClient({
             url: process.env.TURSO_DATABASE_URL,
             authToken: process.env.TURSO_AUTH_TOKEN
@@ -405,7 +405,7 @@ const verifyInstallation = async () => {
           console.log(\`✅ Tabla RAG encontrada con \${result.rows[0].count} registros\`);
           return true;
         } catch (error) {
-          throw new Error(\`Error conectando con Turso: \${error.message}\`);
+          throw new Error(\`Error conectando con MongoDB: \${error.message}\`);
         }
       }
     }
@@ -456,14 +456,14 @@ const installCommands = `
 
 # 1. Instalar dependencias
 cd backend
-npm install @libsql/client
+npm install mongodb/client
 
 # 2. Configurar variables de entorno (agregar al .env)
-echo "TURSO_DATABASE_URL=libsql://isoflow4-sergiocharata1977.turso.io" >> .env
+echo "TURSO_DATABASE_URL=libsql://isoflow4-sergiocharata1977.mongodb.io" >> .env
 echo "TURSO_AUTH_TOKEN=tu_token_aqui" >> .env
 
-# 3. Crear tabla RAG en Turso
-npx turso db shell isoflow4 < backend/scripts/permanentes/create-rag-table-turso.sql
+# 3. Crear tabla RAG en MongoDB
+npx mongodb db shell isoflow4 < backend/scripts/permanentes/create-rag-table-mongodb.sql
 
 # 4. Integrar rutas en el servidor (agregar en app.js o index.js)
 echo "const ragRoutes = require('./routes/rag.routes.js');" >> app.js
@@ -485,9 +485,9 @@ console.log('✅ Script de comandos de instalación creado');
 
 console.log('\n🎉 Instalación del sistema RAG completada!');
 console.log('\n📋 Próximos pasos:');
-console.log('1. Instalar dependencias: npm install @libsql/client');
+console.log('1. Instalar dependencias: npm install mongodb/client');
 console.log('2. Configurar variables de entorno en .env');
-console.log('3. Ejecutar migración en Turso');
+console.log('3. Ejecutar migración en MongoDB');
 console.log('4. Integrar rutas en el servidor principal');
 console.log('5. Verificar instalación con el script de verificación');
 console.log('6. Probar el sistema con el script de prueba');

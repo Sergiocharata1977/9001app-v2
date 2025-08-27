@@ -1,4 +1,4 @@
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 /**
  * Middleware para validar límites del plan de la organización
@@ -11,7 +11,7 @@ const validatePlanLimit = (resourceType, currentCount = null) => {
       const { organization_id } = req.user;
 
       // Obtener la suscripción activa de la organización
-      const { rows: subscription } = await tursoClient.execute({
+      const { rows: subscription } = await mongoClient.execute({
         sql: `
           SELECT 
             s.id, s.estado, s.fecha_fin,
@@ -46,7 +46,7 @@ const validatePlanLimit = (resourceType, currentCount = null) => {
       // Si no se proporciona currentCount, obtener el conteo actual
       let actualCount = currentCount;
       if (actualCount === null) {
-        const { rows: countResult } = await tursoClient.execute({
+        const { rows: countResult } = await mongoClient.execute({
           sql: `SELECT COUNT(*) as count FROM ${resourceType} WHERE organization_id = ?`,
           args: [organization_id]
         });
@@ -134,7 +134,7 @@ const validateCustomLimit = (resourceType, countFunction) => {
 const getOrganizationUsage = async (organization_id) => {
   try {
     // Obtener la suscripción activa
-    const { rows: subscription } = await tursoClient.execute({
+    const { rows: subscription } = await mongoClient.execute({
       sql: `
         SELECT 
           s.id, s.estado, s.fecha_fin,
@@ -168,27 +168,27 @@ const getOrganizationUsage = async (organization_id) => {
       { rows: hallazgosCount },
       { rows: accionesCount }
     ] = await Promise.all([
-      tursoClient.execute({
+      mongoClient.execute({
         sql: 'SELECT COUNT(*) as count FROM personal WHERE organization_id = ?',
         args: [organization_id]
       }),
-      tursoClient.execute({
+      mongoClient.execute({
         sql: 'SELECT COUNT(*) as count FROM departamentos WHERE organization_id = ?',
         args: [organization_id]
       }),
-      tursoClient.execute({
+      mongoClient.execute({
         sql: 'SELECT COUNT(*) as count FROM documentos WHERE organization_id = ?',
         args: [organization_id]
       }),
-      tursoClient.execute({
+      mongoClient.execute({
         sql: 'SELECT COUNT(*) as count FROM auditorias WHERE organization_id = ?',
         args: [organization_id]
       }),
-      tursoClient.execute({
+      mongoClient.execute({
         sql: 'SELECT COUNT(*) as count FROM hallazgos WHERE organization_id = ?',
         args: [organization_id]
       }),
-      tursoClient.execute({
+      mongoClient.execute({
         sql: 'SELECT COUNT(*) as count FROM acciones WHERE organization_id = ?',
         args: [organization_id]
       })

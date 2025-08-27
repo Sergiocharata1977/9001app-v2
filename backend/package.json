@@ -14,7 +14,13 @@
     "check-db": "node scripts/check-database-tables.js",
     "verify-db": "node scripts/verificar-base-datos-completa.js",
     "verify-db-continuo": "node scripts/verificar-base-datos-completa.js --continuo",
-    "diagnostico": "node scripts/diagnostico-turso-simple.js"
+    "diagnostico": "node scripts/diagnostico-turso-simple.js",
+    "migrate:mongo": "node scripts/migrate-turso-to-mongo.js",
+    "test:mongodb": "node scripts/test-mongodb-connection.js",
+    "validate:migration": "node scripts/validate-migration.js",
+    "validate:offline": "node scripts/validate-migration-offline.js",
+    "rollback:migration": "node scripts/rollback-migration.js",
+    "cleanup:final": "node scripts/final-cleanup.js"
   },
   "keywords": [
     "isoflow4",
@@ -24,7 +30,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@libsql/client": "^0.5.6",
     "@types/bcrypt": "^6.0.0",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",

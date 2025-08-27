@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 // Unificar secreto con el usado al firmar en authController (fallback-secret)
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
@@ -37,7 +37,7 @@ const authMiddleware = async (req, res, next) => {
     console.log('👤 User ID from token:', userId);
     
     // Obtener usuario actual de la base de datos
-    const userResult = await tursoClient.execute({
+    const userResult = await mongoClient.execute({
       sql: `SELECT id, organization_id, name, email, role, is_active 
             FROM usuarios 
             WHERE id = ? AND is_active = 1`,

@@ -1,5 +1,5 @@
 const express = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 const authMiddleware = require('../middleware/authMiddleware.js');
 
 const router = express.Router();
@@ -11,25 +11,25 @@ router.get('/hierarchy', authMiddleware, async (req, res, next) => {
     console.log('🏗️ Obteniendo jerarquía SGC para organización:', organizationId);
     
     // 1. Obtener todos los procesos
-    const procesos = await tursoClient.execute({
+    const procesos = await mongoClient.execute({
       sql: 'SELECT * FROM procesos WHERE organization_id = ? ORDER BY nombre',
       args: [organizationId]
     });
     
     // 2. Obtener todos los objetivos de calidad
-    const objetivos = await tursoClient.execute({
+    const objetivos = await mongoClient.execute({
       sql: 'SELECT * FROM objetivos_calidad WHERE organization_id = ? ORDER BY nombre_objetivo',
       args: [organizationId]
     });
     
     // 3. Obtener todos los indicadores
-    const indicadores = await tursoClient.execute({
+    const indicadores = await mongoClient.execute({
       sql: 'SELECT * FROM Indicadores WHERE organization_id = ? ORDER BY nombre',
       args: [organizationId]
     });
     
     // 4. Obtener todas las mediciones
-    const mediciones = await tursoClient.execute({
+    const mediciones = await mongoClient.execute({
       sql: 'SELECT * FROM mediciones WHERE organization_id = ? ORDER BY fecha_medicion DESC',
       args: [organizationId]
     });
@@ -81,7 +81,7 @@ router.get('/procesos/:id/hierarchy', authMiddleware, async (req, res, next) => 
     console.log(`🔍 Obteniendo jerarquía para proceso ${id} en organización ${organizationId}`);
     
     // 1. Obtener proceso específico
-    const proceso = await tursoClient.execute({
+    const proceso = await mongoClient.execute({
       sql: 'SELECT * FROM procesos WHERE id = ? AND organization_id = ?',
       args: [id, organizationId]
     });
@@ -94,13 +94,13 @@ router.get('/procesos/:id/hierarchy', authMiddleware, async (req, res, next) => 
     }
     
     // 2. Obtener objetivos del proceso
-    const objetivos = await tursoClient.execute({
+    const objetivos = await mongoClient.execute({
       sql: 'SELECT * FROM objetivos_calidad WHERE proceso_id = ? AND organization_id = ? ORDER BY nombre_objetivo',
       args: [id, organizationId]
     });
     
     // 3. Obtener indicadores del proceso
-    const indicadores = await tursoClient.execute({
+    const indicadores = await mongoClient.execute({
       sql: 'SELECT * FROM Indicadores WHERE proceso_id = ? AND organization_id = ? ORDER BY nombre',
       args: [id, organizationId]
     });
@@ -109,7 +109,7 @@ router.get('/procesos/:id/hierarchy', authMiddleware, async (req, res, next) => 
     const indicadorIds = indicadores.rows.map(ind => ind.id);
     let mediciones = [];
     if (indicadorIds.length > 0) {
-      const medicionesResult = await tursoClient.execute({
+      const medicionesResult = await mongoClient.execute({
         sql: `SELECT * FROM mediciones WHERE indicador_id IN (${indicadorIds.map(() => '?').join(',')}) AND organization_id = ? ORDER BY fecha_medicion DESC`,
         args: [...indicadorIds, organizationId]
       });

@@ -1,5 +1,5 @@
 const express = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 const bcrypt = require('bcryptjs');
 
 const router = express.Router();
@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
 
     console.log(`🔍 Obteniendo usuarios para organización: ${organization_id}`);
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT 
         id, name, email, role, organization_id, created_at, updated_at
         FROM usuarios 
@@ -58,7 +58,7 @@ router.get('/:id', async (req, res) => {
       });
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT 
         id, name, email, role, organization_id, created_at, updated_at
         FROM usuarios 
@@ -115,7 +115,7 @@ router.post('/', async (req, res) => {
     }
 
     // Verificar si el email ya existe
-    const existingResult = await tursoClient.execute({
+    const existingResult = await mongoClient.execute({
       sql: 'SELECT id FROM usuarios WHERE email = ? AND organization_id = ?',
       args: [email, organization_id]
     });
@@ -130,7 +130,7 @@ router.post('/', async (req, res) => {
     // Hash de la contraseña (simplificado por ahora)
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO usuarios (
         nombre, email, password, role, organization_id, created_at, updated_at
       ) VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))
@@ -179,7 +179,7 @@ router.put('/:id', async (req, res) => {
     }
 
     // Verificar que el usuario existe y pertenece a la organización
-    const existingResult = await tursoClient.execute({
+    const existingResult = await mongoClient.execute({
       sql: 'SELECT id FROM usuarios WHERE id = ? AND organization_id = ?',
       args: [id, organization_id]
     });
@@ -191,7 +191,7 @@ router.put('/:id', async (req, res) => {
       });
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `UPDATE usuarios SET 
         nombre = ?, email = ?, role = ?, updated_at = datetime('now')
         WHERE id = ? AND organization_id = ?
@@ -234,7 +234,7 @@ router.delete('/:id', async (req, res) => {
     }
 
     // Verificar que el usuario existe y pertenece a la organización
-    const existingResult = await tursoClient.execute({
+    const existingResult = await mongoClient.execute({
       sql: 'SELECT id FROM usuarios WHERE id = ? AND organization_id = ?',
       args: [id, organization_id]
     });
@@ -246,7 +246,7 @@ router.delete('/:id', async (req, res) => {
       });
     }
 
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: 'DELETE FROM usuarios WHERE id = ? AND organization_id = ?',
       args: [id, organization_id]
     });

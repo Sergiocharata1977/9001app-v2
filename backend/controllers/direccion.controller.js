@@ -1,10 +1,10 @@
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 // Obtener la configuración actual
 const getConfiguracion = async (req, res) => {
   try {
     const organizationId = req.user?.organization_id || 1; // Default a 1 si no hay usuario
-    const result = await tursoClient.execute(
+    const result = await mongoClient.execute(
       'SELECT * FROM direccion_configuracion WHERE organization_id = ?', 
       [organizationId]
     );
@@ -40,7 +40,7 @@ const updateConfiguracion = async (req, res) => {
   const now = new Date().toISOString();
 
   try {
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `
         UPDATE direccion_configuracion
         SET 
@@ -80,7 +80,7 @@ const updateConfiguracion = async (req, res) => {
     }
 
     // Obtener la configuración actualizada para devolverla
-    const updatedConfig = await tursoClient.execute(
+    const updatedConfig = await mongoClient.execute(
       'SELECT * FROM direccion_configuracion WHERE organization_id = ?',
       [organizationId]
     );

@@ -1,11 +1,11 @@
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 const { randomUUID  } = require('crypto');
 const bcrypt = require('bcryptjs');
 
 // Obtener todas las organizaciones (solo super admin)
 const getAllOrganizations = async (req, res) => {
   try {
-    const result = await tursoClient.execute(`
+    const result = await mongoClient.execute(`
       SELECT 
         o.id,
         o.name,
@@ -31,7 +31,7 @@ const getOrganizationDetails = async (req, res) => {
     const { id } = req.params;
 
     // Información básica de la organización
-    const orgResult = await tursoClient.execute({
+    const orgResult = await mongoClient.execute({
       sql: 'SELECT * FROM organizations WHERE id = ?',
       args: [id]
     });
@@ -41,13 +41,13 @@ const getOrganizationDetails = async (req, res) => {
     }
 
     // Usuarios de la organización
-    const usersResult = await tursoClient.execute({
+    const usersResult = await mongoClient.execute({
       sql: 'SELECT id, name, email, role, created_at FROM usuarios WHERE organization_id = ? ORDER BY created_at DESC',
       args: [id]
     });
 
     // Estadísticas de la organización
-    const statsResult = await tursoClient.execute({
+    const statsResult = await mongoClient.execute({
       sql: `
         SELECT 
           (SELECT COUNT(*) FROM usuarios WHERE organization_id = ?) as total_users,
@@ -79,7 +79,7 @@ const createOrganization = async (req, res) => {
     }
 
     // Verificar si ya existe una organización con ese nombre
-    const existingOrg = await tursoClient.execute({
+    const existingOrg = await mongoClient.execute({
       sql: 'SELECT id FROM organizations WHERE name = ?',
       args: [organizationName]
     });
@@ -89,7 +89,7 @@ const createOrganization = async (req, res) => {
     }
 
     // Verificar si ya existe un usuario con ese email
-    const existingUser = await tursoClient.execute({
+    const existingUser = await mongoClient.execute({
       sql: 'SELECT id FROM usuarios WHERE email = ?',
       args: [adminEmail]
     });
@@ -100,7 +100,7 @@ const createOrganization = async (req, res) => {
 
     // Crear organización
     const organizationId = randomUUID();
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: 'INSERT INTO organizations (id, name, created_at) VALUES (?, ?, ?)',
       args: [organizationId, organizationName, new Date().toISOString()]
     });
@@ -109,7 +109,7 @@ const createOrganization = async (req, res) => {
     const userId = randomUUID();
     const hashedPassword = await bcrypt.hash(adminPassword, 10);
     
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: 'INSERT INTO usuarios (id, name, email, password, role, organization_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)',
       args: [userId, adminName, adminEmail, hashedPassword, 'admin', organizationId, new Date().toISOString()]
     });
@@ -144,7 +144,7 @@ const updateOrganization = async (req, res) => {
     }
 
     // Verificar que la organización existe
-    const existingOrg = await tursoClient.execute({
+    const existingOrg = await mongoClient.execute({
       sql: 'SELECT id FROM organizations WHERE id = ?',
       args: [id]
     });
@@ -154,7 +154,7 @@ const updateOrganization = async (req, res) => {
     }
 
     // Verificar que no existe otra organización con el mismo nombre
-    const nameCheck = await tursoClient.execute({
+    const nameCheck = await mongoClient.execute({
       sql: 'SELECT id FROM organizations WHERE name = ? AND id != ?',
       args: [name, id]
     });
@@ -164,7 +164,7 @@ const updateOrganization = async (req, res) => {
     }
 
     // Actualizar organización
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: 'UPDATE organizations SET name = ? WHERE id = ?',
       args: [name, id]
     });
@@ -182,7 +182,7 @@ const deactivateOrganization = async (req, res) => {
     const { id } = req.params;
 
     // Verificar que la organización existe
-    const existingOrg = await tursoClient.execute({
+    const existingOrg = await mongoClient.execute({
       sql: 'SELECT id FROM organizations WHERE id = ?',
       args: [id]
     });
@@ -192,13 +192,13 @@ const deactivateOrganization = async (req, res) => {
     }
 
     // Desactivar todos los usuarios de la organización
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: 'UPDATE usuarios SET active = false WHERE organization_id = ?',
       args: [id]
     });
 
     // Marcar organización como inactiva
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: 'UPDATE organizations SET active = false WHERE id = ?',
       args: [id]
     });
@@ -214,7 +214,7 @@ const deactivateOrganization = async (req, res) => {
 const getSystemStats = async (req, res) => {
   try {
     // Estadísticas generales
-    const generalStats = await tursoClient.execute(`
+    const generalStats = await mongoClient.execute(`
       SELECT 
         (SELECT COUNT(*) FROM organizations) as total_organizations,
         (SELECT COUNT(*) FROM usuarios) as total_users,
@@ -224,7 +224,7 @@ const getSystemStats = async (req, res) => {
     `);
 
     // Organizaciones más activas (por número de usuarios)
-    const activeOrgs = await tursoClient.execute(`
+    const activeOrgs = await mongoClient.execute(`
       SELECT 
         o.name,
         COUNT(u.id) as user_count
@@ -236,7 +236,7 @@ const getSystemStats = async (req, res) => {
     `);
 
     // Actividad reciente (últimos 30 días)
-    const recentActivity = await tursoClient.execute(`
+    const recentActivity = await mongoClient.execute(`
       SELECT 
         DATE(timestamp) as date,
         COUNT(*) as activity_count
@@ -247,7 +247,7 @@ const getSystemStats = async (req, res) => {
     `);
 
     // Distribución de roles
-    const roleDistribution = await tursoClient.execute(`
+    const roleDistribution = await mongoClient.execute(`
       SELECT 
         role,
         COUNT(*) as count
@@ -311,7 +311,7 @@ const getSystemAuditLogs = async (req, res) => {
     sql += ' ORDER BY al.timestamp DESC LIMIT ? OFFSET ?';
     args.push(parseInt(limit), offset);
 
-    const result = await tursoClient.execute({ sql, args });
+    const result = await mongoClient.execute({ sql, args });
 
     // Contar total para paginación
     let countSql = 'SELECT COUNT(*) as total FROM audit_logs WHERE 1=1';
@@ -337,7 +337,7 @@ const getSystemAuditLogs = async (req, res) => {
       countArgs.push(dateTo);
     }
 
-    const countResult = await tursoClient.execute({ sql: countSql, args: countArgs });
+    const countResult = await mongoClient.execute({ sql: countSql, args: countArgs });
     const total = countResult.rows[0].total;
 
     res.json({

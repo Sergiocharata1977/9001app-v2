@@ -1,5 +1,5 @@
 const express = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 const router = express.Router();
 
@@ -7,14 +7,14 @@ const router = express.Router();
 router.get('/', async (req, res) => {
   try {
     console.log('📋 Obteniendo identificación de procesos...');
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'SELECT * FROM identificacion_procesos WHERE organization_id = ? LIMIT 1',
       args: [req.user?.organization_id || 1]
     });
     
     if (result.rows.length === 0) {
       // Si no existe, crear un registro vacío
-      const insertResult = await tursoClient.execute({
+      const insertResult = await mongoClient.execute({
         sql: `INSERT INTO identificacion_procesos (
           organization_id, politica_calidad, alcance, mapa_procesos, organigrama
         ) VALUES (?, ?, ?, ?, ?) RETURNING *`,
@@ -55,7 +55,7 @@ router.put('/', async (req, res) => {
     });
 
     // Verificar si existe un registro
-    const existingRecord = await tursoClient.execute({
+    const existingRecord = await mongoClient.execute({
       sql: 'SELECT id FROM identificacion_procesos WHERE organization_id = ?',
       args: [req.user?.organization_id || 1]
     });
@@ -63,7 +63,7 @@ router.put('/', async (req, res) => {
     let result;
     if (existingRecord.rows.length === 0) {
       // Crear nuevo registro si no existe
-      result = await tursoClient.execute({
+      result = await mongoClient.execute({
         sql: `INSERT INTO identificacion_procesos (
           organization_id, politica_calidad, alcance, mapa_procesos, organigrama, updated_at
         ) VALUES (?, ?, ?, ?, ?, datetime('now', 'localtime')) RETURNING *`,
@@ -78,7 +78,7 @@ router.put('/', async (req, res) => {
       console.log('✅ Nuevo registro de identificación de procesos creado');
     } else {
       // Actualizar registro existente
-      result = await tursoClient.execute({
+      result = await mongoClient.execute({
         sql: `UPDATE identificacion_procesos 
               SET politica_calidad = ?, alcance = ?, mapa_procesos = ?, organigrama = ?, 
                   updated_at = datetime('now', 'localtime')
@@ -110,7 +110,7 @@ router.delete('/', async (req, res) => {
   try {
     console.log('🗑️ Limpiando identificación de procesos...');
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `UPDATE identificacion_procesos 
             SET politica_calidad = '', alcance = '', mapa_procesos = '', organigrama = '',
                 updated_at = datetime('now', 'localtime')

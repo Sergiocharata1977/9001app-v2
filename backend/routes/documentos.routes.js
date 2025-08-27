@@ -1,7 +1,7 @@
 const { Router  } = require('express');
 const multer = require('multer');
 const path = require('path');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 const { fileURLToPath  } = require('url');
 const fs = require('fs');
 const authMiddleware = require('../middleware/authMiddleware.js');
@@ -47,7 +47,7 @@ router.get('/', authMiddleware, async (req, res) => {
       return res.status(400).json({ message: 'La organización del usuario no fue encontrada.' });
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'SELECT * FROM documentos WHERE organization_id = ? ORDER BY created_at DESC',
       args: [organization_id],
     });
@@ -73,7 +73,7 @@ router.get('/:id', authMiddleware, async (req, res) => {
     const { id } = req.params;
     const organization_id = req.user?.organization_id;
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'SELECT * FROM documentos WHERE id = ? AND organization_id = ?',
       args: [id, organization_id],
     });
@@ -129,7 +129,7 @@ router.post('/', authMiddleware, upload.single('archivo'), async (req, res) => {
       titulo, descripcion, version, archivo_nombre, archivo_path, tipo_archivo, tamaño, organization_id
     });
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO documentos (titulo, nombre, descripcion, version, archivo_nombre, archivo_path, tipo_archivo, tamaño, organization_id) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       args: [titulo, titulo, descripcion || '', version || '1.0', archivo_nombre, archivo_path, tipo_archivo, tamaño, organization_id],
@@ -160,7 +160,7 @@ router.get('/:id/download', authMiddleware, async (req, res) => {
     const organization_id = req.user?.organization_id;
 
     // Obtener información del documento
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'SELECT * FROM documentos WHERE id = ? AND organization_id = ?',
       args: [id, organization_id],
     });
@@ -192,7 +192,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     const organization_id = req.user?.organization_id;
 
     // Primero obtener el documento para eliminar el archivo
-    const selectResult = await tursoClient.execute({
+    const selectResult = await mongoClient.execute({
       sql: 'SELECT archivo_path FROM documentos WHERE id = ? AND organization_id = ?',
       args: [id, organization_id],
     });
@@ -215,7 +215,7 @@ router.delete('/:id', authMiddleware, async (req, res) => {
     }
 
     // Eliminar el registro de la base de datos
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: 'DELETE FROM documentos WHERE id = ? AND organization_id = ?',
       args: [id, organization_id],
     });

@@ -1,4 +1,4 @@
-const tursoClient = require('../../lib/tursoClient.js');
+const mongoClient = require('../../lib/mongoClient.js');
 const fs = require('fs');
 const path = require('path');
 
@@ -151,7 +151,7 @@ async function guardarTareasEnBD(tareas) {
         tarea.tiempo_real
       ];
       
-      await tursoClient.execute(query, params);
+      await mongoClient.execute(query, params);
       console.log(`✅ Tarea #${tarea.tarea_numero} guardada`);
       
     } catch (error) {
@@ -195,18 +195,18 @@ async function sincronizarCoordinacion() {
 // Función para obtener estadísticas
 async function obtenerEstadisticas() {
   try {
-    const totalQuery = await tursoClient.execute(
+    const totalQuery = await mongoClient.execute(
       'SELECT COUNT(*) as total FROM coordinacion_tareas WHERE organization_id = 2'
     );
     
-    const estadoQuery = await tursoClient.execute(`
+    const estadoQuery = await mongoClient.execute(`
       SELECT estado, COUNT(*) as count 
       FROM coordinacion_tareas 
       WHERE organization_id = 2 
       GROUP BY estado
     `);
     
-    const moduloQuery = await tursoClient.execute(`
+    const moduloQuery = await mongoClient.execute(`
       SELECT modulo, COUNT(*) as count 
       FROM coordinacion_tareas 
       WHERE organization_id = 2 

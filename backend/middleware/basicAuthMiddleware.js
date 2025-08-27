@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
 
@@ -18,7 +18,7 @@ const basicAuth = async (req, res, next) => {
     const decoded = jwt.verify(token, JWT_SECRET);
     
     // Obtener información completa del usuario y organización
-    const userResult = await tursoClient.execute({
+    const userResult = await mongoClient.execute({
       sql: `SELECT u.id, u.name, u.email, u.role, u.organization_id, 
              o.name as organization_name, o.plan, o.max_users
              FROM usuarios u 

@@ -1,5 +1,5 @@
 const express = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 const { auditMiddleware, auditActions, resourceTypes  } = require('../middleware/auditMiddleware.js');
 const authMiddleware = require('../middleware/authMiddleware.js');
 
@@ -17,7 +17,7 @@ router.get('/', async (req, res) => {
   try {
     console.log('🔓 Obteniendo personal para organización:', req.user?.organization_id);
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT p.*, o.name as organization_name 
             FROM personal p 
             LEFT JOIN organizations o ON p.organization_id = o.id 
@@ -52,7 +52,7 @@ router.get('/con-relaciones/:id', async (req, res) => {
     console.log('🔄 Obteniendo personal con relaciones:', id);
     
     // Obtener datos del personal
-    const personalResult = await tursoClient.execute({
+    const personalResult = await mongoClient.execute({
       sql: `SELECT p.*, o.name as organization_name 
             FROM personal p 
             LEFT JOIN organizations o ON p.organization_id = o.id 
@@ -70,7 +70,7 @@ router.get('/con-relaciones/:id', async (req, res) => {
     const personal = personalResult.rows[0];
 
     // Obtener relaciones de puestos
-    const puestosResult = await tursoClient.execute({
+    const puestosResult = await mongoClient.execute({
       sql: `SELECT r.*, p.nombre as puesto_nombre, p.descripcion as puesto_descripcion
             FROM relaciones_sgc r
             JOIN puestos p ON r.destino_id = p.id
@@ -82,7 +82,7 @@ router.get('/con-relaciones/:id', async (req, res) => {
     });
 
     // Obtener relaciones de departamentos
-    const departamentosResult = await tursoClient.execute({
+    const departamentosResult = await mongoClient.execute({
       sql: `SELECT r.*, d.nombre as departamento_nombre, d.descripcion as departamento_descripcion
             FROM relaciones_sgc r
             JOIN departamentos d ON r.destino_id = d.id
@@ -132,7 +132,7 @@ router.post('/:id/asignar-puesto', async (req, res) => {
     }
 
     // Verificar que el personal existe
-    const personalExists = await tursoClient.execute({
+    const personalExists = await mongoClient.execute({
       sql: 'SELECT id FROM personal WHERE id = ? AND organization_id = ?',
       args: [id, req.user?.organization_id]
     });
@@ -145,7 +145,7 @@ router.post('/:id/asignar-puesto', async (req, res) => {
     }
 
     // Verificar que el puesto existe
-    const puestoExists = await tursoClient.execute({
+    const puestoExists = await mongoClient.execute({
       sql: 'SELECT id FROM puestos WHERE id = ? AND organization_id = ?',
       args: [puesto_id, req.user?.organization_id]
     });
@@ -158,7 +158,7 @@ router.post('/:id/asignar-puesto', async (req, res) => {
     }
 
     // Eliminar relaciones anteriores de puestos para este personal
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `DELETE FROM relaciones_sgc 
             WHERE organization_id = ? 
             AND origen_tipo = 'personal' 
@@ -168,7 +168,7 @@ router.post('/:id/asignar-puesto', async (req, res) => {
     });
 
     // Crear nueva relación
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO relaciones_sgc 
             (organization_id, origen_tipo, origen_id, destino_tipo, destino_id, descripcion, fecha_creacion, usuario_creador)
             VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?)`,
@@ -221,7 +221,7 @@ router.post('/:id/asignar-departamento', async (req, res) => {
     }
 
     // Verificar que el personal existe
-    const personalExists = await tursoClient.execute({
+    const personalExists = await mongoClient.execute({
       sql: 'SELECT id FROM personal WHERE id = ? AND organization_id = ?',
       args: [id, req.user?.organization_id]
     });
@@ -234,7 +234,7 @@ router.post('/:id/asignar-departamento', async (req, res) => {
     }
 
     // Verificar que el departamento existe
-    const departamentoExists = await tursoClient.execute({
+    const departamentoExists = await mongoClient.execute({
       sql: 'SELECT id FROM departamentos WHERE id = ? AND organization_id = ?',
       args: [departamento_id, req.user?.organization_id]
     });
@@ -247,7 +247,7 @@ router.post('/:id/asignar-departamento', async (req, res) => {
     }
 
     // Eliminar relaciones anteriores de departamentos para este personal
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `DELETE FROM relaciones_sgc 
             WHERE organization_id = ? 
             AND origen_tipo = 'personal' 
@@ -257,7 +257,7 @@ router.post('/:id/asignar-departamento', async (req, res) => {
     });
 
     // Crear nueva relación
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO relaciones_sgc 
             (organization_id, origen_tipo, origen_id, destino_tipo, destino_id, descripcion, fecha_creacion, usuario_creador)
             VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?)`,
@@ -300,7 +300,7 @@ router.get('/:id', async (req, res) => {
     const { id } = req.params;
     console.log(`🔓 Obteniendo personal ${id} sin restricciones`);
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `SELECT p.*, o.name as organization_name 
             FROM personal p 
             LEFT JOIN organizations o ON p.organization_id = o.id 
@@ -350,7 +350,7 @@ router.post('/', async (req, res) => {
 
     console.log('🔓 Creando persona sin restricciones');
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO personal (
         nombre, apellido, dni, email, telefono, puesto, departamento, 
         fecha_ingreso, estado, organization_id, created_at, updated_at
@@ -408,7 +408,7 @@ router.put('/:id', async (req, res) => {
 
     console.log(`🔓 Actualizando persona ${id} sin restricciones`);
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `UPDATE personal SET 
         nombre = ?, apellido = ?, dni = ?, email = ?, telefono = ?, 
         puesto = ?, departamento = ?, fecha_ingreso = ?, estado = ?, 
@@ -451,7 +451,7 @@ router.delete('/:id', async (req, res) => {
     console.log(`🔓 Eliminando persona ${id} sin restricciones`);
     
     // Primero eliminar todas las relaciones de este personal
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: `DELETE FROM relaciones_sgc 
             WHERE organization_id = ? 
             AND (origen_tipo = 'personal' AND origen_id = ?) 
@@ -460,7 +460,7 @@ router.delete('/:id', async (req, res) => {
     });
 
     // Luego eliminar el personal
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'DELETE FROM personal WHERE id = ?',
       args: [id]
     });

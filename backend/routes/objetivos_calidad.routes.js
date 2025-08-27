@@ -1,5 +1,5 @@
 const express = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 const router = express.Router();
 
@@ -9,7 +9,7 @@ router.get('/', async (req, res) => {
     console.log('🎯 GET /objetivos - Obteniendo objetivos...');
     const organizationId = req.user?.organization_id || 1;
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'SELECT * FROM objetivos WHERE organization_id = ?',
       args: [organizationId]
     });
@@ -30,7 +30,7 @@ router.get('/:id', async (req, res) => {
     
     console.log(`🎯 GET /objetivos/${id} - Obteniendo objetivo específico...`);
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: 'SELECT * FROM objetivos WHERE id = ? AND organization_id = ?',
       args: [id, organizationId]
     });
@@ -73,7 +73,7 @@ router.post('/', async (req, res) => {
     // Generar ID único
     const id = 'obj-' + Date.now();
     
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `INSERT INTO objetivos (
         id, nombre_objetivo, descripcion, proceso_id, indicador_asociado_id, 
         meta, responsable, fecha_inicio, fecha_fin, organization_id
@@ -132,7 +132,7 @@ router.put('/:id', async (req, res) => {
     } = req.body;
 
     // Verificar que el objetivo existe
-    const checkResult = await tursoClient.execute({
+    const checkResult = await mongoClient.execute({
       sql: 'SELECT id FROM objetivos WHERE id = ? AND organization_id = ?',
       args: [id, organizationId]
     });
@@ -141,7 +141,7 @@ router.put('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Objetivo no encontrado' });
     }
 
-    const result = await tursoClient.execute({
+    const result = await mongoClient.execute({
       sql: `UPDATE objetivos SET 
         nombre_objetivo = ?, descripcion = ?, proceso_id = ?, 
         indicador_asociado_id = ?, meta = ?, responsable = ?, 
@@ -189,7 +189,7 @@ router.delete('/:id', async (req, res) => {
     console.log(`🎯 DELETE /objetivos/${id} - Eliminando objetivo...`);
     
     // Verificar que el objetivo existe
-    const checkResult = await tursoClient.execute({
+    const checkResult = await mongoClient.execute({
       sql: 'SELECT id FROM objetivos WHERE id = ? AND organization_id = ?',
       args: [id, organizationId]
     });
@@ -198,7 +198,7 @@ router.delete('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Objetivo no encontrado' });
     }
 
-    await tursoClient.execute({
+    await mongoClient.execute({
       sql: 'DELETE FROM objetivos WHERE id = ? AND organization_id = ?',
       args: [id, organizationId]
     });

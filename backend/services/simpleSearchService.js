@@ -5,7 +5,7 @@
  * Sistema básico de búsqueda en base de datos sin IA
  */
 
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 class SimpleSearchSystem {
   static async search(query, organizationId = 1) {
@@ -61,7 +61,7 @@ class SimpleSearchSystem {
       `;
       
       const searchTerm = `%${query}%`;
-      const result = await tursoClient.execute({
+      const result = await mongoClient.execute({
         sql: searchQuery,
         args: [organizationId, searchTerm, searchTerm, searchTerm, organizationId, searchTerm, searchTerm, searchTerm, organizationId, searchTerm, searchTerm]
       });
@@ -86,7 +86,7 @@ class SimpleSearchSystem {
         SELECT 'documentos' as tabla, COUNT(*) as count FROM documentos WHERE organization_id = 1
       `;
       
-      const result = await tursoClient.execute(statsQuery);
+      const result = await mongoClient.execute(statsQuery);
       return result.rows;
     } catch (error) {
       console.error('Error obteniendo estadísticas:', error);

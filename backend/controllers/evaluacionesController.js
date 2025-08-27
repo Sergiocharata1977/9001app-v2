@@ -1,4 +1,4 @@
-const tursoClient = require('../lib/tursoClient.js');
+const mongoClient = require('../lib/mongoClient.js');
 
 // Obtener todas las evaluaciones individuales de la organización
 const getEvaluaciones = async (req, res) => {
@@ -14,7 +14,7 @@ const getEvaluaciones = async (req, res) => {
 
     console.log(`🔎 [Evaluaciones] Obteniendo evaluaciones para organización: ${organization_id}`);
     
-    const result = await tursoClient.execute({ 
+    const result = await mongoClient.execute({ 
       sql: `SELECT 
               e.*,
               p.nombres as empleado_nombre,
@@ -76,11 +76,11 @@ const createEvaluacion = async (req, res) => {
     console.log(`🔄 [Evaluaciones] Creando evaluación para empleado ${empleado_id}`);
 
     // Iniciar transacción
-    await tursoClient.execute('BEGIN TRANSACTION');
+    await mongoClient.execute('BEGIN TRANSACTION');
 
     try {
       // Crear la evaluación principal
-      const evaluacionResult = await tursoClient.execute({
+      const evaluacionResult = await mongoClient.execute({
         sql: `INSERT INTO evaluaciones_individuales 
               (organization_id, empleado_id, evaluador_id, fecha_evaluacion, observaciones, estado, created_at) 
               VALUES (?, ?, ?, ?, ?, 'completada', datetime('now'))`,
@@ -92,7 +92,7 @@ const createEvaluacion = async (req, res) => {
       // Insertar los puntajes de competencias
       for (const comp of competencias) {
         if (comp.competencia_id && comp.puntaje !== undefined) {
-          await tursoClient.execute({
+          await mongoClient.execute({
             sql: `INSERT INTO evaluaciones_competencias_detalle 
                   (organization_id, evaluacion_id, competencia_id, puntaje, created_at) 
                   VALUES (?, ?, ?, ?, datetime('now'))`,
@@ -102,7 +102,7 @@ const createEvaluacion = async (req, res) => {
       }
 
       // Confirmar transacción
-      await tursoClient.execute('COMMIT');
+      await mongoClient.execute('COMMIT');
 
       console.log(`✅ [Evaluaciones] Evaluación creada exitosamente con ID: ${evaluacion_id}`);
 
@@ -122,7 +122,7 @@ const createEvaluacion = async (req, res) => {
 
     } catch (error) {
       // Revertir transacción en caso de error
-      await tursoClient.execute('ROLLBACK');
+      await mongoClient.execute('ROLLBACK');
       throw error;
     }
 
@@ -150,7 +150,7 @@ const getEvaluacionById = async (req, res) => {
     }
 
     // Obtener la evaluación principal
-    const evaluacionResult = await tursoClient.execute({
+    const evaluacionResult = await mongoClient.execute({
       sql: `SELECT 
               e.*,
               p.nombre as empleado_nombre,
@@ -172,7 +172,7 @@ const getEvaluacionById = async (req, res) => {
     }
 
     // Obtener los detalles de competencias
-    const competenciasResult = await tursoClient.execute({
+    const competenciasResult = await mongoClient.execute({
       sql: `SELECT 
               ecd.*,
               c.nombre as competencia_nombre,
@@ -214,13 +214,13 @@ const getEstadisticasEvaluaciones = async (req, res) => {
     }
 
     // Total de evaluaciones
-    const totalResult = await tursoClient.execute({
+    const totalResult = await mongoClient.execute({
       sql: 'SELECT COUNT(*) as total FROM evaluaciones_individuales WHERE organization_id = ?',
       args: [organization_id]
     });
 
     // Evaluaciones por mes (últimos 6 meses)
-    const porMesResult = await tursoClient.execute({
+    const porMesResult = await mongoClient.execute({
       sql: `SELECT 
               strftime('%Y-%m', fecha_evaluacion) as mes,
               COUNT(*) as cantidad
@@ -233,7 +233,7 @@ const getEstadisticasEvaluaciones = async (req, res) => {
     });
 
     // Promedio de puntajes por competencia
-    const promediosResult = await tursoClient.execute({
+    const promediosResult = await mongoClient.execute({
       sql: `SELECT 
               c.nombre as competencia,
               AVG(ecd.puntaje) as promedio,
