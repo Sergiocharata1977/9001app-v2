@@ -1,0 +1,29 @@
+{
+  "testOrganization": {
+    "id": "test-org-001",
+    "name": "Test Organization",
+    "description": "Organization for testing purposes",
+    "address": "123 Test Street",
+    "phone": "+1234567890",
+    "email": "info@testorg.com",
+    "website": "https://testorg.com",
+    "isoCertified": true,
+    "isoCertificationDate": "2024-01-01T00:00:00.000Z",
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  },
+  "inactiveOrganization": {
+    "id": "inactive-org-001",
+    "name": "Inactive Organization",
+    "description": "Inactive organization for testing",
+    "address": "456 Inactive Street",
+    "phone": "+0987654321",
+    "email": "info@inactiveorg.com",
+    "website": "https://inactiveorg.com",
+    "isoCertified": false,
+    "isActive": false,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  }
+}
