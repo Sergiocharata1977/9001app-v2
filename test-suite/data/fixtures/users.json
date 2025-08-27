@@ -1,0 +1,46 @@
+{
+  "adminUser": {
+    "id": "admin-001",
+    "email": "admin@test.com",
+    "password": "TestPassword123!",
+    "role": "admin",
+    "name": "Admin Test",
+    "organization": "test-org-001",
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  },
+  "regularUser": {
+    "id": "user-001",
+    "email": "user@test.com",
+    "password": "TestPassword123!",
+    "role": "user",
+    "name": "User Test",
+    "organization": "test-org-001",
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  },
+  "superAdmin": {
+    "id": "super-admin-001",
+    "email": "superadmin@test.com",
+    "password": "TestPassword123!",
+    "role": "super_admin",
+    "name": "Super Admin Test",
+    "organization": "test-org-001",
+    "isActive": true,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  },
+  "inactiveUser": {
+    "id": "inactive-001",
+    "email": "inactive@test.com",
+    "password": "TestPassword123!",
+    "role": "user",
+    "name": "Inactive User",
+    "organization": "test-org-001",
+    "isActive": false,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
+  }
+}
