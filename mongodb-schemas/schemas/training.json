@@ -1,0 +1,291 @@
+{
+  "collection": "trainings",
+  "schema": {
+    "organizationId": {
+      "type": "objectId",
+      "required": true,
+      "ref": "organizations",
+      "index": true
+    },
+    "title": {
+      "type": "string",
+      "required": true,
+      "trim": true,
+      "maxlength": 200,
+      "index": true
+    },
+    "code": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "trim": true,
+      "maxlength": 50,
+      "index": true
+    },
+    "type": {
+      "type": "string",
+      "required": true,
+      "enum": ["mandatory", "optional", "development", "compliance", "safety"],
+      "index": true
+    },
+    "category": {
+      "type": "string",
+      "required": true,
+      "enum": ["technical", "soft_skills", "compliance", "safety", "quality", "leadership"],
+      "index": true
+    },
+    "description": {
+      "type": "string",
+      "trim": true,
+      "maxlength": 1000
+    },
+    "objectives": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": { "type": "string", "required": true },
+          "measurable": { "type": "boolean", "default": false },
+          "criteria": { "type": "string" }
+        }
+      }
+    },
+    "content": {
+      "type": "object",
+      "properties": {
+        "modules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string", "required": true },
+              "title": { "type": "string", "required": true },
+              "description": { "type": "string" },
+              "duration": { "type": "number" },
+              "order": { "type": "number" },
+              "materials": { "type": "array", "items": { "type": "string" } },
+              "activities": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": { "type": "string", "enum": ["presentation", "exercise", "quiz", "discussion", "practical"] },
+                    "title": { "type": "string" },
+                    "description": { "type": "string" },
+                    "duration": { "type": "number" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "totalDuration": { "type": "number" },
+        "prerequisites": { "type": "array", "items": { "type": "string" } },
+        "materials": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "delivery": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": ["in-person", "online", "hybrid", "self-paced", "blended"],
+          "required": true
+        },
+        "platform": { "type": "string" },
+        "location": { "type": "string" },
+        "maxParticipants": { "type": "number" },
+        "minParticipants": { "type": "number", "default": 1 }
+      }
+    },
+    "instructors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "userId": { "type": "objectId", "ref": "users" },
+          "name": { "type": "string" },
+          "qualifications": { "type": "string" },
+          "experience": { "type": "number" },
+          "isPrimary": { "type": "boolean", "default": false }
+        }
+      }
+    },
+    "assessment": {
+      "type": "object",
+      "properties": {
+        "required": { "type": "boolean", "default": true },
+        "type": { "type": "string", "enum": ["quiz", "exam", "practical", "presentation", "portfolio"] },
+        "passingScore": { "type": "number", "min": 0, "max": 100, "default": 70 },
+        "questions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "question": { "type": "string" },
+              "type": { "type": "string", "enum": ["multiple_choice", "true_false", "essay", "practical"] },
+              "options": { "type": "array", "items": { "type": "string" } },
+              "correctAnswer": { "type": "string" },
+              "points": { "type": "number" }
+            }
+          }
+        },
+        "retakePolicy": { "type": "string" },
+        "validityPeriod": { "type": "number" }
+      }
+    },
+    "certification": {
+      "type": "object",
+      "properties": {
+        "issued": { "type": "boolean", "default": true },
+        "template": { "type": "string" },
+        "validityPeriod": { "type": "number" },
+        "renewalRequirements": { "type": "string" }
+      }
+    },
+    "compliance": {
+      "type": "object",
+      "properties": {
+        "iso9001": {
+          "type": "object",
+          "properties": {
+            "clause": { "type": "string" },
+            "requirements": { "type": "array", "items": { "type": "string" } }
+          }
+        },
+        "regulations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "requirements": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "scheduling": {
+      "type": "object",
+      "properties": {
+        "sessions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "string" },
+              "startDate": { "type": "date" },
+              "endDate": { "type": "date" },
+              "startTime": { "type": "string" },
+              "endTime": { "type": "string" },
+              "instructor": { "type": "objectId", "ref": "users" },
+              "location": { "type": "string" },
+              "maxParticipants": { "type": "number" },
+              "enrolled": { "type": "number", "default": 0 },
+              "status": { "type": "string", "enum": ["scheduled", "in-progress", "completed", "cancelled"] }
+            }
+          }
+        },
+        "recurring": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": false },
+            "frequency": { "type": "string", "enum": ["daily", "weekly", "monthly", "quarterly", "yearly"] },
+            "interval": { "type": "number" }
+          }
+        }
+      }
+    },
+    "enrollment": {
+      "type": "object",
+      "properties": {
+        "autoEnrollment": { "type": "boolean", "default": false },
+        "approvalRequired": { "type": "boolean", "default": false },
+        "waitlistEnabled": { "type": "boolean", "default": true },
+        "enrollmentDeadline": { "type": "number" }
+      }
+    },
+    "status": {
+      "type": "string",
+      "required": true,
+      "enum": ["draft", "active", "inactive", "archived"],
+      "default": "draft",
+      "index": true
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "totalEnrollments": { "type": "number", "default": 0 },
+        "completions": { "type": "number", "default": 0 },
+        "averageScore": { "type": "number", "default": 0 },
+        "satisfactionRating": { "type": "number", "default": 0 },
+        "effectivenessScore": { "type": "number", "default": 0 }
+      }
+    },
+    "createdBy": {
+      "type": "objectId",
+      "ref": "users",
+      "required": true
+    },
+    "approvedBy": {
+      "type": "objectId",
+      "ref": "users"
+    },
+    "approvedAt": {
+      "type": "date"
+    },
+    "createdAt": {
+      "type": "date",
+      "default": "now"
+    },
+    "updatedAt": {
+      "type": "date",
+      "default": "now"
+    }
+  },
+  "indexes": [
+    { "name": "organizationId_1", "keys": { "organizationId": 1 } },
+    { "name": "code_1", "keys": { "code": 1 }, "unique": true },
+    { "name": "type_1", "keys": { "type": 1 } },
+    { "name": "category_1", "keys": { "category": 1 } },
+    { "name": "status_1", "keys": { "status": 1 } },
+    { "name": "organizationId_status_1", "keys": { "organizationId": 1, "status": 1 } },
+    { "name": "type_category_1", "keys": { "type": 1, "category": 1 } },
+    { "name": "instructors_userId_1", "keys": { "instructors.userId": 1 } },
+    { "name": "scheduling_sessions_startDate_1", "keys": { "scheduling.sessions.startDate": 1 } },
+    { "name": "createdAt_1", "keys": { "createdAt": -1 } }
+  ],
+  "validation": {
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["organizationId", "title", "code", "type", "category"],
+        "properties": {
+          "organizationId": {
+            "bsonType": "objectId"
+          },
+          "title": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "code": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "type": {
+            "enum": ["mandatory", "optional", "development", "compliance", "safety"]
+          },
+          "category": {
+            "enum": ["technical", "soft_skills", "compliance", "safety", "quality", "leadership"]
+          },
+          "status": {
+            "enum": ["draft", "active", "inactive", "archived"]
+          }
+        }
+      }
+    }
+  }
+}

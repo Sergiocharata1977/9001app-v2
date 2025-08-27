@@ -1,0 +1,276 @@
+{
+  "collection": "indicators",
+  "schema": {
+    "organizationId": {
+      "type": "objectId",
+      "required": true,
+      "ref": "organizations",
+      "index": true
+    },
+    "name": {
+      "type": "string",
+      "required": true,
+      "trim": true,
+      "maxlength": 200,
+      "index": true
+    },
+    "code": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "trim": true,
+      "maxlength": 50,
+      "index": true
+    },
+    "type": {
+      "type": "string",
+      "required": true,
+      "enum": ["kpi", "kri", "efficiency", "quality", "satisfaction", "financial", "compliance"],
+      "index": true
+    },
+    "category": {
+      "type": "string",
+      "required": true,
+      "enum": ["process", "product", "customer", "financial", "learning", "compliance"],
+      "index": true
+    },
+    "description": {
+      "type": "string",
+      "trim": true,
+      "maxlength": 500
+    },
+    "formula": {
+      "type": "string",
+      "required": true,
+      "maxlength": 1000
+    },
+    "unit": {
+      "type": "string",
+      "required": true,
+      "maxlength": 50
+    },
+    "frequency": {
+      "type": "string",
+      "required": true,
+      "enum": ["daily", "weekly", "monthly", "quarterly", "yearly"],
+      "index": true
+    },
+    "targets": {
+      "type": "object",
+      "properties": {
+        "minimum": { "type": "number" },
+        "target": { "type": "number" },
+        "excellent": { "type": "number" },
+        "tolerance": { "type": "number" }
+      }
+    },
+    "dataSource": {
+      "type": "object",
+      "properties": {
+        "type": { "type": "string", "enum": ["manual", "automatic", "integration"] },
+        "source": { "type": "string" },
+        "query": { "type": "string" },
+        "parameters": { "type": "object" },
+        "lastSync": { "type": "date" }
+      }
+    },
+    "calculation": {
+      "type": "object",
+      "properties": {
+        "method": { "type": "string", "enum": ["sum", "average", "count", "percentage", "ratio", "custom"] },
+        "period": { "type": "string", "enum": ["point", "period", "cumulative"] },
+        "baseline": { "type": "number" },
+        "baselineDate": { "type": "date" },
+        "trend": { "type": "string", "enum": ["increasing", "decreasing", "stable"] }
+      }
+    },
+    "dimensions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string" },
+          "type": { "type": "string", "enum": ["department", "product", "process", "customer", "time"] },
+          "values": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "thresholds": {
+      "type": "object",
+      "properties": {
+        "warning": { "type": "number" },
+        "critical": { "type": "number" },
+        "actions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "threshold": { "type": "string", "enum": ["warning", "critical"] },
+              "action": { "type": "string", "enum": ["notification", "alert", "escalation", "automation"] },
+              "recipients": { "type": "array", "items": { "type": "objectId", "ref": "users" } },
+              "message": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "reporting": {
+      "type": "object",
+      "properties": {
+        "dashboard": { "type": "boolean", "default": true },
+        "reports": { "type": "array", "items": { "type": "string" } },
+        "visualization": {
+          "type": "string",
+          "enum": ["line", "bar", "pie", "gauge", "table", "heatmap"],
+          "default": "line"
+        },
+        "colorScheme": { "type": "string" },
+        "position": { "type": "number" }
+      }
+    },
+    "ownership": {
+      "type": "object",
+      "properties": {
+        "owner": { "type": "objectId", "ref": "users" },
+        "department": { "type": "string" },
+        "process": { "type": "string" },
+        "reviewFrequency": { "type": "string", "enum": ["monthly", "quarterly", "yearly"] },
+        "lastReview": { "type": "date" }
+      }
+    },
+    "compliance": {
+      "type": "object",
+      "properties": {
+        "iso9001": {
+          "type": "object",
+          "properties": {
+            "clause": { "type": "string" },
+            "requirement": { "type": "string" },
+            "evidence": { "type": "string" }
+          }
+        },
+        "regulations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "requirement": { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "date": { "type": "date" },
+          "value": { "type": "number" },
+          "status": { "type": "string", "enum": ["below_target", "on_target", "above_target", "excellent"] },
+          "notes": { "type": "string" },
+          "recordedBy": { "type": "objectId", "ref": "users" }
+        }
+      }
+    },
+    "trends": {
+      "type": "object",
+      "properties": {
+        "direction": { "type": "string", "enum": ["improving", "declining", "stable"] },
+        "slope": { "type": "number" },
+        "volatility": { "type": "number" },
+        "seasonality": { "type": "boolean" },
+        "forecast": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "date": { "type": "date" },
+              "value": { "type": "number" },
+              "confidence": { "type": "number" }
+            }
+          }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "required": true,
+      "enum": ["active", "inactive", "deprecated"],
+      "default": "active",
+      "index": true
+    },
+    "createdBy": {
+      "type": "objectId",
+      "ref": "users",
+      "required": true
+    },
+    "createdAt": {
+      "type": "date",
+      "default": "now"
+    },
+    "updatedAt": {
+      "type": "date",
+      "default": "now"
+    }
+  },
+  "indexes": [
+    { "name": "organizationId_1", "keys": { "organizationId": 1 } },
+    { "name": "code_1", "keys": { "code": 1 }, "unique": true },
+    { "name": "type_1", "keys": { "type": 1 } },
+    { "name": "category_1", "keys": { "category": 1 } },
+    { "name": "frequency_1", "keys": { "frequency": 1 } },
+    { "name": "status_1", "keys": { "status": 1 } },
+    { "name": "organizationId_status_1", "keys": { "organizationId": 1, "status": 1 } },
+    { "name": "type_category_1", "keys": { "type": 1, "category": 1 } },
+    { "name": "ownership_owner_1", "keys": { "ownership.owner": 1 } },
+    { "name": "history_date_1", "keys": { "history.date": -1 } },
+    { "name": "createdAt_1", "keys": { "createdAt": -1 } }
+  ],
+  "validation": {
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["organizationId", "name", "code", "type", "category", "formula", "unit", "frequency"],
+        "properties": {
+          "organizationId": {
+            "bsonType": "objectId"
+          },
+          "name": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 200
+          },
+          "code": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "type": {
+            "enum": ["kpi", "kri", "efficiency", "quality", "satisfaction", "financial", "compliance"]
+          },
+          "category": {
+            "enum": ["process", "product", "customer", "financial", "learning", "compliance"]
+          },
+          "formula": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 1000
+          },
+          "unit": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "frequency": {
+            "enum": ["daily", "weekly", "monthly", "quarterly", "yearly"]
+          },
+          "status": {
+            "enum": ["active", "inactive", "deprecated"]
+          }
+        }
+      }
+    }
+  }
+}

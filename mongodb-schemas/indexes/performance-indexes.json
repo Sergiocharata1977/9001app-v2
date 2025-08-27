@@ -1,0 +1,322 @@
+{
+  "performance_indexes": {
+    "organizations": [
+      {
+        "name": "org_active_subscription",
+        "keys": { "isActive": 1, "subscription.isActive": 1 },
+        "background": true,
+        "description": "Optimiza consultas de organizaciones activas con suscripciones válidas"
+      },
+      {
+        "name": "org_iso9001_status",
+        "keys": { "iso9001.status": 1, "isActive": 1 },
+        "background": true,
+        "description": "Optimiza consultas por estado de certificación ISO 9001"
+      },
+      {
+        "name": "org_created_date",
+        "keys": { "createdAt": -1 },
+        "background": true,
+        "description": "Optimiza consultas por fecha de creación (más recientes primero)"
+      }
+    ],
+    "users": [
+      {
+        "name": "user_org_active",
+        "keys": { "organizationId": 1, "isActive": 1 },
+        "background": true,
+        "description": "Optimiza consultas de usuarios activos por organización"
+      },
+      {
+        "name": "user_roles_org",
+        "keys": { "roles": 1, "organizationId": 1 },
+        "background": true,
+        "description": "Optimiza consultas de usuarios por roles y organización"
+      },
+      {
+        "name": "user_last_login",
+        "keys": { "activity.lastLogin": -1 },
+        "background": true,
+        "description": "Optimiza consultas por último login"
+      },
+      {
+        "name": "user_email_org",
+        "keys": { "email": 1, "organizationId": 1 },
+        "background": true,
+        "description": "Optimiza búsquedas de usuarios por email y organización"
+      }
+    ],
+    "agents": [
+      {
+        "name": "agent_org_status",
+        "keys": { "organizationId": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de agentes por organización y estado"
+      },
+      {
+        "name": "agent_type_status",
+        "keys": { "type": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de agentes por tipo y estado"
+      },
+      {
+        "name": "agent_current_task",
+        "keys": { "currentTask.taskId": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de agentes con tareas activas"
+      }
+    ],
+    "processes": [
+      {
+        "name": "process_org_status",
+        "keys": { "organizationId": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de procesos por organización y estado"
+      },
+      {
+        "name": "process_category_status",
+        "keys": { "category": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de procesos por categoría y estado"
+      },
+      {
+        "name": "process_created_by",
+        "keys": { "createdBy": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de procesos por creador"
+      }
+    ],
+    "crm_agro": [
+      {
+        "name": "crm_org_status",
+        "keys": { "organizationId": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de clientes por organización y estado"
+      },
+      {
+        "name": "crm_type_status",
+        "keys": { "clientType": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de clientes por tipo y estado"
+      },
+      {
+        "name": "crm_assigned_to",
+        "keys": { "assignedTo": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de clientes por responsable"
+      },
+      {
+        "name": "crm_score_org",
+        "keys": { "score": -1, "organizationId": 1 },
+        "background": true,
+        "description": "Optimiza consultas de clientes por score"
+      },
+      {
+        "name": "crm_geo_location",
+        "keys": { "addresses.coordinates": "2dsphere" },
+        "background": true,
+        "description": "Optimiza consultas geoespaciales de clientes"
+      }
+    ],
+    "audits": [
+      {
+        "name": "audit_org_status",
+        "keys": { "organizationId": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de auditorías por organización y estado"
+      },
+      {
+        "name": "audit_type_status",
+        "keys": { "type": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de auditorías por tipo y estado"
+      },
+      {
+        "name": "audit_schedule_dates",
+        "keys": { "schedule.plannedStartDate": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de auditorías por fechas programadas"
+      },
+      {
+        "name": "audit_lead_auditor",
+        "keys": { "team.leadAuditor.userId": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de auditorías por auditor líder"
+      },
+      {
+        "name": "audit_findings_status",
+        "keys": { "findings.status": 1, "organizationId": 1 },
+        "background": true,
+        "description": "Optimiza consultas de hallazgos de auditoría"
+      }
+    ],
+    "rag_documents": [
+      {
+        "name": "rag_org_status",
+        "keys": { "organizationId": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de documentos por organización y estado"
+      },
+      {
+        "name": "rag_type_category",
+        "keys": { "type": 1, "category": 1 },
+        "background": true,
+        "description": "Optimiza consultas de documentos por tipo y categoría"
+      },
+      {
+        "name": "rag_metadata_search",
+        "keys": { "metadata.keywords": 1, "metadata.tags": 1 },
+        "background": true,
+        "description": "Optimiza búsquedas por palabras clave y tags"
+      },
+      {
+        "name": "rag_access_control",
+        "keys": { "accessControl.visibility": 1, "organizationId": 1 },
+        "background": true,
+        "description": "Optimiza consultas por control de acceso"
+      },
+      {
+        "name": "rag_content_text",
+        "keys": { "content.text": "text" },
+        "background": true,
+        "description": "Índice de texto completo para búsquedas semánticas"
+      }
+    ],
+    "personnel": [
+      {
+        "name": "personnel_org_status",
+        "keys": { "organizationId": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de personal por organización y estado"
+      },
+      {
+        "name": "personnel_department_position",
+        "keys": { "employment.department": 1, "employment.position": 1 },
+        "background": true,
+        "description": "Optimiza consultas de personal por departamento y posición"
+      },
+      {
+        "name": "personnel_hire_date",
+        "keys": { "employment.hireDate": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de personal por fecha de contratación"
+      },
+      {
+        "name": "personnel_competencies",
+        "keys": { "competencies.skill": 1, "competencies.level": 1 },
+        "background": true,
+        "description": "Optimiza consultas de competencias del personal"
+      },
+      {
+        "name": "personnel_supervisor",
+        "keys": { "employment.supervisor": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de personal por supervisor"
+      }
+    ],
+    "trainings": [
+      {
+        "name": "training_org_status",
+        "keys": { "organizationId": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de capacitaciones por organización y estado"
+      },
+      {
+        "name": "training_type_category",
+        "keys": { "type": 1, "category": 1 },
+        "background": true,
+        "description": "Optimiza consultas de capacitaciones por tipo y categoría"
+      },
+      {
+        "name": "training_instructors",
+        "keys": { "instructors.userId": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de capacitaciones por instructores"
+      },
+      {
+        "name": "training_sessions_dates",
+        "keys": { "scheduling.sessions.startDate": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de sesiones de capacitación"
+      }
+    ],
+    "indicators": [
+      {
+        "name": "indicators_org_status",
+        "keys": { "organizationId": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de indicadores por organización y estado"
+      },
+      {
+        "name": "indicators_type_category",
+        "keys": { "type": 1, "category": 1 },
+        "background": true,
+        "description": "Optimiza consultas de indicadores por tipo y categoría"
+      },
+      {
+        "name": "indicators_frequency",
+        "keys": { "frequency": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de indicadores por frecuencia"
+      },
+      {
+        "name": "indicators_owner",
+        "keys": { "ownership.owner": 1, "status": 1 },
+        "background": true,
+        "description": "Optimiza consultas de indicadores por propietario"
+      },
+      {
+        "name": "indicators_history_date",
+        "keys": { "history.date": -1 },
+        "background": true,
+        "description": "Optimiza consultas del historial de indicadores"
+      }
+    ]
+  },
+  "compound_indexes": [
+    {
+      "collection": "users",
+      "name": "user_org_role_active",
+      "keys": { "organizationId": 1, "roles": 1, "isActive": 1 },
+      "background": true,
+      "description": "Índice compuesto para consultas complejas de usuarios"
+    },
+    {
+      "collection": "audits",
+      "name": "audit_org_type_status_date",
+      "keys": { "organizationId": 1, "type": 1, "status": 1, "schedule.plannedStartDate": 1 },
+      "background": true,
+      "description": "Índice compuesto para consultas complejas de auditorías"
+    },
+    {
+      "collection": "rag_documents",
+      "name": "rag_org_type_status_created",
+      "keys": { "organizationId": 1, "type": 1, "status": 1, "createdAt": -1 },
+      "background": true,
+      "description": "Índice compuesto para consultas complejas de documentos"
+    },
+    {
+      "collection": "personnel",
+      "name": "personnel_org_dept_status",
+      "keys": { "organizationId": 1, "employment.department": 1, "status": 1 },
+      "background": true,
+      "description": "Índice compuesto para consultas complejas de personal"
+    }
+  ],
+  "index_optimization_rules": {
+    "general": [
+      "Siempre incluir organizationId en índices compuestos para multi-tenancy",
+      "Usar índices de cobertura para consultas frecuentes",
+      "Evitar índices en campos con baja selectividad",
+      "Monitorear el uso de índices con explain()",
+      "Revisar índices regularmente para eliminar los no utilizados"
+    ],
+    "performance_tips": [
+      "Los índices deben soportar las consultas más frecuentes",
+      "Considerar el orden de los campos en índices compuestos",
+      "Usar índices de texto para búsquedas semánticas",
+      "Implementar índices geoespaciales para ubicaciones",
+      "Optimizar índices para agregaciones complejas"
+    ]
+  }
+}

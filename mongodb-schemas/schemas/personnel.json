@@ -1,0 +1,334 @@
+{
+  "collection": "personnel",
+  "schema": {
+    "organizationId": {
+      "type": "objectId",
+      "required": true,
+      "ref": "organizations",
+      "index": true
+    },
+    "employeeId": {
+      "type": "string",
+      "required": true,
+      "unique": true,
+      "trim": true,
+      "maxlength": 50,
+      "index": true
+    },
+    "personalInfo": {
+      "type": "object",
+      "properties": {
+        "firstName": { "type": "string", "required": true, "trim": true, "maxlength": 50 },
+        "lastName": { "type": "string", "required": true, "trim": true, "maxlength": 50 },
+        "middleName": { "type": "string", "trim": true, "maxlength": 50 },
+        "dateOfBirth": { "type": "date" },
+        "gender": { "type": "string", "enum": ["male", "female", "other"] },
+        "nationality": { "type": "string", "maxlength": 100 },
+        "identification": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "enum": ["dni", "passport", "driver_license", "other"] },
+            "number": { "type": "string", "maxlength": 50 },
+            "issueDate": { "type": "date" },
+            "expiryDate": { "type": "date" }
+          }
+        }
+      }
+    },
+    "contact": {
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "lowercase": true },
+        "phone": { "type": "string", "maxlength": 20 },
+        "mobile": { "type": "string", "maxlength": 20 },
+        "emergencyContact": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string", "maxlength": 100 },
+            "relationship": { "type": "string", "maxlength": 50 },
+            "phone": { "type": "string", "maxlength": 20 },
+            "email": { "type": "string", "lowercase": true }
+          }
+        }
+      }
+    },
+    "address": {
+      "type": "object",
+      "properties": {
+        "street": { "type": "string", "maxlength": 200 },
+        "city": { "type": "string", "maxlength": 100 },
+        "state": { "type": "string", "maxlength": 100 },
+        "country": { "type": "string", "maxlength": 100 },
+        "postalCode": { "type": "string", "maxlength": 20 }
+      }
+    },
+    "employment": {
+      "type": "object",
+      "properties": {
+        "position": { "type": "string", "required": true, "maxlength": 100 },
+        "department": { "type": "string", "required": true, "maxlength": 100 },
+        "jobTitle": { "type": "string", "maxlength": 100 },
+        "hireDate": { "type": "date", "required": true },
+        "contractType": {
+          "type": "string",
+          "enum": ["permanent", "temporary", "contract", "intern", "consultant"],
+          "required": true
+        },
+        "contractEndDate": { "type": "date" },
+        "probationEndDate": { "type": "date" },
+        "salary": { "type": "number" },
+        "currency": { "type": "string", "default": "ARS" },
+        "payFrequency": { "type": "string", "enum": ["weekly", "bi-weekly", "monthly"] },
+        "supervisor": { "type": "objectId", "ref": "personnel" },
+        "workSchedule": {
+          "type": "object",
+          "properties": {
+            "type": { "type": "string", "enum": ["full-time", "part-time", "flexible", "shift"] },
+            "hoursPerWeek": { "type": "number" },
+            "startTime": { "type": "string" },
+            "endTime": { "type": "string" }
+          }
+        }
+      }
+    },
+    "competencies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "skill": { "type": "string", "required": true },
+          "category": { "type": "string", "enum": ["technical", "soft", "leadership", "compliance"] },
+          "level": { "type": "string", "enum": ["beginner", "intermediate", "advanced", "expert"] },
+          "acquiredDate": { "type": "date" },
+          "expiryDate": { "type": "date" },
+          "certification": { "type": "string" },
+          "issuer": { "type": "string" },
+          "score": { "type": "number", "min": 0, "max": 100 },
+          "isRequired": { "type": "boolean", "default": false },
+          "assessmentMethod": { "type": "string" },
+          "assessor": { "type": "objectId", "ref": "users" },
+          "lastAssessment": { "type": "date" },
+          "nextAssessment": { "type": "date" }
+        }
+      }
+    },
+    "training": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "courseId": { "type": "objectId", "ref": "trainings" },
+          "courseName": { "type": "string" },
+          "type": { "type": "string", "enum": ["mandatory", "optional", "development"] },
+          "status": { "type": "string", "enum": ["planned", "in-progress", "completed", "cancelled"] },
+          "startDate": { "type": "date" },
+          "endDate": { "type": "date" },
+          "duration": { "type": "number" },
+          "score": { "type": "number", "min": 0, "max": 100 },
+          "certificate": { "type": "string" },
+          "instructor": { "type": "string" },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "performance": {
+      "type": "object",
+      "properties": {
+        "evaluations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "period": { "type": "string" },
+              "evaluator": { "type": "objectId", "ref": "users" },
+              "date": { "type": "date" },
+              "overallScore": { "type": "number", "min": 1, "max": 5 },
+              "categories": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "score": { "type": "number", "min": 1, "max": 5 },
+                    "comments": { "type": "string" }
+                  }
+                }
+              },
+              "strengths": { "type": "array", "items": { "type": "string" } },
+              "improvements": { "type": "array", "items": { "type": "string" } },
+              "goals": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        },
+        "achievements": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "title": { "type": "string" },
+              "description": { "type": "string" },
+              "date": { "type": "date" },
+              "type": { "type": "string", "enum": ["award", "recognition", "project", "improvement"] }
+            }
+          }
+        }
+      }
+    },
+    "health": {
+      "type": "object",
+      "properties": {
+        "medicalExams": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "type": { "type": "string" },
+              "date": { "type": "date" },
+              "result": { "type": "string", "enum": ["fit", "unfit", "conditional"] },
+              "nextExam": { "type": "date" },
+              "notes": { "type": "string" }
+            }
+          }
+        },
+        "vaccinations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": { "type": "string" },
+              "date": { "type": "date" },
+              "nextDue": { "type": "date" },
+              "required": { "type": "boolean" }
+            }
+          }
+        },
+        "allergies": { "type": "array", "items": { "type": "string" } },
+        "medications": { "type": "array", "items": { "type": "string" } },
+        "emergencyInfo": { "type": "string" }
+      }
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string", "enum": ["contract", "id", "certificate", "medical", "other"] },
+          "name": { "type": "string" },
+          "filePath": { "type": "string" },
+          "uploadDate": { "type": "date" },
+          "expiryDate": { "type": "date" },
+          "isRequired": { "type": "boolean", "default": false }
+        }
+      }
+    },
+    "status": {
+      "type": "string",
+      "required": true,
+      "enum": ["active", "inactive", "terminated", "suspended", "on-leave"],
+      "default": "active",
+      "index": true
+    },
+    "termination": {
+      "type": "object",
+      "properties": {
+        "date": { "type": "date" },
+        "reason": { "type": "string" },
+        "type": { "type": "string", "enum": ["resignation", "termination", "retirement", "contract_end"] },
+        "exitInterview": { "type": "boolean" },
+        "notes": { "type": "string" }
+      }
+    },
+    "userId": {
+      "type": "objectId",
+      "ref": "users",
+      "unique": true
+    },
+    "createdBy": {
+      "type": "objectId",
+      "ref": "users",
+      "required": true
+    },
+    "createdAt": {
+      "type": "date",
+      "default": "now"
+    },
+    "updatedAt": {
+      "type": "date",
+      "default": "now"
+    }
+  },
+  "indexes": [
+    { "name": "organizationId_1", "keys": { "organizationId": 1 } },
+    { "name": "employeeId_1", "keys": { "employeeId": 1 }, "unique": true },
+    { "name": "status_1", "keys": { "status": 1 } },
+    { "name": "organizationId_status_1", "keys": { "organizationId": 1, "status": 1 } },
+    { "name": "employment_department_1", "keys": { "employment.department": 1 } },
+    { "name": "employment_position_1", "keys": { "employment.position": 1 } },
+    { "name": "employment_hireDate_1", "keys": { "employment.hireDate": 1 } },
+    { "name": "employment_supervisor_1", "keys": { "employment.supervisor": 1 } },
+    { "name": "competencies_skill_1", "keys": { "competencies.skill": 1 } },
+    { "name": "competencies_level_1", "keys": { "competencies.level": 1 } },
+    { "name": "training_status_1", "keys": { "training.status": 1 } },
+    { "name": "userId_1", "keys": { "userId": 1 }, "unique": true },
+    { "name": "createdAt_1", "keys": { "createdAt": -1 } }
+  ],
+  "validation": {
+    "validator": {
+      "$jsonSchema": {
+        "bsonType": "object",
+        "required": ["organizationId", "employeeId", "personalInfo", "employment"],
+        "properties": {
+          "organizationId": {
+            "bsonType": "objectId"
+          },
+          "employeeId": {
+            "bsonType": "string",
+            "minLength": 1,
+            "maxLength": 50
+          },
+          "personalInfo": {
+            "bsonType": "object",
+            "required": ["firstName", "lastName"],
+            "properties": {
+              "firstName": {
+                "bsonType": "string",
+                "minLength": 1,
+                "maxLength": 50
+              },
+              "lastName": {
+                "bsonType": "string",
+                "minLength": 1,
+                "maxLength": 50
+              }
+            }
+          },
+          "employment": {
+            "bsonType": "object",
+            "required": ["position", "department", "hireDate", "contractType"],
+            "properties": {
+              "position": {
+                "bsonType": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              "department": {
+                "bsonType": "string",
+                "minLength": 1,
+                "maxLength": 100
+              },
+              "hireDate": {
+                "bsonType": "date"
+              },
+              "contractType": {
+                "enum": ["permanent", "temporary", "contract", "intern", "consultant"]
+              }
+            }
+          },
+          "status": {
+            "enum": ["active", "inactive", "terminated", "suspended", "on-leave"]
+          }
+        }
+      }
+    }
+  }
+}
