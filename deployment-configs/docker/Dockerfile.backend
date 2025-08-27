@@ -1,0 +1,67 @@
+# Dockerfile para Backend Node.js/TypeScript
+FROM node:18-alpine AS builder
+
+# Instalar dependencias del sistema
+RUN apk add --no-cache python3 make g++
+
+# Establecer directorio de trabajo
+WORKDIR /app
+
+# Copiar archivos de dependencias
+COPY backend/package*.json ./
+COPY backend/tsconfig.json ./
+
+# Instalar dependencias
+RUN npm ci --only=production && npm cache clean --force
+
+# Copiar código fuente
+COPY backend/src ./src
+COPY backend/config ./config
+COPY backend/middleware ./middleware
+COPY backend/routes ./routes
+COPY backend/controllers ./controllers
+COPY backend/models ./models
+COPY backend/services ./services
+COPY backend/utils ./utils
+
+# Compilar TypeScript
+RUN npm run build
+
+# Imagen de producción
+FROM node:18-alpine AS production
+
+# Instalar dependencias de seguridad
+RUN apk add --no-cache dumb-init
+
+# Crear usuario no-root
+RUN addgroup -g 1001 -S nodejs
+RUN adduser -S nodejs -u 1001
+
+# Establecer directorio de trabajo
+WORKDIR /app
+
+# Copiar dependencias y código compilado
+COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nodejs:nodejs /app/dist ./dist
+COPY --from=builder --chown=nodejs:nodejs /app/package*.json ./
+
+# Crear directorios necesarios
+RUN mkdir -p uploads logs && chown -R nodejs:nodejs uploads logs
+
+# Exponer puerto
+EXPOSE 3000
+
+# Variables de entorno
+ENV NODE_ENV=production
+ENV PORT=3000
+
+# Cambiar a usuario no-root
+USER nodejs
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD node healthcheck.js
+
+# Comando de inicio
+ENTRYPOINT ["dumb-init", "--"]
+CMD ["node", "dist/index.js"]

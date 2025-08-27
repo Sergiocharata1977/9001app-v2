@@ -12,7 +12,68 @@
     "typescript": "node dist/coordinator.js typescript",
     "api": "node dist/coordinator.js api",
     "full": "node dist/coordinator.js full-migration",
-    "web": "node dist/coordinator.js web"
+    "web": "node dist/coordinator.js web",
+    "setup-cicd": "bash deployment-configs/scripts/deployment/setup-cicd.sh",
+    "setup-infrastructure": "bash deployment-configs/scripts/deployment/setup-infrastructure.sh",
+    "setup-monitoring": "bash deployment-configs/scripts/deployment/setup-monitoring.sh",
+    "setup-backup": "bash deployment-configs/scripts/deployment/setup-backup.sh",
+    "setup-security": "bash deployment-configs/scripts/deployment/setup-security.sh",
+    "setup-scaling": "bash deployment-configs/scripts/deployment/setup-scaling.sh",
+    "deploy": "bash deployment-configs/scripts/deployment/deploy.sh",
+    "deploy:dev": "bash deployment-configs/scripts/deployment/deploy.sh development",
+    "deploy:staging": "bash deployment-configs/scripts/deployment/deploy.sh staging",
+    "deploy:prod": "bash deployment-configs/scripts/deployment/deploy.sh production",
+    "rollback": "bash deployment-configs/scripts/deployment/deploy.sh production rollback",
+    "status": "bash deployment-configs/scripts/deployment/deploy.sh production status",
+    "test:integration": "bash deployment-configs/scripts/deployment/test-integration.sh",
+    "test:performance": "bash deployment-configs/scripts/deployment/test-performance.sh",
+    "test:smoke": "bash deployment-configs/scripts/deployment/test-smoke.sh",
+    "test:recovery": "bash deployment-configs/scripts/deployment/test-recovery.sh",
+    "backup": "bash deployment-configs/backup/mongodb/backup-script.sh",
+    "backup:validate": "bash deployment-configs/backup/mongodb/backup-script.sh --validate",
+    "backup:cleanup": "bash deployment-configs/backup/mongodb/backup-script.sh --cleanup",
+    "monitor": "bash deployment-configs/scripts/monitoring/check-health.sh",
+    "monitor:setup": "bash deployment-configs/scripts/monitoring/setup-monitoring.sh",
+    "monitor:reports": "bash deployment-configs/scripts/monitoring/generate-reports.sh",
+    "maintenance": "bash deployment-configs/scripts/maintenance/maintenance.sh",
+    "maintenance:backup": "bash deployment-configs/scripts/maintenance/backup.sh",
+    "maintenance:cleanup": "bash deployment-configs/scripts/maintenance/cleanup.sh",
+    "maintenance:update": "bash deployment-configs/scripts/maintenance/update.sh",
+    "maintenance:security": "bash deployment-configs/scripts/maintenance/security-update.sh",
+    "maintenance:certificates": "bash deployment-configs/scripts/maintenance/certificate-renewal.sh",
+    "docker:build": "bash deployment-configs/docker/docker-scripts/build.sh",
+    "docker:deploy": "bash deployment-configs/docker/docker-scripts/deploy.sh",
+    "docker:backup": "bash deployment-configs/docker/docker-scripts/backup.sh",
+    "docker:restore": "bash deployment-configs/docker/docker-scripts/restore.sh",
+    "k8s:deploy": "bash deployment-configs/kubernetes/deploy.sh",
+    "k8s:rollback": "bash deployment-configs/kubernetes/rollback.sh",
+    "k8s:scale": "bash deployment-configs/kubernetes/scale.sh",
+    "terraform:init": "bash deployment-configs/infrastructure/terraform/init.sh",
+    "terraform:plan": "bash deployment-configs/infrastructure/terraform/plan.sh",
+    "terraform:apply": "bash deployment-configs/infrastructure/terraform/apply.sh",
+    "terraform:destroy": "bash deployment-configs/infrastructure/terraform/destroy.sh",
+    "ansible:setup": "bash deployment-configs/infrastructure/ansible/setup.sh",
+    "ansible:deploy": "bash deployment-configs/infrastructure/ansible/deploy.sh",
+    "ansible:configure": "bash deployment-configs/infrastructure/ansible/configure.sh",
+    "security:scan": "bash deployment-configs/security/security-scan.sh",
+    "security:audit": "bash deployment-configs/security/security-audit.sh",
+    "security:firewall": "bash deployment-configs/security/firewall/iptables-rules",
+    "ssl:renew": "bash deployment-configs/security/ssl/renewal-scripts/renew-cert.sh",
+    "ssl:install": "bash deployment-configs/security/ssl/renewal-scripts/install-cert.sh",
+    "logs:collect": "bash deployment-configs/scripts/monitoring/collect-logs.sh",
+    "logs:analyze": "bash deployment-configs/scripts/monitoring/analyze-logs.sh",
+    "logs:cleanup": "bash deployment-configs/scripts/maintenance/log-rotation.sh",
+    "docs:generate": "bash deployment-configs/scripts/documentation/generate-docs.sh",
+    "docs:update": "bash deployment-configs/scripts/documentation/update-docs.sh",
+    "health:check": "bash deployment-configs/scripts/monitoring/health-check.sh",
+    "health:report": "bash deployment-configs/scripts/monitoring/health-report.sh",
+    "alert:test": "bash deployment-configs/scripts/monitoring/alert-test.sh",
+    "alert:configure": "bash deployment-configs/scripts/monitoring/configure-alerts.sh",
+    "ci:setup": "bash deployment-configs/ci-cd/setup-ci.sh",
+    "ci:test": "bash deployment-configs/ci-cd/test-pipeline.sh",
+    "cd:setup": "bash deployment-configs/ci-cd/setup-cd.sh",
+    "cd:test": "bash deployment-configs/ci-cd/test-deployment.sh",
+    "validate": "bash deployment-configs/scripts/deployment/validate-setup.sh"
   },
   "dependencies": {
     "@types/node": "^20.0.0",
@@ -28,5 +89,116 @@
     "@types/cors": "^2.8.19",
     "@types/express": "^4.17.23",
     "ts-node": "^10.9.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sergiocharata1977/9001app-v2.git"
+  },
+  "keywords": [
+    "iso9001",
+    "quality-management",
+    "multi-agent",
+    "typescript",
+    "nodejs",
+    "react",
+    "mongodb",
+    "devops",
+    "ci-cd"
+  ],
+  "author": "DevOps Team - 9001app-v2",
+  "license": "MIT",
+  "devOps": {
+    "version": "1.0.0",
+    "environments": {
+      "development": {
+        "docker-compose": "docker-compose.yml",
+        "ports": {
+          "frontend": 3001,
+          "backend": 3000,
+          "mongodb": 27017,
+          "redis": 6379,
+          "prometheus": 9090,
+          "grafana": 3002,
+          "elasticsearch": 9200,
+          "kibana": 5601
+        }
+      },
+      "staging": {
+        "docker-compose": "docker-compose.staging.yml",
+        "ports": {
+          "frontend": 3001,
+          "backend": 3000,
+          "mongodb": 27017,
+          "redis": 6379,
+          "prometheus": 9090,
+          "grafana": 3002,
+          "elasticsearch": 9200,
+          "kibana": 5601
+        }
+      },
+      "production": {
+        "kubernetes": true,
+        "namespace": "9001app",
+        "replicas": {
+          "backend": 3,
+          "frontend": 2
+        },
+        "resources": {
+          "backend": {
+            "requests": {
+              "cpu": "500m",
+              "memory": "512Mi"
+            },
+            "limits": {
+              "cpu": "1000m",
+              "memory": "1Gi"
+            }
+          },
+          "frontend": {
+            "requests": {
+              "cpu": "250m",
+              "memory": "256Mi"
+            },
+            "limits": {
+              "cpu": "500m",
+              "memory": "512Mi"
+            }
+          }
+        }
+      }
+    },
+    "monitoring": {
+      "prometheus": {
+        "port": 9090,
+        "retention": "30d"
+      },
+      "grafana": {
+        "port": 3002,
+        "adminPassword": "admin123"
+      },
+      "alertmanager": {
+        "port": 9093
+      }
+    },
+    "backup": {
+      "mongodb": {
+        "schedule": "0 2 * * *",
+        "retention": "30d",
+        "compression": "gzip"
+      }
+    },
+    "security": {
+      "ssl": {
+        "provider": "letsencrypt",
+        "renewal": "30d"
+      },
+      "firewall": {
+        "rules": "iptables-rules"
+      }
+    }
   }
 }

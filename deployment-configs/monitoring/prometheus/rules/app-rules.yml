@@ -1,0 +1,189 @@
+groups:
+  - name: 9001app-application
+    rules:
+      # High error rate
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: critical
+          team: 9001app
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is {{ $value }} errors per second for the last 5 minutes"
+
+      # High response time
+      - alert: HighResponseTime
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          team: 9001app
+        annotations:
+          summary: "High response time detected"
+          description: "95th percentile response time is {{ $value }} seconds"
+
+      # High CPU usage
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          team: 9001app
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is {{ $value }}%"
+
+      # High memory usage
+      - alert: HighMemoryUsage
+        expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          team: 9001app
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is {{ $value }}%"
+
+      # Disk space running out
+      - alert: DiskSpaceRunningOut
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) * 100 < 10
+        for: 5m
+        labels:
+          severity: critical
+          team: 9001app
+        annotations:
+          summary: "Disk space running out"
+          description: "Disk usage is {{ $value }}%"
+
+      # Application down
+      - alert: ApplicationDown
+        expr: up{job="9001app-backend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: 9001app
+        annotations:
+          summary: "Application is down"
+          description: "Backend application is not responding"
+
+      # Frontend down
+      - alert: FrontendDown
+        expr: up{job="9001app-frontend"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: 9001app
+        annotations:
+          summary: "Frontend is down"
+          description: "Frontend application is not responding"
+
+      # High request rate
+      - alert: HighRequestRate
+        expr: rate(http_requests_total[5m]) > 1000
+        for: 5m
+        labels:
+          severity: warning
+          team: 9001app
+        annotations:
+          summary: "High request rate detected"
+          description: "Request rate is {{ $value }} requests per second"
+
+      # Database connection issues
+      - alert: DatabaseConnectionIssues
+        expr: rate(mongodb_connections_current[5m]) > 0.8 * mongodb_connections_available
+        for: 2m
+        labels:
+          severity: warning
+          team: 9001app
+        annotations:
+          summary: "Database connection issues"
+          description: "Database connection usage is high"
+
+      # Redis connection issues
+      - alert: RedisConnectionIssues
+        expr: redis_connected_clients > 100
+        for: 2m
+        labels:
+          severity: warning
+          team: 9001app
+        annotations:
+          summary: "Redis connection issues"
+          description: "Too many Redis connections"
+
+      # Agent coordination issues
+      - alert: AgentCoordinationIssues
+        expr: rate(agent_coordination_errors_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: warning
+          team: 9001app
+        annotations:
+          summary: "Agent coordination issues detected"
+          description: "Agent coordination errors are occurring"
+
+      # API rate limiting
+      - alert: APIRateLimiting
+        expr: rate(http_requests_total{status="429"}[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+          team: 9001app
+        annotations:
+          summary: "API rate limiting detected"
+          description: "Rate limiting is being applied to API requests"
+
+      # Slow database queries
+      - alert: SlowDatabaseQueries
+        expr: histogram_quantile(0.95, rate(mongodb_query_duration_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+          team: 9001app
+        annotations:
+          summary: "Slow database queries detected"
+          description: "95th percentile database query time is {{ $value }} seconds"
+
+      # High number of active users
+      - alert: HighActiveUsers
+        expr: active_users_total > 1000
+        for: 5m
+        labels:
+          severity: info
+          team: 9001app
+        annotations:
+          summary: "High number of active users"
+          description: "There are {{ $value }} active users"
+
+      # Backup failures
+      - alert: BackupFailure
+        expr: backup_status{status="failed"} > 0
+        for: 1m
+        labels:
+          severity: critical
+          team: 9001app
+        annotations:
+          summary: "Backup failure detected"
+          description: "Database backup has failed"
+
+      # SSL certificate expiration
+      - alert: SSLCertificateExpiringSoon
+        expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 30
+        for: 1m
+        labels:
+          severity: warning
+          team: 9001app
+        annotations:
+          summary: "SSL certificate expiring soon"
+          description: "SSL certificate will expire in {{ $value }} seconds"
+
+      # Health check failures
+      - alert: HealthCheckFailure
+        expr: health_check_status{status="unhealthy"} > 0
+        for: 2m
+        labels:
+          severity: critical
+          team: 9001app
+        annotations:
+          summary: "Health check failure"
+          description: "Application health check is failing"
