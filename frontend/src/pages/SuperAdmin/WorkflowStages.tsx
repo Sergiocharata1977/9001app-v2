@@ -44,7 +44,7 @@ const WorkflowStages = () => {
           "Dashboard de métricas",
           "Integración con sistema ISO 9001"
         ],
-        technologies: ["React", "TypeScript", "Node.js", "Turso DB"],
+        technologies: ["React", "TypeScript", "Node.js", "MongoDB"],
         estimatedHours: 80
       },
       agent: null,
@@ -205,7 +205,7 @@ const WorkflowStages = () => {
         deployment: {
           backend: "VPS con Node.js",
           frontend: "Vercel/Netlify",
-          database: "Turso DB"
+          database: "MongoDB"
         },
         metrics: {
           totalHours: 80,

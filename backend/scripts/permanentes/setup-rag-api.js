@@ -95,7 +95,7 @@ const setupRAGSystem = async () => {
     console.error('❌ Error configurando sistema RAG:', error.message);
     console.log('\\n🔧 Solución de problemas:');
     console.log('1. Verificar que el servidor esté corriendo en puerto 3000');
-    console.log('2. Verificar las variables de entorno TURSO_DATABASE_URL y TURSO_AUTH_TOKEN');
+    console.log('2. Verificar las variables de entorno MONGODB_URI y MONGODB_AUTH_TOKEN');
     console.log('3. Verificar que las rutas RAG estén integradas en el servidor');
   }
 };
@@ -121,14 +121,14 @@ const installationGuide = `
 ### 1. Instalar Dependencias
 \`\`\`bash
 cd backend
-npm install @libsql/client
+npm install mongoose
 \`\`\`
 
 ### 2. Configurar Variables de Entorno
 Agregar al archivo .env del backend:
 \`\`\`
-TURSO_DATABASE_URL=libsql://isoflow4-sergiocharata1977.turso.io
-TURSO_AUTH_TOKEN=tu_token_aqui
+MONGODB_URI=mongodb://isoflow4-sergiocharata1977.turso.io
+MONGODB_AUTH_TOKEN=tu_token_aqui
 \`\`\`
 
 ### 3. Integrar Rutas en el Servidor
@@ -230,7 +230,7 @@ function App() {
 - Verificar que las rutas RAG estén integradas
 
 ### Error: "Error creando tabla RAG"
-- Verificar TURSO_DATABASE_URL y TURSO_AUTH_TOKEN
+- Verificar MONGODB_URI y MONGODB_AUTH_TOKEN
 - Verificar permisos de la base de datos
 
 ### Error: "Error de autenticación"

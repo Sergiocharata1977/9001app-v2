@@ -268,7 +268,7 @@ const simpleSearchSystem = `#!/usr/bin/env node
  * Sistema básico de búsqueda en base de datos sin IA
  */
 
-const tursoClient = require('../lib/tursoClient.js');
+import MongoDBConnection from '../config/mongodb';
 
 class SimpleSearchSystem {
   static async search(query, organizationId = 1) {
@@ -377,7 +377,7 @@ const directQuerySystem = `#!/usr/bin/env node
  * Sistema para consultas directas a tablas específicas
  */
 
-const tursoClient = require('../lib/tursoClient.js');
+import MongoDBConnection from '../config/mongodb';
 
 class DirectQuerySystem {
   static async queryPersonal(organizationId = 1) {
@@ -781,8 +781,8 @@ const personal = await DirectQuerySystem.queryPersonal(organizationId);
 ### Variables de Entorno
 \`\`\`env
 # Base de datos
-TURSO_DATABASE_URL=libsql://your-database.turso.io
-TURSO_AUTH_TOKEN=your_auth_token
+MONGODB_URI=mongodb://your-database.turso.io
+MONGODB_AUTH_TOKEN=your_auth_token
 
 # Configuración RAG
 RAG_ENABLED=true

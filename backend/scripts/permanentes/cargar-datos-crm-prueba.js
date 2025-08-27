@@ -2,14 +2,14 @@
 // SCRIPT PARA CARGAR DATOS DE PRUEBA CRM
 // ===============================================
 
-import { TursoClient } from '@libsql/client';
+import { TursoClient } from 'mongoose';
 import dotenv from 'dotenv';
 
 dotenv.config();
 
 const tursoClient = new TursoClient({
-    url: process.env.TURSO_DATABASE_URL,
-    authToken: process.env.TURSO_AUTH_TOKEN,
+    url: process.env.MONGODB_URI,
+    authToken: process.env.MONGODB_AUTH_TOKEN,
 });
 
 // Datos de prueba para clientes

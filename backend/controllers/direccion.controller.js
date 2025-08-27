@@ -1,4 +1,4 @@
-const tursoClient = require('../lib/tursoClient.js');
+import MongoDBConnection from '../config/mongodb';
 
 // Obtener la configuración actual
 const getConfiguracion = async (req, res) => {

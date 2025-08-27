@@ -5,7 +5,7 @@
  * Sistema básico de búsqueda en base de datos sin IA
  */
 
-const tursoClient = require('../lib/tursoClient.js');
+import MongoDBConnection from '../config/mongodb';
 
 class SimpleSearchSystem {
   static async search(query, organizationId = 1) {

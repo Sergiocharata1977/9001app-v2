@@ -1,4 +1,4 @@
-import { createClient } from '@libsql/client';
+import { createClient } from 'mongoose';
 import OpenAI from 'openai';
 
 interface RAGQuery {
@@ -62,7 +62,7 @@ export class TursoRAGService {
       
       const startTime = Date.now();
       
-      // Paso 1: Buscar datos relevantes en Turso
+      // MongoDB
       const relevantData = await this.searchTursoData(query.question, query.organizationId);
       
       // Paso 2: Calcular relevancia

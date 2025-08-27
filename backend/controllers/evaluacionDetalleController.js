@@ -1,4 +1,4 @@
-const turso = require('../lib/tursoClient.js');
+const turso = require('../config/mongodb');
 
 // Obtener todos los detalles de una programación de evaluación
 const getDetallesPorProgramacion = async (req, res) => {

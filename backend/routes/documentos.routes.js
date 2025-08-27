@@ -1,7 +1,7 @@
 const { Router  } = require('express');
 const multer = require('multer');
 const path = require('path');
-const tursoClient = require('../lib/tursoClient.js');
+import MongoDBConnection from '../config/mongodb';
 const { fileURLToPath  } = require('url');
 const fs = require('fs');
 const authMiddleware = require('../middleware/authMiddleware.js');

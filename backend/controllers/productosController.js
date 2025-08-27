@@ -1,4 +1,4 @@
-const tursoClient = require('../lib/tursoClient.js');
+import MongoDBConnection from '../config/mongodb';
 
 // @desc    Obtener todos los productos de la organización
 // @route   GET /api/productos

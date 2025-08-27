@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const tursoClient = require('../lib/tursoClient.js');
+import MongoDBConnection from '../config/mongodb';
 
 // Unificar secreto con el usado al firmar en authController (fallback-secret)
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';

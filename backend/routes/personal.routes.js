@@ -1,5 +1,5 @@
 const express = require('express');
-const tursoClient = require('../lib/tursoClient.js');
+import MongoDBConnection from '../config/mongodb';
 const { auditMiddleware, auditActions, resourceTypes  } = require('../middleware/auditMiddleware.js');
 const authMiddleware = require('../middleware/authMiddleware.js');
 

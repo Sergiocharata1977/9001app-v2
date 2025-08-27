@@ -18,7 +18,7 @@ const TestSimpleComponent = () => {
         <ul className="space-y-1 text-sm">
           <li>• Frontend: React + Vite</li>
           <li>• Backend: Node.js + Express</li>
-          <li>• Base de datos: Turso (libsql)</li>
+          <li>• Base de datos: Turso (mongodb)</li>
           <li>• Autenticación: JWT</li>
           <li>• Ruta actual: {location.pathname}</li>
         </ul>

@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const tursoClient = require('../lib/tursoClient.js');
+import MongoDBConnection from '../config/mongodb';
 const { randomUUID } = require('crypto');
 
 /**

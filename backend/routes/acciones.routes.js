@@ -1,6 +1,6 @@
 const { Router  } = require('express');
 const { randomUUID  } = require('crypto');
-const tursoClient = require('../lib/tursoClient.js');
+import MongoDBConnection from '../config/mongodb';
 
 // Helper function to convert BigInt to string in objects
 function convertBigIntToString(obj) {

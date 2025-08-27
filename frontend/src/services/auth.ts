@@ -4,7 +4,7 @@ import { createApiClient } from './apiService.js';
 const authApiClient = createApiClient('/auth');
 const usersApiClient = createApiClient('/usuarios');
 
-// Servicio de autenticación adaptado para usar los nuevos endpoints de TursoDB
+// MongoDB
 export const authService = {
   /**
    * Inicia sesión con email y contraseña

@@ -109,8 +109,8 @@ const ConfiguracionEntornos = () => {
 
                 <div className="bg-gray-900 text-green-400 p-4 rounded-lg font-mono text-sm">
                   <div className="mb-2"># Contenido para .env.local:</div>
-                  <div>TURSO_DATABASE_URL=libsql://tu-base-desarrollo.turso.io</div>
-                  <div>TURSO_AUTH_TOKEN=eyJ... (tu token completo)</div>
+                  <div>MONGODB_URI=mongodb://tu-base-desarrollo.turso.io</div>
+                  <div>MONGODB_AUTH_TOKEN=eyJ... (tu token completo)</div>
                   <div>JWT_SECRET=desarrollo-local-secret-key-123456789</div>
                   <div>PORT=5000</div>
                   <div>NODE_ENV=development</div>
@@ -143,8 +143,8 @@ const ConfiguracionEntornos = () => {
                   <div className="space-y-2">
                     <h5 className="font-medium">Base de Datos:</h5>
                     <ul className="text-sm space-y-1">
-                      <li><code>TURSO_DATABASE_URL</code> - URL de Turso</li>
-                      <li><code>TURSO_AUTH_TOKEN</code> - Token de autenticación</li>
+                      <li><code>MONGODB_URI</code> - URL de Turso</li>
+                      <li><code>MONGODB_AUTH_TOKEN</code> - Token de autenticación</li>
                     </ul>
                   </div>
                   <div className="space-y-2">
