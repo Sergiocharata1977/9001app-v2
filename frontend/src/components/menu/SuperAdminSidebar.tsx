@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
@@ -11,9 +11,6 @@ import {
   Settings,
   Shield,
   BarChart3,
-  FileText,
-  Globe,
-  Server,
   Activity,
   Zap,
   ArrowLeft,
@@ -26,13 +23,17 @@ import {
 } from 'lucide-react';
 import useAuthStore from '@/store/authStore';
 
-const SuperAdminSidebar = ({ isOpen, onClose, isMobile }) => {
+const SuperAdminSidebar = ({ isOpen, onClose, isMobile }: {
+  isOpen: boolean;
+  onClose: () => void;
+  isMobile: boolean;
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const user = useAuthStore((state) => state.user);
-  const [expandedSections, setExpandedSections] = useState(['system', 'organizations', 'agents']);
+  const [expandedSections, setExpandedSections] = useState<string[]>(['system', 'organizations', 'agents']);
 
-  const toggleSection = (sectionId) => {
+  const toggleSection = (sectionId: string) => {
     setExpandedSections(prev => 
       prev.includes(sectionId) 
         ? prev.filter(id => id !== sectionId)
@@ -40,7 +41,7 @@ const SuperAdminSidebar = ({ isOpen, onClose, isMobile }) => {
     );
   };
 
-  const handleNavigation = (path) => {
+  const handleNavigation = (path: string) => {
     navigate(path);
     if (isMobile) {
       onClose();
@@ -56,31 +57,16 @@ const SuperAdminSidebar = ({ isOpen, onClose, isMobile }) => {
     return null;
   }
 
-  const menuSections = [
+  const menuSections = useMemo(() => [
     {
       id: 'system',
       name: '🏛️ Sistema Global',
       icon: Crown,
       color: 'purple',
       items: [
-        { 
-          name: 'Dashboard Global', 
-          path: '/super-admin/dashboard', 
-          icon: BarChart3,
-          description: 'Vista general de todas las organizaciones'
-        },
-        { 
-          name: 'Estadísticas Globales', 
-          path: '/super-admin/stats', 
-          icon: Activity,
-          description: 'Métricas del sistema completo'
-        },
-        { 
-          name: 'Monitoreo en Tiempo Real', 
-          path: '/super-admin/monitoring', 
-          icon: Zap,
-          description: 'Estado de servicios y rendimiento'
-        }
+        { name: 'Dashboard Global', path: '/super-admin/dashboard', icon: BarChart3, description: 'Vista general del sistema' },
+        { name: 'Estadísticas Globales', path: '/super-admin/stats', icon: Activity, description: 'Métricas del sistema' },
+        { name: 'Monitoreo en Tiempo Real', path: '/super-admin/monitoring', icon: Zap, description: 'Estado de servicios' }
       ]
     },
     {
@@ -89,30 +75,10 @@ const SuperAdminSidebar = ({ isOpen, onClose, isMobile }) => {
       icon: Bot,
       color: 'indigo',
       items: [
-        { 
-          name: 'Coordinación de Agentes', 
-          path: '/super-admin/coordination', 
-          icon: Bot,
-          description: 'Dashboard de coordinación de agentes'
-        },
-        { 
-          name: 'Demo de Flujo', 
-          path: '/super-admin/workflow-demo', 
-          icon: Workflow,
-          description: 'Demo interactivo del flujo de trabajo'
-        },
-        { 
-          name: 'Etapas Detalladas', 
-          path: '/super-admin/workflow-stages', 
-          icon: GitBranch,
-          description: 'Vista técnica de cada etapa'
-        },
-        { 
-          name: 'Integración Auto-Planner', 
-          path: '/super-admin/auto-planner', 
-          icon: Settings,
-          description: 'Conexión con sistema auto-planner existente'
-        }
+        { name: 'Coordinación de Agentes', path: '/super-admin/coordination', icon: Bot, description: 'Dashboard de agentes' },
+        { name: 'Demo de Flujo', path: '/super-admin/workflow-demo', icon: Workflow, description: 'Demo interactivo' },
+        { name: 'Etapas Detalladas', path: '/super-admin/workflow-stages', icon: GitBranch, description: 'Vista técnica' },
+        { name: 'Integración Auto-Planner', path: '/super-admin/auto-planner', icon: Settings, description: 'Auto-planner' }
       ]
     },
     {
@@ -121,24 +87,9 @@ const SuperAdminSidebar = ({ isOpen, onClose, isMobile }) => {
       icon: Building2,
       color: 'blue',
       items: [
-        { 
-          name: 'Todas las Organizaciones', 
-          path: '/super-admin/organizations', 
-          icon: Building2,
-          description: 'Administrar todas las organizaciones'
-        },
-        { 
-          name: 'Crear Organización', 
-          path: '/super-admin/organizations/create', 
-          icon: Building2,
-          description: 'Registrar nueva organización'
-        },
-        { 
-          name: 'Planes y Suscripciones', 
-          path: '/super-admin/plans', 
-          icon: Shield,
-          description: 'Gestionar planes de suscripción'
-        }
+        { name: 'Todas las Organizaciones', path: '/super-admin/organizations', icon: Building2, description: 'Administrar organizaciones' },
+        { name: 'Crear Organización', path: '/super-admin/organizations/create', icon: Building2, description: 'Nueva organización' },
+        { name: 'Planes y Suscripciones', path: '/super-admin/plans', icon: Shield, description: 'Gestionar planes' }
       ]
     },
     {
@@ -147,24 +98,9 @@ const SuperAdminSidebar = ({ isOpen, onClose, isMobile }) => {
       icon: Users,
       color: 'green',
       items: [
-        { 
-          name: 'Usuarios Globales', 
-          path: '/super-admin/users', 
-          icon: Users,
-          description: 'Todos los usuarios del sistema'
-        },
-        { 
-          name: 'Roles y Permisos', 
-          path: '/super-admin/roles', 
-          icon: Shield,
-          description: 'Configurar roles del sistema'
-        },
-        { 
-          name: 'Auditoría de Accesos', 
-          path: '/super-admin/audit', 
-          icon: Activity,
-          description: 'Logs de acceso y actividad'
-        }
+        { name: 'Usuarios Globales', path: '/super-admin/users', icon: Users, description: 'Todos los usuarios' },
+        { name: 'Roles y Permisos', path: '/super-admin/roles', icon: Shield, description: 'Configurar roles' },
+        { name: 'Auditoría de Accesos', path: '/super-admin/audit', icon: Activity, description: 'Logs de acceso' }
       ]
     },
     {
@@ -173,24 +109,8 @@ const SuperAdminSidebar = ({ isOpen, onClose, isMobile }) => {
       icon: Database,
       color: 'orange',
       items: [
-        { 
-          name: 'Esquema de BD', 
-          path: '/super-admin/database/schema', 
-          icon: Database,
-          description: 'Estructura de la base de datos'
-        },
-        { 
-          name: 'Documentación BD', 
-          path: '/super-admin/database/docs', 
-          icon: FileText,
-          description: 'Documentación técnica completa'
-        },
-        { 
-          name: 'Backup y Restore', 
-          path: '/super-admin/database/backup', 
-          icon: Server,
-          description: 'Gestión de respaldos'
-        }
+        { name: 'Esquema de BD', path: '/super-admin/database/schema', icon: Database, description: 'Estructura BD' },
+        { name: 'Backup y Restore', path: '/super-admin/database/backup', icon: Database, description: 'Gestión respaldos' }
       ]
     },
     {
@@ -199,36 +119,16 @@ const SuperAdminSidebar = ({ isOpen, onClose, isMobile }) => {
       icon: Settings,
       color: 'red',
       items: [
-        { 
-          name: 'Configuración Global', 
-          path: '/super-admin/config', 
-          icon: Settings,
-          description: 'Configuración del sistema'
-        },
-        { 
-          name: 'Features del Sistema', 
-          path: '/super-admin/features', 
-          icon: Zap,
-          description: 'Habilitar/deshabilitar features'
-        },
-        { 
-          name: 'Logs del Sistema', 
-          path: '/super-admin/logs', 
-          icon: Activity,
-          description: 'Logs de errores y eventos'
-        },
-        { 
-          name: 'Mantenimiento', 
-          path: '/super-admin/maintenance', 
-          icon: Server,
-          description: 'Modo mantenimiento'
-        }
+        { name: 'Configuración Global', path: '/super-admin/config', icon: Settings, description: 'Configuración' },
+        { name: 'Features del Sistema', path: '/super-admin/features', icon: Zap, description: 'Habilitar features' },
+        { name: 'Logs del Sistema', path: '/super-admin/logs', icon: Activity, description: 'Logs de errores' },
+        { name: 'Mantenimiento', path: '/super-admin/maintenance', icon: Settings, description: 'Modo mantenimiento' }
       ]
     }
-  ];
+  ], []);
 
-  const getColorClasses = (color, isActive = false) => {
-    const colors = {
+  const getColorClasses = useMemo(() => (color: string, isActive = false) => {
+    const colors: Record<string, string> = {
       purple: isActive ? 'bg-purple-600 text-white' : 'text-purple-600 hover:bg-purple-50',
       blue: isActive ? 'bg-blue-600 text-white' : 'text-blue-600 hover:bg-blue-50',
       green: isActive ? 'bg-green-600 text-white' : 'text-green-600 hover:bg-green-50',
@@ -237,7 +137,7 @@ const SuperAdminSidebar = ({ isOpen, onClose, isMobile }) => {
       red: isActive ? 'bg-red-600 text-white' : 'text-red-600 hover:bg-red-50'
     };
     return colors[color] || colors.purple;
-  };
+  }, []);
 
   return (
     <motion.div

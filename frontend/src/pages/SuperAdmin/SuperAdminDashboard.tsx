@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,10 +12,18 @@ import {
   TrendingUp,
   AlertTriangle,
   CheckCircle,
-  Clock
+  Clock,
+  Bot,
+  Zap
 } from 'lucide-react';
+import { useAgentStatus } from '@/hooks/useAgentStatus';
+import { useAgentMetrics } from '@/hooks/useAgentMetrics';
+import AgentStatus from '@/components/AgentStatus';
 
 const SuperAdminDashboard = () => {
+  const { agents, getActiveAgents, getCompletedAgents } = useAgentStatus();
+  const { systemMetrics } = useAgentMetrics();
+  
   const [stats, setStats] = useState({
     organizations: 0,
     users: 0,
@@ -32,6 +40,13 @@ const SuperAdminDashboard = () => {
       systemHealth: 'excellent'
     });
   }, []);
+
+  const agentStats = useMemo(() => ({
+    total: agents.length,
+    active: getActiveAgents().length,
+    completed: getCompletedAgents().length,
+    averageProgress: agents.reduce((sum, agent) => sum + agent.progress, 0) / agents.length
+  }), [agents, getActiveAgents, getCompletedAgents]);
 
   const getHealthColor = (health) => {
     switch (health) {
@@ -80,10 +95,10 @@ const SuperAdminDashboard = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Usuarios Totales</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.users}</p>
+                <p className="text-sm font-medium text-gray-600">Agentes Activos</p>
+                <p className="text-2xl font-bold text-gray-900">{agentStats.active}</p>
               </div>
-              <Users className="w-8 h-8 text-green-500" />
+              <Bot className="w-8 h-8 text-green-500" />
             </div>
           </CardContent>
         </Card>
@@ -92,8 +107,8 @@ const SuperAdminDashboard = () => {
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Usuarios Activos</p>
-                <p className="text-2xl font-bold text-gray-900">{stats.activeUsers}</p>
+                <p className="text-sm font-medium text-gray-600">Progreso Total</p>
+                <p className="text-2xl font-bold text-gray-900">{agentStats.averageProgress.toFixed(1)}%</p>
               </div>
               <Activity className="w-8 h-8 text-purple-500" />
             </div>
@@ -235,6 +250,11 @@ const SuperAdminDashboard = () => {
         </Card>
       </div>
 
+      {/* Estado de Agentes */}
+      <div className="mt-8">
+        <AgentStatus agents={agents} showDetails={false} />
+      </div>
+
       {/* Acciones Rápidas */}
       <div className="mt-8">
         <Card className="shadow-lg">
@@ -244,16 +264,16 @@ const SuperAdminDashboard = () => {
           <CardContent className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <Button variant="outline" className="h-12">
-                <Shield className="w-4 h-4 mr-2" />
-                Configurar Roles
+                <Bot className="w-4 h-4 mr-2" />
+                Gestionar Agentes
               </Button>
               <Button variant="outline" className="h-12">
-                <TrendingUp className="w-4 h-4 mr-2" />
-                Ver Estadísticas
+                <Zap className="w-4 h-4 mr-2" />
+                Monitoreo
               </Button>
               <Button variant="outline" className="h-12">
                 <Activity className="w-4 h-4 mr-2" />
-                Monitoreo
+                Estadísticas
               </Button>
             </div>
           </CardContent>
