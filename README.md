@@ -3,7 +3,7 @@
 [![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-19+-blue.svg)](https://reactjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue.svg)](https://www.typescriptlang.org/)
-[![Turso](https://img.shields.io/badge/Database-Turso%20SQLite-orange.svg)](https://turso.tech/)
+[![MongoDB](https://img.shields.io/badge/Database-MongoDB-green.svg)](https://www.mongodb.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 ## 📋 Descripción
@@ -247,6 +247,37 @@ npm run build
 # Subir dist/ a tu servidor web
 ```
 
+## 📚 Documentación
+
+### Documentación Interna
+- [📖 Documentación Completa](./docs/README.md)
+- [🏗️ Arquitectura del Sistema](./docs/internal/super-admin/architecture.md)
+- [💻 Setup del Entorno](./docs/internal/programmers/environment-setup.md)
+- [🔧 API Reference](./docs/api/api-reference.md)
+
+### Para Super Administradores
+- [👑 Gestión de Organizaciones](./docs/internal/super-admin/organization-management.md)
+- [🔒 Configuración de Seguridad](./docs/internal/super-admin/security-config.md)
+- [📊 Monitoreo y Logs](./docs/internal/super-admin/monitoring.md)
+
+### Para Desarrolladores
+- [🏗️ Arquitectura de Código](./docs/internal/programmers/code-architecture.md)
+- [🗄️ Base de Datos](./docs/internal/programmers/database.md)
+- [🧪 Testing](./docs/internal/programmers/testing.md)
+
+### Procesos y Planes
+- [🔄 Flujo de Desarrollo](./docs/internal/processes/development-workflow.md)
+- [🚀 Roadmap 2024](./docs/internal/plans/development-roadmap.md)
+
+## 🔧 Scripts Organizados
+
+Los scripts están organizados por categoría en el directorio [`/scripts`](./scripts/):
+
+- **🚀 Deployment**: Scripts de despliegue ([docs](./scripts/deployment/README.md))
+- **⚙️ Setup**: Scripts de configuración inicial
+- **🔧 Maintenance**: Scripts de mantenimiento
+- **💻 Development**: Scripts de desarrollo
+
 ## 🤝 Contribución
 
 1. Fork el proyecto
@@ -254,6 +285,12 @@ npm run build
 3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
 4. Push a la rama (`git push origin feature/AmazingFeature`)
 5. Abre un Pull Request
+
+### Convenciones de Desarrollo
+- Sigue el [flujo de desarrollo](./docs/internal/processes/development-workflow.md)
+- Usa [conventional commits](https://www.conventionalcommits.org/)
+- Mantén cobertura de tests > 80%
+- Documenta nuevas características
 
 ## 📝 Licencia
 
@@ -266,8 +303,9 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 
 ## 🙏 Agradecimientos
 
-- **Turso** por la base de datos SQLite en la nube
+- **MongoDB** por la base de datos robusta y escalable
 - **React** y **Node.js** por los frameworks
+- **TypeScript** por el sistema de tipos
 - **Tailwind CSS** por el sistema de diseño
 - **Radix UI** por los componentes accesibles
 
