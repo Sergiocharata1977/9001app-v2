@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider } from './context/ThemeContext.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
-import AppRoutes from './routes/AppRoutes.jsx';
+import AppRoutes from './routes/AppRoutes.tsx';
 import { QueryProvider } from './hooks/useQueryClient.jsx';
 import { useAuthInitializer } from './hooks/useAuthInitializer.js';
 import LoginDebug from './components/common/LoginDebug.jsx';
