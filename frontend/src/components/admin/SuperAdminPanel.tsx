@@ -14,12 +14,14 @@ import {
   Activity,
   Shield,
   UserCheck,
-  BarChart3
+  BarChart3,
+  Bot
 } from 'lucide-react';
 import { adminService } from '@/services/adminService';
 import OrganizationModal from './OrganizationModal';
 import UserModal from './UserModal';
 import AdminDashboard from './AdminDashboard';
+import AgentDashboard from './AgentDashboard';
 
 const SuperAdminPanel = () => {
   const [organizations, setOrganizations] = useState([]);
@@ -153,14 +155,19 @@ const SuperAdminPanel = () => {
             <Users className="w-4 h-4 mr-2" />
             Usuarios
           </Button>
+          <Button variant="outline" onClick={() => setActiveTab('agents')}>
+            <Bot className="w-4 h-4 mr-2" />
+            Agentes
+          </Button>
         </div>
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5">
+        <TabsList className="grid w-full grid-cols-6">
           <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
           <TabsTrigger value="organizations">Organizaciones</TabsTrigger>
           <TabsTrigger value="users">Usuarios Globales</TabsTrigger>
+          <TabsTrigger value="agents">🤖 Agent Coordinator</TabsTrigger>
           <TabsTrigger value="features">Features</TabsTrigger>
           <TabsTrigger value="monitoring">Monitoreo</TabsTrigger>
         </TabsList>
@@ -267,6 +274,10 @@ const SuperAdminPanel = () => {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+
+        <TabsContent value="agents" className="space-y-4">
+          <AgentDashboard />
         </TabsContent>
 
         <TabsContent value="features" className="space-y-4">
