@@ -1,27 +1,19 @@
-const mongoClient = require('../lib/mongoClient.js');
+const PlanesModel = require('../models/Planes.js');
 
-// Obtener todos los planes de la organización
+// Obtener todos los planes disponibles
 const getOrganizationPlanes = async (req, res) => {
+  const planesModel = new PlanesModel();
+  
   try {
-    const currentUser = req.user;
-    const organizationId = currentUser.organization_id;
+    console.log('📋 Obteniendo planes disponibles...');
 
-    console.log(`📋 Obteniendo planes para organización ${organizationId}`);
-
-    const result = await mongoClient.execute({
-      sql: `SELECT id, title, description, status, start_date, end_date, 
-             responsible_id, responsible_name, created_at, updated_at
-             FROM planes 
-             WHERE organization_id = ?
-             ORDER BY created_at DESC`,
-      args: [organizationId]
-    });
-
-    console.log(`✅ Planes encontrados para organización ${organizationId}`);
+    const planes = await planesModel.getAllPlanes();
+    
+    console.log(`✅ ${planes.length} planes encontrados`);
     res.json({
       success: true,
-      data: result.rows,
-      total: result.rows.length
+      data: planes,
+      total: planes.length
     });
   } catch (error) {
     console.error('❌ Error obteniendo planes:', error);
@@ -30,6 +22,68 @@ const getOrganizationPlanes = async (req, res) => {
       message: 'Error al obtener planes',
       error: error.message
     });
+  } finally {
+    await planesModel.disconnect();
+  }
+};
+
+// Obtener plan específico por ID
+const getPlanById = async (req, res) => {
+  const planesModel = new PlanesModel();
+  
+  try {
+    const { id } = req.params;
+    console.log(`📋 Obteniendo plan con ID: ${id}`);
+
+    const plan = await planesModel.getPlanById(id);
+    
+    if (!plan) {
+      return res.status(404).json({
+        success: false,
+        message: 'Plan no encontrado'
+      });
+    }
+
+    console.log(`✅ Plan encontrado: ${plan.nombre}`);
+    res.json({
+      success: true,
+      data: plan
+    });
+  } catch (error) {
+    console.error('❌ Error obteniendo plan:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener plan',
+      error: error.message
+    });
+  } finally {
+    await planesModel.disconnect();
+  }
+};
+
+// Obtener estadísticas de planes
+const getPlanesStats = async (req, res) => {
+  const planesModel = new PlanesModel();
+  
+  try {
+    console.log('📊 Obteniendo estadísticas de planes...');
+
+    const stats = await planesModel.getPlanesStats();
+    
+    console.log('✅ Estadísticas de planes obtenidas');
+    res.json({
+      success: true,
+      data: stats
+    });
+  } catch (error) {
+    console.error('❌ Error obteniendo estadísticas de planes:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error al obtener estadísticas de planes',
+      error: error.message
+    });
+  } finally {
+    await planesModel.disconnect();
   }
 };
 
@@ -130,6 +184,8 @@ const cancelSuscripcion = async (req, res) => {
 
 module.exports = {
   getOrganizationPlanes,
+  getPlanById,
+  getPlanesStats,
   getSuscripcionActual,
   createSuscripcion,
   cancelSuscripcion

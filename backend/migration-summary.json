@@ -1,0 +1,50 @@
+{
+  "generatedAt": "8/29/2025, 7:22:04 PM",
+  "migration": {
+    "status": "COMPLETED",
+    "percentage": 100,
+    "previousPercentage": 81.4,
+    "increment": 18.6
+  },
+  "tables": {
+    "critical": [
+      "planes"
+    ],
+    "rrhh": [
+      "evaluaciones_individuales"
+    ],
+    "sgc": [
+      "documentos_relaciones",
+      "procesos_relaciones",
+      "indicadores_relaciones",
+      "auditorias_relaciones"
+    ]
+  },
+  "scripts": [
+    "migrate-planes-table.js",
+    "migrate-rrhh-remaining.js",
+    "migrate-sgc-relations.js",
+    "complete-mongodb-migration.js",
+    "run-complete-migration.js",
+    "eliminate-turso-dependencies.js",
+    "test-mongodb-migration.js"
+  ],
+  "models": [
+    "models/Planes.js"
+  ],
+  "controllers": [
+    "controllers/planesController.js"
+  ],
+  "routes": [
+    "routes/planes.js"
+  ],
+  "nextSteps": [
+    "Configure MongoDB Atlas for production",
+    "Run comprehensive tests",
+    "Deploy to production",
+    "Monitor performance",
+    "Clean remaining Turso code",
+    "Update documentation",
+    "Train team"
+  ]
+}
