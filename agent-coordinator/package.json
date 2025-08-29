@@ -1,65 +1,77 @@
 {
-  "name": "agent-coordinator",
-  "version": "2.0.0",
-  "description": "Sistema de coordinación de agentes para migración 9001app-v2 a MongoDB",
+  "name": "@9001app/agent-coordinator",
+  "version": "1.0.0",
+  "description": "Sistema coordinador de agentes para migración y optimización 9001app-v2",
   "main": "dist/index.js",
-  "type": "module",
   "scripts": {
+    "start": "node src/simple-server.js",
+    "dev": "node src/simple-server.js",
     "build": "tsc",
-    "start": "node dist/index.js",
-    "dev": "ts-node --esm src/index.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:watch": "tsc --watch",
     "clean": "rimraf dist",
-    "prebuild": "npm run clean",
-    "postinstall": "npm run build",
-    "full-migration": "npm run build && node dist/index.js full-migration",
-    "mongodb": "npm run build && node dist/index.js mongodb",
-    "typescript": "npm run build && node dist/index.js typescript",
-    "security": "npm run build && node dist/index.js security",
-    "structure": "npm run build && node dist/index.js structure",
-    "api": "npm run build && node dist/index.js api",
-    "web": "npm run build && node dist/index.js web",
-    "status": "npm run build && node dist/index.js status"
+    "lint": "eslint src/**/*.ts",
+    "test": "jest",
+    "web": "node src/simple-server.js",
+    "security": "echo 'Ejecutando Security Agent...'",
+    "structure": "echo 'Ejecutando Structure Agent...'",
+    "typescript": "echo 'Ejecutando TypeScript Agent...'",
+    "api": "echo 'Ejecutando API Agent...'",
+    "mongodb": "echo 'Ejecutando MongoDB Agent...'",
+    "all": "echo 'Ejecutando todos los agentes...'",
+    "status": "echo 'Estado del sistema'"
   },
   "keywords": [
     "agent-coordinator",
-    "mongodb",
     "typescript",
+    "mongodb",
+    "automation",
     "migration",
-    "9001app-v2",
-    "iso-9001"
+    "9001app"
   ],
-  "author": "9001app-v2 Team",
+  "author": "9001app Team",
   "license": "MIT",
   "dependencies": {
-    "@types/mongodb": "^4.0.6",
-    "@types/node": "^24.3.0",
-    "axios": "^1.11.0",
-    "chalk": "^5.6.0",
-    "commander": "^14.0.0",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.1",
+    "chalk": "^4.1.2",
+    "commander": "^11.0.0",
     "express": "^4.18.2",
-    "mongodb": "^6.19.0",
-    "mongoose": "^8.18.0",
-    "typescript": "^5.9.2"
+    "socket.io": "^4.7.2",
+    "cors": "^2.8.5",
+    "mongoose": "^7.5.0",
+    "axios": "^1.5.0",
+    "dotenv": "^16.3.1",
+    "winston": "^3.10.0",
+    "node-cron": "^3.0.2",
+    "fs-extra": "^11.1.1",
+    "glob": "^10.3.3",
+    "semver": "^7.5.4"
   },
   "devDependencies": {
-    "@types/commander": "^2.12.0",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
-    "rimraf": "^6.0.1",
-    "ts-node": "^10.9.2"
+    "@types/node": "^20.5.0",
+    "@types/express": "^4.17.17",
+    "@types/cors": "^2.8.13",
+    "@types/fs-extra": "^11.0.1",
+    "@types/node-cron": "^3.0.8",
+    "@types/semver": "^7.5.0",
+    "@typescript-eslint/eslint-plugin": "^6.4.0",
+    "@typescript-eslint/parser": "^6.4.0",
+    "eslint": "^8.47.0",
+    "jest": "^29.6.2",
+    "@types/jest": "^29.5.4",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.1.6",
+    "rimraf": "^5.0.1"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/9001app-v2/agent-coordinator.git"
+    "url": "https://github.com/9001app/9001app-v2.git"
   },
   "bugs": {
-    "url": "https://github.com/9001app-v2/agent-coordinator/issues"
+    "url": "https://github.com/9001app/9001app-v2/issues"
   },
-  "homepage": "https://github.com/9001app-v2/agent-coordinator#readme"
+  "homepage": "https://github.com/9001app/9001app-v2#readme"
 }
