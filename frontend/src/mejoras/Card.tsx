@@ -3,8 +3,15 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, FileText, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import type { Hallazgo, Accion } from '../types/mejoras';
 
-export function Card({ item, isOverlay = false, onClick }) {
+interface CardProps {
+  item: Hallazgo | Accion;
+  isOverlay?: boolean;
+  onClick: () => void;
+}
+
+export function Card({ item, isOverlay = false, onClick }: CardProps) {
   const {
     attributes,
     listeners,
@@ -13,7 +20,7 @@ export function Card({ item, isOverlay = false, onClick }) {
     transition,
     isDragging,
   } = useSortable({ 
-    id: item.id,
+    id: item._id!,
     disabled: isOverlay,
   });
 
@@ -23,9 +30,9 @@ export function Card({ item, isOverlay = false, onClick }) {
     opacity: isDragging && !isOverlay ? 0 : 1,
   };
 
-  const isHallazgo = item.type === 'hallazgo';
-  const itemNumber = isHallazgo ? item.numeroHallazgo : item.numeroAccion;
-  const itemTitle = isHallazgo ? item.titulo : (item.descripcion_accion || 'Acción sin descripción');
+  const isHallazgo = 'codigo' in item; // Distinguir entre Hallazgo y Accion
+  const itemNumber = isHallazgo ? (item as Hallazgo).codigo : `ACC-${(item as Accion)._id?.slice(-6)}`;
+  const itemTitle = isHallazgo ? (item as Hallazgo).titulo : (item as Accion).descripcion;
   const borderColor = isHallazgo ? 'border-l-4 border-blue-500' : 'border-l-4 border-yellow-500';
   const Icon = isHallazgo ? FileText : Zap;
 

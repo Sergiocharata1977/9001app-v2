@@ -16,13 +16,24 @@ import {
 import {
   FileText, X, Target, CheckSquare, RefreshCw, AlertCircle
 } from 'lucide-react';
-import { personalService } from '../../services/personalService.js';
-import { departamentosService } from '../../services/departamentos.js';
+import { personalService } from '../../services/personalService';
+import { departamentosService } from '../../services/departamentos';
+import type { 
+  AuditoriaModalProps, 
+  AuditoriaFormData, 
+  Personal, 
+  Departamento 
+} from '../../types/auditorias';
 
-const AuditoriaModal = ({ isOpen, onClose, onSave, auditoria }) => {
+const AuditoriaModal: React.FC<AuditoriaModalProps> = ({ 
+  isOpen, 
+  onClose, 
+  onSave, 
+  auditoria 
+}) => {
   const isEditMode = Boolean(auditoria);
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<AuditoriaFormData>({
     codigo: '',
     titulo: '',
     areas: [], // Cambiado de 'area' a 'areas' (array)
@@ -34,13 +45,13 @@ const AuditoriaModal = ({ isOpen, onClose, onSave, auditoria }) => {
     estado: 'planificada'
   });
 
-  const [personal, setPersonal] = useState([]);
-  const [departamentos, setDepartamentos] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [personal, setPersonal] = useState<Personal[]>([]);
+  const [departamentos, setDepartamentos] = useState<Departamento[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [saving, setSaving] = useState<boolean>(false);
 
   // Función para generar código automático
-  const generateAuditCode = () => {
+  const generateAuditCode = (): string => {
     const currentYear = new Date().getFullYear();
     const currentMonth = String(new Date().getMonth() + 1).padStart(2, '0');
     const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
@@ -79,7 +90,7 @@ const AuditoriaModal = ({ isOpen, onClose, onSave, auditoria }) => {
     }
   }, [isOpen, auditoria]);
 
-  const loadData = async () => {
+  const loadData = async (): Promise<void> => {
     try {
       setLoading(true);
       console.log('🔄 Cargando datos para auditoría...');
@@ -89,7 +100,7 @@ const AuditoriaModal = ({ isOpen, onClose, onSave, auditoria }) => {
       const personalRes = await personalService.getAllPersonal();
       console.log('👥 Respuesta del servicio personal:', personalRes);
 
-      let personalData = [];
+      let personalData: Personal[] = [];
       if (personalRes?.data) {
         personalData = personalRes.data;
       } else if (Array.isArray(personalRes)) {
@@ -106,7 +117,7 @@ const AuditoriaModal = ({ isOpen, onClose, onSave, auditoria }) => {
       const departamentosRes = await departamentosService.getAll();
       console.log('🏢 Respuesta del servicio departamentos:', departamentosRes);
 
-      let departamentosData = [];
+      let departamentosData: Departamento[] = [];
       if (departamentosRes?.data) {
         departamentosData = departamentosRes.data;
       } else if (Array.isArray(departamentosRes)) {
@@ -126,21 +137,21 @@ const AuditoriaModal = ({ isOpen, onClose, onSave, auditoria }) => {
     } catch (error) {
       console.error('❌ Error cargando datos:', error);
       // Datos mock temporales si hay error
-      const mockPersonal = [
-        { id: 1, nombres: 'Juan', apellidos: 'Pérez' },
-        { id: 2, nombres: 'María', apellidos: 'García' },
-        { id: 3, nombres: 'Carlos', apellidos: 'López' },
-        { id: 4, nombres: 'Ana', apellidos: 'Martínez' },
-        { id: 5, nombres: 'Luis', apellidos: 'Rodríguez' }
+      const mockPersonal: Personal[] = [
+        { _id: '1', nombre: 'Juan', apellido: 'Pérez', email: 'juan@test.com' },
+        { _id: '2', nombre: 'María', apellido: 'García', email: 'maria@test.com' },
+        { _id: '3', nombre: 'Carlos', apellido: 'López', email: 'carlos@test.com' },
+        { _id: '4', nombre: 'Ana', apellido: 'Martínez', email: 'ana@test.com' },
+        { _id: '5', nombre: 'Luis', apellido: 'Rodríguez', email: 'luis@test.com' }
       ];
       setPersonal(mockPersonal);
       
-      const mockDepartamentos = [
-        { id: 1, nombre: 'Calidad' },
-        { id: 2, nombre: 'Producción' },
-        { id: 3, nombre: 'Mantenimiento' },
-        { id: 4, nombre: 'Recursos Humanos' },
-        { id: 5, nombre: 'Administración' }
+      const mockDepartamentos: Departamento[] = [
+        { _id: '1', nombre: 'Calidad' },
+        { _id: '2', nombre: 'Producción' },
+        { _id: '3', nombre: 'Mantenimiento' },
+        { _id: '4', nombre: 'Recursos Humanos' },
+        { _id: '5', nombre: 'Administración' }
       ];
       setDepartamentos(mockDepartamentos);
       
@@ -150,17 +161,17 @@ const AuditoriaModal = ({ isOpen, onClose, onSave, auditoria }) => {
     }
   };
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>): void => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectChange = (name, value) => {
+  const handleSelectChange = (name: keyof AuditoriaFormData, value: string): void => {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   // Manejar selección múltiple de áreas
-  const handleAreasChange = (selectedAreas) => {
+  const handleAreasChange = (selectedAreas: string[]): void => {
     // Si se selecciona "todos", limpiar otras selecciones
     if (selectedAreas.includes('todos')) {
       setFormData(prev => ({ ...prev, areas: ['todos'] }));
@@ -170,7 +181,7 @@ const AuditoriaModal = ({ isOpen, onClose, onSave, auditoria }) => {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent): Promise<void> => {
     e.preventDefault();
 
     if (!formData.codigo || !formData.titulo || !formData.fecha_programada || formData.areas.length === 0 || !formData.objetivos) {
@@ -191,10 +202,10 @@ const AuditoriaModal = ({ isOpen, onClose, onSave, auditoria }) => {
   };
 
   const getEstadoOptions = () => [
-    { value: 'planificada', label: 'Planificada' },
-    { value: 'en_proceso', label: 'En Proceso' },
-    { value: 'completada', label: 'Completada' },
-    { value: 'cancelada', label: 'Cancelada' }
+    { value: 'planificada' as const, label: 'Planificada' },
+    { value: 'en_progreso' as const, label: 'En Proceso' },
+    { value: 'completada' as const, label: 'Completada' },
+    { value: 'cancelada' as const, label: 'Cancelada' }
   ];
 
   if (loading) {
@@ -271,8 +282,8 @@ const AuditoriaModal = ({ isOpen, onClose, onSave, auditoria }) => {
                       <SelectItem value="todos">
                         🏢 Todos los departamentos
                       </SelectItem>
-                      {departamentos.filter(depto => depto.id).map(depto => (
-                        <SelectItem key={`depto-${depto.id}`} value={depto.id.toString()}>
+                      {departamentos.filter(depto => depto._id).map(depto => (
+                        <SelectItem key={`depto-${depto._id}`} value={depto._id}>
                           {depto.nombre || 'Sin nombre'}
                         </SelectItem>
                       ))}
@@ -282,7 +293,7 @@ const AuditoriaModal = ({ isOpen, onClose, onSave, auditoria }) => {
                     <div className="mt-2 text-sm text-gray-600">
                       {formData.areas.includes('todos') 
                         ? 'Seleccionado: Todos los departamentos'
-                        : `Seleccionado: ${departamentos.filter(d => d.id && formData.areas.includes(d.id.toString())).map(d => d.nombre || 'Sin nombre').join(', ')}`
+                        : `Seleccionado: ${departamentos.filter(d => d._id && formData.areas.includes(d._id)).map(d => d.nombre || 'Sin nombre').join(', ')}`
                       }
                     </div>
                   )}
@@ -311,9 +322,9 @@ const AuditoriaModal = ({ isOpen, onClose, onSave, auditoria }) => {
                       <SelectValue placeholder="Seleccionar responsable" />
                     </SelectTrigger>
                     <SelectContent>
-                      {personal.filter(person => person.id).map(person => (
-                        <SelectItem key={`person-${person.id}`} value={person.id.toString()}>
-                          {(person.nombres || '')} {(person.apellidos || '')}
+                      {personal.filter(person => person._id).map(person => (
+                        <SelectItem key={`person-${person._id}`} value={person._id}>
+                          {person.nombre} {person.apellido}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -336,7 +347,7 @@ const AuditoriaModal = ({ isOpen, onClose, onSave, auditoria }) => {
               {/* Estado */}
               <div>
                 <Label htmlFor="estado">Estado</Label>
-                <Select value={formData.estado} onValueChange={(value) => handleSelectChange('estado', value)}>
+                <Select value={formData.estado} onValueChange={(value) => handleSelectChange('estado', value as AuditoriaFormData['estado'])}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
