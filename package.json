@@ -1,7 +1,7 @@
 {
   "name": "agent-coordinator",
   "version": "1.0.0",
-  "description": "Coordinador de agentes para proyecto ISO 9001",
+  "description": "Coordinador de agentes para proyecto ISO 9001 con Testing Completo",
   "main": "dist/coordinator.js",
   "scripts": {
     "build": "tsc",
@@ -14,7 +14,19 @@
     "typescript": "node dist/coordinator.js typescript",
     "api": "node dist/coordinator.js api",
     "full": "node dist/coordinator.js full-migration",
-    "web": "node dist/coordinator.js web"
+    "web": "node dist/coordinator.js web",
+    "test": "node scripts/test-runner.js",
+    "test:frontend": "node scripts/test-runner.js --frontend-only",
+    "test:backend": "node scripts/test-runner.js --backend-only",
+    "test:security": "node scripts/test-runner.js --security-only",
+    "test:performance": "node scripts/test-runner.js --performance-only",
+    "debugbot:analyze": "node scripts/test-runner.js --no-performance",
+    "debugbot:full": "node scripts/test-runner.js",
+    "debugbot:quick": "node scripts/test-runner.js --no-security --no-performance",
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install",
+    "clean": "rm -rf node_modules frontend/node_modules backend/node_modules",
+    "clean:coverage": "rm -rf frontend/coverage backend/coverage test-reports",
+    "setup:testing": "chmod +x scripts/test-runner.js"
   },
   "dependencies": {
     "@types/node": "^20.0.0",

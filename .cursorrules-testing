@@ -1,0 +1,196 @@
+# DebugBot Testing Configuration for Cursor AI
+# Configuración de testing automatizado con DebugBot
+
+# CONFIGURACIÓN DE TESTING AUTOMATIZADO
+- DebugBot debe ejecutar tests automáticamente en cada cambio de código
+- Análisis de cobertura de código en tiempo real
+- Detección temprana de bugs y problemas de calidad
+- Sugerencias automáticas de mejora de código
+- Integración con CI/CD para testing continuo
+
+# COMANDOS DE TESTING AUTOMATIZADOS
+test:
+  frontend:
+    unit: "cd frontend && npm run test"
+    integration: "cd frontend && npm run test:integration"
+    e2e: "cd frontend && npm run cypress:run"
+    coverage: "cd frontend && npm run test -- --coverage"
+    watch: "cd frontend && npm run test -- --watch"
+  
+  backend:
+    unit: "cd backend && npm test"
+    integration: "cd backend && npm run test:integration"
+    coverage: "cd backend && npm run test -- --coverage"
+    watch: "cd backend && npm run test -- --watch"
+
+# ANÁLISIS DE CÓDIGO AUTOMATIZADO
+analysis:
+  typescript:
+    check: "cd frontend && npm run type-check"
+    lint: "cd frontend && npm run lint"
+    format: "cd frontend && npm run format"
+  
+  quality:
+    complexity: "Analizar complejidad ciclomática"
+    duplicates: "Detectar código duplicado"
+    security: "Análisis de vulnerabilidades"
+    performance: "Análisis de rendimiento"
+
+# MÉTRICAS DE CALIDAD REQUERIDAS
+quality_gates:
+  coverage:
+    statements: 70
+    branches: 70
+    functions: 70
+    lines: 70
+  
+  typescript:
+    strict: true
+    no_any: true
+    no_implicit_any: true
+  
+  eslint:
+    max_warnings: 0
+    max_errors: 0
+
+# TESTING AUTOMATIZADO POR COMPONENTE
+component_testing:
+  critical_components:
+    - "AuthStore"
+    - "CRMLayout"
+    - "ErrorBoundary"
+    - "FormValidation"
+    - "ApiServices"
+  
+  test_types:
+    - unit_tests
+    - integration_tests
+    - snapshot_tests
+    - accessibility_tests
+    - performance_tests
+
+# DEBUGBOT TRIGGERS
+auto_triggers:
+  on_file_save:
+    - run_relevant_tests
+    - check_typescript_errors
+    - run_linting
+    - analyze_code_quality
+  
+  on_commit:
+    - run_full_test_suite
+    - generate_coverage_report
+    - security_scan
+    - performance_analysis
+  
+  on_pull_request:
+    - run_integration_tests
+    - check_coverage_threshold
+    - code_quality_review
+    - accessibility_audit
+
+# CONFIGURACIÓN DE REPORTES
+reporting:
+  formats:
+    - html
+    - json
+    - lcov
+    - junit
+  
+  destinations:
+    - console
+    - file_system
+    - ci_cd_pipeline
+    - monitoring_dashboard
+
+# INTEGRACIÓN CON HERRAMIENTAS
+integrations:
+  jest:
+    config: "jest.config.ts"
+    watch_mode: true
+    coverage_threshold: 70
+  
+  cypress:
+    config: "cypress.config.js"
+    browser: "chrome"
+    headless: true
+  
+  eslint:
+    config: "eslint.config.js"
+    auto_fix: true
+  
+  prettier:
+    config: ".prettierrc"
+    auto_format: true
+
+# DEBUGGING AUTOMÁTICO
+auto_debugging:
+  error_detection:
+    - runtime_errors
+    - type_errors
+    - logic_errors
+    - performance_issues
+  
+  suggestions:
+    - code_improvements
+    - best_practices
+    - optimization_tips
+    - security_fixes
+
+# MONITOREO CONTINUO
+monitoring:
+  metrics:
+    - test_execution_time
+    - coverage_trends
+    - error_rates
+    - performance_metrics
+  
+  alerts:
+    - failing_tests
+    - coverage_drops
+    - security_vulnerabilities
+    - performance_regressions
+
+# COMANDOS ESPECÍFICOS PARA DEBUGBOT
+debugbot_commands:
+  analyze: "Analizar calidad del código actual"
+  test: "Ejecutar suite completa de tests"
+  coverage: "Generar reporte de cobertura"
+  security: "Escaneo de seguridad"
+  performance: "Análisis de rendimiento"
+  suggest: "Sugerencias de mejora"
+  fix: "Auto-corrección de problemas menores"
+
+# CONFIGURACIÓN DE ENTORNOS
+environments:
+  development:
+    auto_testing: true
+    watch_mode: true
+    detailed_logging: true
+  
+  staging:
+    full_test_suite: true
+    performance_testing: true
+    security_scanning: true
+  
+  production:
+    smoke_tests: true
+    monitoring: true
+    alerting: true
+
+# PATRONES DE EXCLUSIÓN
+exclude_patterns:
+  - "node_modules/**"
+  - "dist/**"
+  - "build/**"
+  - "coverage/**"
+  - "*.test.ts"
+  - "*.spec.ts"
+  - "*.d.ts"
+
+# CONFIGURACIÓN DE PERFORMANCE
+performance:
+  test_timeout: 10000
+  parallel_execution: true
+  cache_results: true
+  incremental_testing: true
