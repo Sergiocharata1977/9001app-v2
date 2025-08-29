@@ -3,6 +3,7 @@ import { Toaster } from 'react-hot-toast';
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import LoginDebug from './components/common/LoginDebug.jsx';
 import SuperAdminRedirect from './components/common/SuperAdminRedirect.jsx';
+import SuperAdminTestAuth from './components/admin/super-admin/SuperAdminTestAuth.tsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { ThemeProvider } from './context/ThemeContext.jsx';
 import { useAuthInitializer } from './hooks/useAuthInitializer.js';
@@ -38,6 +39,9 @@ const AppContent = () => {
       
       {/* Componente de debug para desarrollo */}
       <LoginDebug />
+      
+      {/* Componente de test para Super Admin */}
+      <SuperAdminTestAuth />
       
       <Toaster
         position="top-right"

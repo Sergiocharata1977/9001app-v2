@@ -104,6 +104,29 @@ const useAuthStore = create(
               return false;
             }
 
+            // Si es token de test, crear usuario mock
+            if (token === 'mock-super-admin-token-123') {
+              const mockUser = {
+                id: '999',
+                name: 'Super Admin Test',
+                email: 'superadmin@9001app.com',
+                role: 'super_admin',
+                organization_id: null,
+                organization_name: null,
+                organization_plan: null,
+                is_active: true,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              };
+              
+              set({
+                user: mockUser,
+                token,
+                isAuthenticated: true
+              });
+              return true;
+            }
+
             const response = await authApi.verifyToken();
             const { user } = response.data;
             
@@ -127,7 +150,8 @@ const useAuthStore = create(
 
         updateUser: (userData) => {
           set((state) => ({
-            user: { ...state.user, ...userData }
+            user: { ...state.user, ...userData },
+            isAuthenticated: true
           }));
         },
 
@@ -194,6 +218,31 @@ const useAuthStore = create(
             }
 
             set({ isLoading: true });
+            
+            // Si es token de test, crear usuario mock
+            if (token === 'mock-super-admin-token-123') {
+              const mockUser = {
+                id: '999',
+                name: 'Super Admin Test',
+                email: 'superadmin@9001app.com',
+                role: 'super_admin',
+                organization_id: null,
+                organization_name: null,
+                organization_plan: null,
+                is_active: true,
+                created_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              };
+              
+              set({
+                user: mockUser,
+                token,
+                isAuthenticated: true,
+                isLoading: false
+              });
+              return true;
+            }
+            
             const response = await authApi.verifyToken();
             const { user } = response.data;
             
