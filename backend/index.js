@@ -1,13 +1,33 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
+const mongoose = require('mongoose');
 
 // Importar middleware de autenticación
-const authMiddleware = require('./middleware/authMiddleware.js');
+const authMiddleware = require('./middleware/authMiddlewareMongo.js');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// Configuración de MongoDB
+const connectMongoDB = async () => {
+  try {
+    const mongoURI = process.env.MONGODB_URI || 'mongodb://localhost:27017/9001app-v2';
+    await mongoose.connect(mongoURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log('✅ MongoDB conectado exitosamente');
+  } catch (error) {
+    console.error('❌ Error conectando a MongoDB:', error);
+    process.exit(1);
+  }
+};
+
+// Conectar a MongoDB
+connectMongoDB();
 
 // Middleware
 app.use(cors());
@@ -45,6 +65,8 @@ const coordinacionRoutes = require('./routes/coordinacion.routes.js');
 const crmRoutes = require('./routes/crm.routes.js');
 const databaseRoutes = require('./routes/database.routes.js');
 const fileStructureRoutes = require('./routes/fileStructure.routes.js');
+const testMongoRoutes = require('./routes/testMongo.routes.js');
+const diagnosticRoutes = require('./routes/diagnostic.routes.js');
 
 // Importar rutas RAG del nuevo sistema
 let ragRoutes = null;
@@ -123,7 +145,7 @@ app.use('/api/politica-calidad', politicaCalidadRoutes);
 app.use('/api/events', eventsRoutes);
 
 // Rutas de coordinación de agentes
-app.use('/api', coordinacionRoutes);
+app.use('/api/coordinacion', coordinacionRoutes);
 
 // Rutas de CRM
 app.use('/api/crm', crmRoutes);
@@ -133,6 +155,12 @@ app.use('/api/database', databaseRoutes);
 
 // Rutas de estructura de archivos
 app.use('/api/file-structure', fileStructureRoutes);
+
+// Rutas de prueba de MongoDB (sin autenticación)
+app.use('/api/test-mongo', testMongoRoutes);
+
+// Rutas de diagnóstico del sistema (sin autenticación)
+app.use('/api/diagnostic', diagnosticRoutes);
 
 // Rutas de RAG (si está disponible)
 if (ragRoutes) {

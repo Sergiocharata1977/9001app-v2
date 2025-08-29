@@ -112,6 +112,12 @@ const AccionSingle = lazy(() => import('../components/acciones/AccionSingle'));
 // Componente de prueba
 const TestSimpleComponent = lazy(() => import("../components/TestSimpleComponent"));
 
+// Componente de diagnóstico de conexión
+const TestConnection = lazy(() => import("../components/TestConnection"));
+
+// Componente de prueba de renderizado de datos
+const TestDataRendering = lazy(() => import("../components/TestDataRendering"));
+
 // Planes y Suscripciones
 const PlanesPage = lazy(() => import("../components/planes/PlanesListing"));
 
@@ -153,6 +159,10 @@ const AppRoutes = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/encuestas/responder/:id" element={<ResponderEncuesta />} />
+        
+        {/* Diagnóstico público (sin autenticación) */}
+        <Route path="/diagnostic" element={<TestConnection />} />
+        <Route path="/test-data" element={<TestDataRendering />} />
 
         {/* Rutas Web (Landing) */}
         <Route path="/" element={<WebHome />} />
@@ -302,6 +312,9 @@ const AppRoutes = () => {
 
                   {/* Prueba de renderizado */}
                   <Route path="test-simple" element={<TestSimpleComponent />} />
+                  
+                  {/* Diagnóstico de conexión Frontend-Backend */}
+                  <Route path="test-connection" element={<TestConnection />} />
 
                   {/* Planes y Suscripciones */}
                   <Route path="planes" element={<PlanesPage />} />

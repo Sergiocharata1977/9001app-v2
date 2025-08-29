@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const coordinacionController = require('../controllers/coordinacionController.js');
-const authMiddleware = require('../middleware/authMiddleware.js');
+const authMiddleware = require('../middleware/authMiddlewareMongo.js');
 const adminMiddleware = require('../middleware/adminMiddleware.js');
 
 // Aplicar middleware de autenticación a todas las rutas
