@@ -1,0 +1,219 @@
+{
+  "name": "DebugBot Testing Configuration",
+  "version": "1.0.0",
+  "description": "Automated testing and code analysis configuration for Cursor AI DebugBot",
+  "config": {
+    "autoTesting": {
+      "enabled": true,
+      "triggers": {
+        "onFileSave": true,
+        "onCommit": true,
+        "onPullRequest": true,
+        "onSchedule": "0 */6 * * *"
+      },
+      "scope": {
+        "unitTests": true,
+        "integrationTests": true,
+        "e2eTests": false,
+        "securityTests": true,
+        "performanceTests": true
+      }
+    },
+    "codeAnalysis": {
+      "typescript": {
+        "strict": true,
+        "noImplicitAny": true,
+        "exactOptionalPropertyTypes": true,
+        "noImplicitReturns": true
+      },
+      "linting": {
+        "eslint": {
+          "enabled": true,
+          "maxWarnings": 0,
+          "maxErrors": 0
+        },
+        "prettier": {
+          "enabled": true,
+          "autoFix": true
+        }
+      },
+      "security": {
+        "auditLevel": "high",
+        "vulnerabilityChecks": true,
+        "dependencyScanning": true
+      }
+    },
+    "coverage": {
+      "thresholds": {
+        "global": {
+          "branches": 70,
+          "functions": 70,
+          "lines": 70,
+          "statements": 70
+        },
+        "perFile": {
+          "branches": 60,
+          "functions": 60,
+          "lines": 60,
+          "statements": 60
+        }
+      },
+      "reporters": ["text", "lcov", "html", "json-summary"],
+      "exclude": [
+        "**/*.test.{ts,tsx,js,jsx}",
+        "**/*.spec.{ts,tsx,js,jsx}",
+        "**/node_modules/**",
+        "**/dist/**",
+        "**/build/**",
+        "**/coverage/**",
+        "**/*.d.ts",
+        "**/cypress/**"
+      ]
+    },
+    "testing": {
+      "frontend": {
+        "framework": "vitest",
+        "environment": "jsdom",
+        "setupFiles": ["./src/tests/setupTests.ts"],
+        "testMatch": [
+          "src/**/*.{test,spec}.{ts,tsx}",
+          "src/tests/**/*.{test,spec}.{ts,tsx}"
+        ],
+        "timeout": 10000,
+        "coverage": true
+      },
+      "backend": {
+        "framework": "jest",
+        "environment": "node",
+        "setupFiles": ["./tests/setupTests.ts"],
+        "testMatch": [
+          "tests/**/*.{test,spec}.{ts,js}",
+          "src/**/*.{test,spec}.{ts,js}"
+        ],
+        "timeout": 30000,
+        "coverage": true
+      },
+      "integration": {
+        "enabled": true,
+        "testMatch": [
+          "src/tests/integration/**/*.{test,spec}.{ts,tsx}",
+          "tests/integration/**/*.{test,spec}.{ts,js}"
+        ],
+        "timeout": 60000
+      },
+      "e2e": {
+        "framework": "cypress",
+        "enabled": false,
+        "browser": "chrome",
+        "headless": true,
+        "baseUrl": "http://localhost:3000"
+      }
+    },
+    "reporting": {
+      "formats": ["console", "json", "html", "junit"],
+      "outputDir": "./test-reports",
+      "notifications": {
+        "slack": false,
+        "email": false,
+        "github": true
+      },
+      "artifacts": {
+        "screenshots": true,
+        "videos": false,
+        "logs": true,
+        "coverage": true
+      }
+    },
+    "performance": {
+      "bundleAnalysis": {
+        "enabled": true,
+        "maxSize": "5MB",
+        "warnSize": "3MB"
+      },
+      "lighthouse": {
+        "enabled": false,
+        "thresholds": {
+          "performance": 90,
+          "accessibility": 95,
+          "bestPractices": 90,
+          "seo": 90
+        }
+      }
+    },
+    "automation": {
+      "preCommitHooks": {
+        "enabled": true,
+        "tasks": [
+          "lint",
+          "type-check",
+          "test-related",
+          "format"
+        ]
+      },
+      "cicd": {
+        "github": {
+          "enabled": true,
+          "workflow": ".github/workflows/testing-pipeline.yml"
+        },
+        "parallelJobs": 4,
+        "caching": true
+      }
+    },
+    "debugbot": {
+      "aiAssistance": {
+        "enabled": true,
+        "features": {
+          "testGeneration": true,
+          "bugDetection": true,
+          "codeOptimization": true,
+          "securityAnalysis": true,
+          "performanceAnalysis": true
+        }
+      },
+      "smartSuggestions": {
+        "enabled": true,
+        "types": [
+          "test-improvements",
+          "code-quality",
+          "performance-optimization",
+          "security-enhancements",
+          "accessibility-improvements"
+        ]
+      },
+      "autoFixes": {
+        "enabled": true,
+        "scope": [
+          "formatting",
+          "simple-linting-errors",
+          "import-organization",
+          "type-annotations"
+        ]
+      }
+    }
+  },
+  "scripts": {
+    "test": "node scripts/test-runner.js",
+    "test:frontend": "node scripts/test-runner.js --frontend-only",
+    "test:backend": "node scripts/test-runner.js --backend-only",
+    "test:security": "node scripts/test-runner.js --security-only",
+    "analyze": "node scripts/test-runner.js --no-performance",
+    "debugbot:full": "node scripts/test-runner.js",
+    "debugbot:quick": "node scripts/test-runner.js --no-security --no-performance"
+  },
+  "commands": {
+    "analyze": "Ejecutar análisis completo de código y calidad",
+    "test": "Ejecutar suite completa de pruebas",
+    "coverage": "Generar reporte de cobertura de código",
+    "security": "Análisis de seguridad y vulnerabilidades",
+    "performance": "Análisis de rendimiento y optimización",
+    "suggest": "Generar sugerencias de mejora automáticas",
+    "fix": "Aplicar correcciones automáticas menores"
+  },
+  "metadata": {
+    "created": "2024-01-20",
+    "lastUpdated": "2024-01-20",
+    "version": "1.0.0",
+    "author": "DebugBot Integration Team",
+    "description": "Configuración completa para testing automatizado con DebugBot de Cursor AI"
+  }
+}

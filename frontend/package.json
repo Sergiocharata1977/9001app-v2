@@ -12,12 +12,21 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
+    "test:coverage": "vitest --coverage",
+    "test:watch": "vitest --watch",
+    "test:integration": "vitest --config vitest.integration.config.ts",
+    "test:e2e": "cypress run",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
     "prepare": "echo 'Skipping husky install'",
     "type-check": "tsc --noEmit",
     "type-check:watch": "tsc --noEmit --watch",
-    "lint:types": "eslint --ext .ts,.tsx src/"
+    "lint:types": "eslint --ext .ts,.tsx src/",
+    "debugbot:analyze": "npm run lint && npm run type-check && npm run test:coverage",
+    "debugbot:test": "npm run test && npm run test:integration",
+    "debugbot:quality": "npm run lint && npm run format && npm run type-check",
+    "debugbot:security": "npm audit && npm run lint:security",
+    "lint:security": "eslint . --ext .ts,.tsx --config .eslintrc.security.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -97,30 +106,42 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/jest": "^29.5.14",
     "@types/node": "^24.3.0",
     "@types/react": "^19.1.11",
     "@types/react-dom": "^19.1.7",
     "@vitejs/plugin-react": "^4.4.1",
+    "@vitest/coverage-v8": "^2.1.9",
+    "@vitest/ui": "^2.1.9",
     "autoprefixer": "^10.4.21",
     "cypress": "^13.0.0",
     "eslint": "^9.25.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
+    "eslint-plugin-security": "^3.0.1",
     "globals": "^16.0.0",
     "husky": "^8.0.3",
+    "identity-obj-proxy": "^3.0.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "jsdom": "^26.0.0",
     "lint-staged": "^15.0.0",
     "postcss": "^8.5.6",
     "prettier": "^3.0.0",
     "tailwindcss": "^3.4.17",
     "terser": "^5.43.1",
     "typescript": "^5.9.2",
+    "typescript-eslint": "^8.41.0",
     "vite": "^6.3.5",
-    "vitest": "^1.0.0"
+    "vitest": "^2.1.8"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
       "eslint --fix",
-      "prettier --write"
+      "prettier --write",
+      "vitest related --run"
     ],
     "*.{css,scss,md,json}": [
       "prettier --write"
