@@ -1,8 +1,20 @@
 import React from 'react';
-import { Circle, CheckCircle2, ArrowRight } from 'lucide-react';
+import { CheckCircle2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-const WorkflowState = ({ label, description, isActive, isCompleted }) => {
+interface WorkflowStateProps {
+  label: string;
+  description: string;
+  isActive: boolean;
+  isCompleted: boolean;
+}
+
+const WorkflowState: React.FC<WorkflowStateProps> = ({ 
+  label, 
+  description, 
+  isActive, 
+  isCompleted 
+}) => {
   return (
     <div className="flex items-start space-x-4 py-2">
       <div className="flex flex-col items-center mt-1">

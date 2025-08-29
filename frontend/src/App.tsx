@@ -1,12 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
-import { ThemeProvider } from './context/ThemeContext.jsx';
-import { AuthProvider } from './context/AuthContext.jsx';
-import AppRoutes from './routes/AppRoutes.jsx';
-import { QueryProvider } from './hooks/useQueryClient.jsx';
-import { useAuthInitializer } from './hooks/useAuthInitializer.js';
-import LoginDebug from './components/common/LoginDebug.jsx';
+import { ThemeProvider } from './context/ThemeContext';
+import { AuthProvider } from './context/AuthContext';
+import AppRoutes from './routes/AppRoutes';
+import { QueryProvider } from './hooks/useQueryClient';
+import { useAuthInitializer } from './hooks/useAuthInitializer';
+import LoginDebug from './components/common/LoginDebug';
 import './index.css';
 
 // Componente interno que maneja la inicialización de auth

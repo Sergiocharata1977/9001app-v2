@@ -1,11 +1,36 @@
 import React from 'react';
 import WorkflowState from './WorkflowState';
-import { cn } from '@/lib/utils';
 
-const WorkflowStage = ({ config, states, currentState }) => {
+interface WorkflowConfig {
+  emoji: string;
+  title: string;
+  subtitle: string;
+  bgColor: string;
+  borderColor: string;
+  titleColor: string;
+}
+
+interface WorkflowStateItem {
+  id: string;
+  label: string;
+  description: string;
+}
+
+interface WorkflowStageProps {
+  config: WorkflowConfig | null;
+  states: WorkflowStateItem[];
+  currentState: string;
+}
+
+const WorkflowStage: React.FC<WorkflowStageProps> = ({ 
+  config, 
+  states, 
+  currentState 
+}) => {
   if (!config) {
     return null; // No renderizar nada si no hay configuración para esta etapa
   }
+  
   const { emoji, title, subtitle, bgColor, borderColor, titleColor } = config;
 
   return (

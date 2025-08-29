@@ -1,16 +1,26 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
+import type { Accion } from '../types/mejoras';
 
-const getActionTypeInfo = (type) => {
+interface AccionItemProps {
+  accion: Accion;
+}
+
+const getActionTypeInfo = (type: Accion['tipo']) => {
   switch (type) {
-    case 'inmediata':
-      return {
-        title: 'Acción Inmediata',
-        className: 'border-purple-500',
-      };
     case 'correctiva':
       return {
         title: 'Acción Correctiva',
+        className: 'border-red-500',
+      };
+    case 'preventiva':
+      return {
+        title: 'Acción Preventiva',
+        className: 'border-blue-500',
+      };
+    case 'mejora':
+      return {
+        title: 'Acción de Mejora',
         className: 'border-green-500',
       };
     default:
@@ -21,7 +31,7 @@ const getActionTypeInfo = (type) => {
   }
 };
 
-const AccionItem = ({ accion }) => {
+const AccionItem: React.FC<AccionItemProps> = ({ accion }) => {
   const { title, className } = getActionTypeInfo(accion.tipo);
 
   return (
@@ -30,7 +40,8 @@ const AccionItem = ({ accion }) => {
         <p className="font-semibold text-gray-800">{title}</p>
         <p className="text-sm text-gray-600 mt-1">{accion.descripcion}</p>
         <p className="text-xs text-muted-foreground mt-2">
-          Fecha: {accion.fecha} | Estado: <span className="font-medium">{accion.estado}</span>
+          Fecha límite: {new Date(accion.fecha_limite).toLocaleDateString()} | 
+          Estado: <span className="font-medium capitalize">{accion.estado.replace('_', ' ')}</span>
         </p>
       </div>
     </div>

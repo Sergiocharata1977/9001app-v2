@@ -1,98 +1,78 @@
-// Interfaces para el sistema de auditorías ISO 9001
+// Types for Auditorias module
 
 export interface Auditoria {
-  id: string;
+  _id?: string;
   codigo: string;
   titulo: string;
-  descripcion: string;
-  estado: AuditoriaEstado;
-  fecha_programada: string | null;
-  fecha_realizacion: string | null;
-  auditor_lider: string;
-  auditores: string[];
+  areas: string[];
+  responsable_id: string;
+  fecha_programada: string;
+  objetivos: string;
   alcance: string;
   criterios: string;
-  tipo: AuditoriaTipo;
-  areas: string[] | string; // Puede ser array o string JSON
-  duracion_estimada: string;
-  total_aspectos: number;
-  total_relaciones: number;
-  created_at?: string;
-  updated_at?: string;
-  organization_id?: number;
-}
-
-export type AuditoriaEstado = 
-  | 'programacion' 
-  | 'planificacion' 
-  | 'ejecucion' 
-  | 'informe' 
-  | 'seguimiento' 
-  | 'completada' 
-  | 'cancelada';
-
-export type AuditoriaTipo = 'interna' | 'externa' | 'proveedor' | 'cliente';
-
-export interface AuditoriaEstadoConfig {
-  value: AuditoriaEstado;
-  label: string;
-  color: string;
-  bgColor: string;
-  icon?: string;
+  estado: 'planificada' | 'en_progreso' | 'completada' | 'cancelada';
+  fecha_inicio?: string;
+  fecha_fin?: string;
+  hallazgos?: string[];
+  acciones_correctivas?: string[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface AuditoriaFormData {
   codigo: string;
   titulo: string;
-  descripcion: string;
-  estado: AuditoriaEstado;
-  fecha_programada: string | null;
-  fecha_realizacion: string | null;
-  auditor_lider: string;
-  auditores: string[];
+  areas: string[];
+  responsable_id: string;
+  fecha_programada: string;
+  objetivos: string;
   alcance: string;
   criterios: string;
-  tipo: AuditoriaTipo;
-  areas: string[];
-  duracion_estimada: string;
+  estado: 'planificada' | 'en_progreso' | 'completada' | 'cancelada';
 }
 
-export interface AuditoriaAspecto {
-  id: string;
-  auditoria_id: string;
-  aspecto: string;
-  cumplimiento: 'cumple' | 'no_cumple' | 'observacion';
-  observaciones: string;
-  accion_correctiva?: string;
-  responsable?: string;
-  fecha_limite?: string;
-  estado?: string;
+export interface Personal {
+  _id: string;
+  nombre: string;
+  apellido: string;
+  email: string;
+  departamento_id?: string;
+  puesto?: string;
 }
 
-export interface AuditoriaRelacion {
-  id: string;
-  auditoria_id: string;
-  proceso_id: string;
-  indicador_id?: string;
-  hallazgo_id?: string;
-  accion_id?: string;
-  tipo_relacion: 'proceso' | 'indicador' | 'hallazgo' | 'accion';
-  observaciones?: string;
+export interface Departamento {
+  _id: string;
+  nombre: string;
+  descripcion?: string;
+  responsable_id?: string;
 }
 
-export interface AuditoriaFilters {
-  estado?: AuditoriaEstado;
-  tipo?: AuditoriaTipo;
-  auditor_lider?: string;
-  fecha_desde?: string;
-  fecha_hasta?: string;
-  areas?: string[];
+export interface AuditoriaModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSave: (auditoria: AuditoriaFormData) => void;
+  auditoria?: Auditoria | null;
 }
 
-export interface AuditoriaStats {
-  total: number;
-  por_estado: Record<AuditoriaEstado, number>;
-  por_tipo: Record<AuditoriaTipo, number>;
-  proximas: number;
-  vencidas: number;
+export interface AuditoriaListProps {
+  auditorias: Auditoria[];
+  onEdit: (auditoria: Auditoria) => void;
+  onDelete: (id: string) => void;
+  onView: (auditoria: Auditoria) => void;
+  loading?: boolean;
+}
+
+export interface AuditoriaSingleProps {
+  auditoriaId: string;
+}
+
+export interface AuditoriaFormProps {
+  auditoria?: Auditoria | null;
+  onSave: (auditoria: AuditoriaFormData) => void;
+  onCancel: () => void;
+}
+
+export interface AuditoriaRelacionesProps {
+  auditoriaId: string;
+  auditoria: Auditoria;
 }

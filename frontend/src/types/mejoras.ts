@@ -1,366 +1,158 @@
-import { ReactNode } from 'react';
+// Types for Mejoras module
 
-// Estados del workflow de mejoras
-export type MejoraEstado = 
-  | 'deteccion'
-  | 'analisis'
-  | 'planificacion'
-  | 'ejecucion'
-  | 'verificacion'
-  | 'cierre';
-
-// Estados específicos del workflow de hallazgos
-export type HallazgoEstado = 
-  | 'd1_iniciado'
-  | 'd2_accion_inmediata_programada'
-  | 'd3_accion_inmediata_finalizada'
-  | 't1_pendiente_ac'
-  | 't2_cerrado';
-
-// Prioridades
-export type MejoraPrioridad = 'Alta' | 'Media' | 'Baja';
-export type HallazgoPrioridad = 'Alta' | 'Media' | 'Baja';
-
-// Tipos de mejora
-export type MejoraTipo = 'hallazgo' | 'oportunidad' | 'no_conformidad' | 'accion_correctiva' | 'accion_preventiva';
-
-// Origen de la mejora
-export type MejoraOrigen = 'auditoria' | 'reclamo' | 'sugerencia' | 'indicador' | 'revision_direccion' | 'otro';
-
-// Interfaz principal de Mejora
-export interface Mejora {
-  id: number;
-  numeroMejora?: string;
+export interface Hallazgo {
+  _id?: string;
+  codigo: string;
   titulo: string;
   descripcion: string;
-  estado: MejoraEstado;
-  prioridad: MejoraPrioridad;
-  tipo: MejoraTipo;
-  origen: MejoraOrigen;
-  responsable?: string;
-  fechaDeteccion: string;
-  fechaAnalisis?: string;
-  fechaPlanificacion?: string;
-  fechaEjecucion?: string;
-  fechaVerificacion?: string;
-  fechaCierre?: string;
-  procesoId?: number;
-  departamentoId?: number;
-  created_at?: string;
-  updated_at?: string;
+  tipo: 'no_conformidad' | 'oportunidad_mejora' | 'observacion';
+  estado: 'detectado' | 'analisis' | 'planificacion' | 'ejecucion' | 'verificacion' | 'cerrado';
+  prioridad: 'baja' | 'media' | 'alta' | 'critica';
+  proceso_id?: string;
+  responsable_id: string;
+  fecha_deteccion: string;
+  fecha_limite?: string;
+  origen: 'auditoria_interna' | 'auditoria_externa' | 'revision_direccion' | 'quejas_clientes' | 'seguimiento_procesos' | 'otro';
+  evidencias?: string[];
+  acciones?: Accion[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-// Interfaz para Hallazgo (extendida de Mejora)
-export interface Hallazgo extends Mejora {
-  numeroHallazgo?: string;
-  accionInmediata?: string;
-  causaRaiz?: string;
-  planAccion?: string;
-  evidenciaCierre?: string;
-  orden?: number;
-  tipo: 'hallazgo';
-}
-
-// Interfaz para el formulario de mejora
-export interface MejoraFormData {
-  titulo: string;
+export interface Accion {
+  _id?: string;
+  hallazgo_id: string;
+  tipo: 'correctiva' | 'preventiva' | 'mejora';
   descripcion: string;
-  estado?: MejoraEstado;
-  prioridad: MejoraPrioridad;
-  tipo: MejoraTipo;
-  origen: MejoraOrigen;
-  responsable?: string;
-  fechaDeteccion: string;
-  fechaAnalisis?: string;
-  fechaPlanificacion?: string;
-  fechaEjecucion?: string;
-  fechaVerificacion?: string;
-  fechaCierre?: string;
-  procesoId?: number;
-  departamentoId?: number;
+  responsable_id: string;
+  fecha_limite: string;
+  estado: 'planificada' | 'en_progreso' | 'completada' | 'verificada' | 'cerrada';
+  recursos_necesarios?: string;
+  seguimiento?: SeguimientoAccion[];
+  evidencias?: string[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-// Interfaz para el formulario de hallazgo
-export interface HallazgoFormData extends MejoraFormData {
-  numeroHallazgo?: string;
-  accionInmediata?: string;
-  causaRaiz?: string;
-  planAccion?: string;
-  evidenciaCierre?: string;
-  tipo: 'hallazgo';
-}
-
-// Interfaz para las columnas del Kanban
-export interface KanbanColumn {
-  id: string;
-  title: string;
-  hallazgos: Hallazgo[];
-}
-
-// Interfaz para las estadísticas
-export interface MejoraStats {
-  total: number;
-  deteccion: number;
-  analisis: number;
-  planificacion: number;
-  ejecucion: number;
-  verificacion: number;
-  cierre: number;
-  porPrioridad: {
-    alta: number;
-    media: number;
-    baja: number;
-  };
-  porTipo: {
-    hallazgo: number;
-    oportunidad: number;
-    no_conformidad: number;
-    accion_correctiva: number;
-    accion_preventiva: number;
-  };
-}
-
-// Interfaz para el workflow
-export interface WorkflowStage {
-  id: string;
-  title: string;
-  description: string;
-  estado: MejoraEstado;
-  isCompleted: boolean;
-  isActive: boolean;
-  fecha?: string;
-}
-
-// Interfaz para las acciones del workflow
-export interface WorkflowAction {
-  id: string;
-  title: string;
-  description: string;
-  estado: MejoraEstado;
-  isRequired: boolean;
-  isCompleted: boolean;
-  fecha?: string;
-  responsable?: string;
-}
-
-// Interfaz para el historial de cambios
-export interface HistorialItem {
-  id: number;
-  mejoraId: number;
-  accion: string;
-  descripcion: string;
-  usuario: string;
+export interface SeguimientoAccion {
   fecha: string;
-  tipo: string;
-  estadoAnterior?: MejoraEstado;
-  estadoNuevo?: MejoraEstado;
+  comentario: string;
+  responsable_id: string;
+  estado_anterior: string;
+  estado_nuevo: string;
 }
 
-// Interfaz para los filtros
-export interface MejoraFilters {
-  estado?: MejoraEstado[];
-  prioridad?: MejoraPrioridad[];
-  tipo?: MejoraTipo[];
-  origen?: MejoraOrigen[];
-  responsable?: string;
-  fechaDesde?: string;
-  fechaHasta?: string;
-  procesoId?: number;
-  departamentoId?: number;
+export interface Proceso {
+  _id: string;
+  nombre: string;
+  codigo?: string;
+  responsable_id?: string;
+  descripcion?: string;
 }
 
-// Interfaz para la paginación
-export interface PaginationParams {
-  page: number;
-  limit: number;
-  sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
+export interface Personal {
+  _id: string;
+  nombre: string;
+  apellido: string;
+  email: string;
+  departamento_id?: string;
+  puesto?: string;
 }
 
-// Interfaz para la respuesta paginada
-export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
-
-// Interfaz para los eventos de drag & drop
-export interface DragEvent {
-  active: {
-    id: string | number;
-    data: {
-      current: {
-        type: string;
-        hallazgo?: Hallazgo;
-        sortable?: {
-          containerId: string;
-        };
-      };
-    };
-  };
-  over: {
-    id: string | number;
-    data?: {
-      current: {
-        sortable: {
-          containerId: string;
-        };
-      };
-    };
-  };
-}
-
-// Interfaz para las props de los componentes
-export interface KanbanBoardProps {
-  hallazgos: Hallazgo[];
-  onUpdate: () => void;
-}
-
-export interface KanbanCardProps {
+// Component Props Types
+export interface HallazgoCardProps {
   hallazgo: Hallazgo;
-}
-
-export interface KanbanColumnProps {
-  id: string;
-  title: string;
-  hallazgos: Hallazgo[];
-}
-
-export interface WorkflowStepperProps {
-  currentStatus: HallazgoEstado;
-}
-
-export interface WorkflowStageProps {
-  config: {
-    emoji: string;
-    title: string;
-    subtitle: string;
-    bgColor: string;
-    borderColor: string;
-    titleColor: string;
-  };
-  states: Array<{
-    id: string;
-    label: string;
-    description: string;
-  }>;
-  currentState: string;
-}
-
-export interface WorkflowStateProps {
-  label: string;
-  description: string;
-  isActive: boolean;
-  isCompleted: boolean;
-}
-
-export interface TiemposWorkflowProps {
-  hallazgo: Hallazgo;
-}
-
-export interface HistorialItemProps {
-  item: HistorialItem;
-  isLast?: boolean;
+  onEdit: (hallazgo: Hallazgo) => void;
+  onDelete: (id: string) => void;
+  onView: (hallazgo: Hallazgo) => void;
 }
 
 export interface AccionItemProps {
-  accion: WorkflowAction;
-  onComplete: (accionId: string) => void;
-}
-
-// Interfaz para los formularios específicos
-export interface AnalisisFormProps {
-  hallazgoId: number;
-  onUpdate: () => void;
-}
-
-export interface PlanificacionFormProps {
-  mejora: Mejora;
-  onSubmit: (data: Partial<MejoraFormData>) => void;
-  onCancel: () => void;
-}
-
-export interface EjecucionFormProps {
-  mejora: Mejora;
-  onSubmit: (data: Partial<MejoraFormData>) => void;
-  onCancel: () => void;
-}
-
-// Interfaz para el dashboard
-export interface DashboardViewProps {
-  hallazgos: Hallazgo[];
-}
-
-// Interfaz para las tarjetas de hallazgo
-export interface HallazgoCardProps {
-  hallazgo: Hallazgo;
-  onClick: (hallazgo: Hallazgo) => void;
+  accion: Accion;
+  onEdit: (accion: Accion) => void;
+  onDelete: (id: string) => void;
+  onUpdateStatus: (id: string, estado: Accion['estado']) => void;
 }
 
 export interface HallazgoDetailModalProps {
-  hallazgo: Hallazgo | null;
   isOpen: boolean;
   onClose: () => void;
+  hallazgo: Hallazgo | null;
   onEdit: (hallazgo: Hallazgo) => void;
 }
 
 export interface HallazgoFormModalProps {
-  hallazgo: Hallazgo | null;
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (data: HallazgoFormData) => void;
+  onSave: (hallazgo: Partial<Hallazgo>) => void;
+  hallazgo?: Hallazgo | null;
 }
 
-export interface HallazgoModalProps {
-  hallazgo: Hallazgo | null;
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (data: HallazgoFormData) => void;
+export interface AnalisisFormProps {
+  hallazgo: Hallazgo;
+  onSave: (data: any) => void;
+  onCancel: () => void;
 }
 
-export interface HallazgosBoardProps {
+export interface EjecucionFormProps {
+  hallazgo: Hallazgo;
+  onSave: (data: any) => void;
+  onCancel: () => void;
+}
+
+export interface PlanificacionFormProps {
+  hallazgo: Hallazgo;
+  onSave: (data: any) => void;
+  onCancel: () => void;
+}
+
+export interface DashboardViewProps {
   hallazgos: Hallazgo[];
-  onUpdate: () => void;
+  loading?: boolean;
 }
 
-export interface HallazgosListProps {
+export interface KanbanBoardProps {
   hallazgos: Hallazgo[];
-  onSelect: (hallazgo: Hallazgo) => void;
+  onUpdateStatus: (hallazgoId: string, newStatus: Hallazgo['estado']) => void;
+  onEdit: (hallazgo: Hallazgo) => void;
+  onView: (hallazgo: Hallazgo) => void;
 }
 
-// Interfaz para el mapeo de estados
-export interface EstadoMap {
-  [key: string]: string;
+export interface KanbanColumnProps {
+  title: string;
+  status: Hallazgo['estado'];
+  hallazgos: Hallazgo[];
+  onDrop: (hallazgoId: string, newStatus: Hallazgo['estado']) => void;
+  onEdit: (hallazgo: Hallazgo) => void;
+  onView: (hallazgo: Hallazgo) => void;
 }
 
-// Interfaz para las variantes de prioridad
-export interface PrioridadVariantMap {
-  [key: string]: string;
+export interface KanbanCardProps {
+  hallazgo: Hallazgo;
+  onEdit: (hallazgo: Hallazgo) => void;
+  onView: (hallazgo: Hallazgo) => void;
 }
 
-// Interfaz para las props de InfoRow
-export interface InfoRowProps {
-  icon: React.ComponentType<{ className?: string }>;
-  text: string | undefined;
+export interface ColumnProps {
+  title: string;
+  children: React.ReactNode;
+  count?: number;
 }
 
-// Interfaz para las columnas de la tabla de datos
-export interface DataTableColumn {
-  key: string;
-  label: string;
-  sortable?: boolean;
-  filterable?: boolean;
-  width?: string;
-  render?: (value: any, row: Mejora) => ReactNode;
-}
-
-// Interfaz para las acciones de la tabla de datos
-export interface DataTableAction {
-  icon: React.ComponentType<{ className?: string }>;
-  label: string;
-  onClick: (mejora: Mejora) => void;
-  variant?: string;
+export interface CardProps {
+  children: React.ReactNode;
   className?: string;
+  onClick?: () => void;
+}
+
+export interface WorkflowStageProps {
+  stage: Hallazgo['estado'];
+  isActive: boolean;
+  isCompleted: boolean;
+  onClick: () => void;
+}
+
+export interface WorkflowStepperProps {
+  currentStage: Hallazgo['estado'];
+  onStageClick: (stage: Hallazgo['estado']) => void;
 }
