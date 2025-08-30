@@ -158,6 +158,16 @@ const AppRoutes = () => {
         <Route path="/caracteristicas" element={<WebFeatures />} />
         <Route path="/contacto" element={<WebContact />} />
 
+        {/* Rutas Super Admin (fuera del layout principal) */}
+        <Route 
+          path="/super-admin/*"
+          element={
+            <SuperAdminRoute>
+              <SuperAdminPage />
+            </SuperAdminRoute>
+          } 
+        />
+
         {/* Rutas Protegidas de la aplicación (con /app prefix) */}
         <Route 
           path="/app/*"
@@ -251,7 +261,6 @@ const AppRoutes = () => {
                   {/* Administración */}
                   <Route path="usuarios" element={<UsersPage />} />
                   <Route path="usuarios-single" element={<UsuariosSingle />} />
-                  <Route path="admin/super" element={<SuperAdminPage />} />
                   <Route path="admin/organization" element={<OrganizationAdminPage />} />
 
                   {/* Documentación */}

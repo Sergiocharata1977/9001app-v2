@@ -11,18 +11,20 @@ class MongoClientWrapper {
 
   async connect() {
     try {
-      // Verificar si tenemos configuración de MongoDB
-      if (!process.env.MONGODB_URI) {
-        console.log('⚠️ MONGODB_URI no configurada, usando datos mock');
-        this.useMockData = true;
-        this.isConnected = true;
-        return this;
-      }
-
-      console.log('🔌 Intentando conectar a MongoDB...');
-      console.log('📋 URI:', process.env.MONGODB_URI.replace(/\/\/.*@/, '//***:***@')); // Ocultar credenciales
+      // Usar MongoDB URI desde la configuración
+      const mongoUri = process.env.MONGODB_URI || 'mongodb+srv://9001app:password@9001app-v2.xqydf2m.mongodb.net/9001app?retryWrites=true&w=majority';
       
-      this.client = new MongoClient(process.env.MONGODB_URI);
+      console.log('🔌 Intentando conectar a MongoDB...');
+      console.log('📋 URI:', mongoUri.replace(/\/\/.*@/, '//***:***@')); // Ocultar credenciales
+      
+      this.client = new MongoClient(mongoUri, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        maxPoolSize: 10,
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
+      });
+      
       await this.client.connect();
       
       this.db = this.client.db(process.env.MONGODB_DB_NAME || '9001app');
@@ -38,47 +40,73 @@ class MongoClientWrapper {
       console.log('👥 Usuarios en la base de datos:', userCount);
       
       if (userCount === 0) {
-        console.log('⚠️ No hay usuarios en la base de datos, creando usuario de prueba...');
-        await this.createTestUser();
+        console.log('⚠️ No hay usuarios en la base de datos, creando usuarios de prueba...');
+        await this.createTestUsers();
       }
       
       return this;
     } catch (error) {
       console.error('❌ Error conectando a MongoDB:', error.message);
-      console.log('🔄 Usando datos mock...');
+      console.log('🔄 Fallback: Usando datos mock...');
       this.useMockData = true;
       this.isConnected = true;
       return this;
     }
   }
 
-  async createTestUser() {
+  async createTestUsers() {
     try {
       const bcrypt = require('bcryptjs');
       const testPassword = 'admin123';
       const hashedPassword = await bcrypt.hash(testPassword, 10);
       
-      const testUser = {
-        name: 'Admin Test',
-        email: 'admin@9001app.com',
-        password_hash: hashedPassword,
-        role: 'admin',
-        organization_id: 1,
+      const testUsers = [
+        {
+          name: 'Admin User',
+          email: 'admin@9001app.com',
+          password_hash: hashedPassword,
+          role: 'admin',
+          organization_id: 1,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+        {
+          name: 'Super Admin',
+          email: 'superadmin@9001app.com',
+          password_hash: hashedPassword,
+          role: 'super_admin',
+          organization_id: 1,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date()
+        }
+      ];
+      
+      const usersCollection = this.db.collection('users');
+      const result = await usersCollection.insertMany(testUsers);
+      
+      console.log('✅ Usuarios de prueba creados:', result.insertedIds);
+      console.log('🔑 Credenciales de prueba:');
+      console.log('   Admin: admin@9001app.com / admin123');
+      console.log('   Super Admin: superadmin@9001app.com / admin123');
+      
+      // Crear organización de prueba
+      const organizationsCollection = this.db.collection('organizations');
+      const orgResult = await organizationsCollection.insertOne({
+        id: 1,
+        name: '9001app Demo',
+        description: 'Organización de demostración',
+        plan: 'premium',
         is_active: true,
         created_at: new Date(),
         updated_at: new Date()
-      };
+      });
       
-      const usersCollection = this.db.collection('users');
-      const result = await usersCollection.insertOne(testUser);
-      
-      console.log('✅ Usuario de prueba creado:', result.insertedId);
-      console.log('🔑 Credenciales de prueba:');
-      console.log('   Email: admin@9001app.com');
-      console.log('   Password: admin123');
+      console.log('✅ Organización de prueba creada:', orgResult.insertedId);
       
     } catch (error) {
-      console.error('❌ Error creando usuario de prueba:', error);
+      console.error('❌ Error creando usuarios de prueba:', error);
     }
   }
 
@@ -112,8 +140,19 @@ class MongoClientWrapper {
           id: 1,
           name: 'Admin User',
           email: 'admin@9001app.com',
-          password_hash: '$2a$10$AZldzatjvsu/tl2nEDFGpO71JXr0lZ3VDqE0AG7/bkXtrpz85ti72',
+          password_hash: '$2a$10$Q/mCA/vbLgdt340VS.QsQeUBZ9N6wLUW47au8Pf1WbIrNliBAbhLC',
           role: 'admin',
+          organization_id: 1,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+        {
+          id: 2,
+          name: 'Super Admin',
+          email: 'superadmin@9001app.com',
+          password_hash: '$2a$10$Q/mCA/vbLgdt340VS.QsQeUBZ9N6wLUW47au8Pf1WbIrNliBAbhLC',
+          role: 'super_admin',
           organization_id: 1,
           is_active: true,
           created_at: new Date(),
@@ -522,8 +561,19 @@ class MongoClientWrapper {
           id: 1,
           name: 'Admin User',
           email: 'admin@9001app.com',
-          password_hash: '$2a$10$AZldzatjvsu/tl2nEDFGpO71JXr0lZ3VDqE0AG7/bkXtrpz85ti72',
+          password_hash: '$2a$10$Q/mCA/vbLgdt340VS.QsQeUBZ9N6wLUW47au8Pf1WbIrNliBAbhLC',
           role: 'admin',
+          organization_id: 1,
+          is_active: true,
+          created_at: new Date(),
+          updated_at: new Date()
+        },
+        {
+          id: 2,
+          name: 'Super Admin',
+          email: 'superadmin@9001app.com',
+          password_hash: '$2a$10$Q/mCA/vbLgdt340VS.QsQeUBZ9N6wLUW47au8Pf1WbIrNliBAbhLC',
+          role: 'super_admin',
           organization_id: 1,
           is_active: true,
           created_at: new Date(),

@@ -1,8 +1,8 @@
 const jwt = require('jsonwebtoken');
 const mongoClient = require('../lib/mongoClient.js');
 
-// Unificar secreto con el usado al firmar en authController (fallback-secret)
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
+// Unificar secreto con el usado al firmar en authController
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key-change-in-production';
 
 // Middleware de autenticación para sistema SAAS multi-tenant
 const authMiddleware = async (req, res, next) => {

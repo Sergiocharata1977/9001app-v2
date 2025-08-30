@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const mongoClient = require('../lib/mongoClient.js');
 
 // Unificar secreto con el usado en middlewares
-const JWT_SECRET = process.env.JWT_SECRET || 'fallback-secret';
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret-key-change-in-production';
 
 // @desc    Registrar usuario
 // @route   POST /api/auth/register
@@ -75,32 +75,60 @@ const login = async (req, res) => {
 
     console.log('🔍 Buscando usuario con email:', email);
     
-    // DATOS MOCK TEMPORALES - Mientras arreglamos MongoDB
-    const mockUsers = [
-      {
-        id: 1,
-        name: 'Admin User',
-        email: 'admin@9001app.com',
-        password_hash: '$2a$10$AZldzatjvsu/tl2nEDFGpO71JXr0lZ3VDqE0AG7/bkXtrpz85ti72', // admin123
-        role: 'admin',
-        organization_id: 1,
-        organization_name: '9001app Demo',
-        organization_plan: 'premium'
-      },
-      {
-        id: 2,
-        name: 'Super Admin',
-        email: 'superadmin@9001app.com',
-        password_hash: '$2a$10$AZldzatjvsu/tl2nEDFGpO71JXr0lZ3VDqE0AG7/bkXtrpz85ti72', // admin123
-        role: 'super_admin',
-        organization_id: 1,
-        organization_name: '9001app Demo',
-        organization_plan: 'premium'
-      }
-    ];
-
-    // Buscar usuario en datos mock
-    const user = mockUsers.find(u => u.email === email);
+    // Buscar usuario en MongoDB
+    await mongoClient.connect();
+    const usersCollection = mongoClient.collection('users');
+    const organizationsCollection = mongoClient.collection('organizations');
+    
+    const mongoUser = await usersCollection.findOne({ 
+      email: email, 
+      is_active: true 
+    });
+    
+    let user = null;
+    if (mongoUser) {
+      // Obtener información de la organización
+      const organization = await organizationsCollection.findOne({ 
+        id: mongoUser.organization_id 
+      });
+      
+      user = {
+        id: mongoUser._id || mongoUser.id,
+        name: mongoUser.name,
+        email: mongoUser.email,
+        password_hash: mongoUser.password_hash,
+        role: mongoUser.role,
+        organization_id: mongoUser.organization_id,
+        organization_name: organization ? organization.name : '9001app Demo',
+        organization_plan: organization ? organization.plan : 'premium'
+      };
+    } else {
+      // Fallback a datos mock si MongoDB no funciona
+      console.log('⚠️ Usuario no encontrado en MongoDB, usando fallback mock');
+      const mockUsers = [
+        {
+          id: 1,
+          name: 'Admin User',
+          email: 'admin@9001app.com',
+          password_hash: '$2a$10$Q/mCA/vbLgdt340VS.QsQeUBZ9N6wLUW47au8Pf1WbIrNliBAbhLC', // admin123
+          role: 'admin',
+          organization_id: 1,
+          organization_name: '9001app Demo',
+          organization_plan: 'premium'
+        },
+        {
+          id: 2,
+          name: 'Super Admin',
+          email: 'superadmin@9001app.com',
+          password_hash: '$2a$10$Q/mCA/vbLgdt340VS.QsQeUBZ9N6wLUW47au8Pf1WbIrNliBAbhLC', // admin123
+          role: 'super_admin',
+          organization_id: 1,
+          organization_name: '9001app Demo',
+          organization_plan: 'premium'
+        }
+      ];
+      user = mockUsers.find(u => u.email === email);
+    }
     
     console.log('📊 Resultado de búsqueda:', user ? 'Usuario encontrado' : 'Usuario no encontrado');
 
