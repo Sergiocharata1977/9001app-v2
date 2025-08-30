@@ -15,15 +15,15 @@ const SuperAdminRoutes: React.FC = () => {
   return (
     <SuperAdminLayout>
       <Routes>
-        <Route path="dashboard" element={<SuperAdminDashboard />} />
-        <Route path="organizations" element={<OrganizationsManagement />} />
-        <Route path="users" element={<GlobalUsers />} />
-        <Route path="system" element={<SystemConfig />} />
-        <Route path="database" element={<DatabaseManagement />} />
-        <Route path="monitoring" element={<SystemMonitoring />} />
+        <Route path="/" element={<SuperAdminDashboard />} />
+        <Route path="/dashboard" element={<SuperAdminDashboard />} />
+        <Route path="/organizations" element={<OrganizationsManagement />} />
+        <Route path="/users" element={<GlobalUsers />} />
+        <Route path="/system" element={<SystemConfig />} />
+        <Route path="/database" element={<DatabaseManagement />} />
+        <Route path="/monitoring" element={<SystemMonitoring />} />
         
         {/* Redirección por defecto */}
-        <Route index element={<SuperAdminDashboard />} />
         <Route path="*" element={<SuperAdminDashboard />} />
       </Routes>
     </SuperAdminLayout>

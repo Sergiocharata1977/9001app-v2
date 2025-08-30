@@ -17,7 +17,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // ===== RUTAS PÚBLICAS (SIN AUTENTICACIÓN) =====
 
-// Ruta de salud
+// Ruta de salud (pública)
 app.get('/api/health', (req: Request, res: Response) => {
   res.json({
     success: true,
@@ -26,6 +26,7 @@ app.get('/api/health', (req: Request, res: Response) => {
     uptime: process.uptime(),
     version: '1.0.0',
     environment: process.env.NODE_ENV || 'development',
+    mongodb: 'connected' // Placeholder
   });
 });
 
