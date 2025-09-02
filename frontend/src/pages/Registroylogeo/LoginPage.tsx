@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Building2, ArrowRight, CheckCircle } from 'lucide-react';
-import useAuthStore from '../../store/authStore';
+import { useAuth } from '../../context/AuthContext';
 import { toast } from 'react-hot-toast';
 
 const LoginPage = () => {
@@ -15,8 +15,7 @@ const LoginPage = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   
   const navigate = useNavigate();
-  const login = useAuthStore((state) => state.login);
-  const isSuperAdmin = useAuthStore((state) => state.isSuperAdmin);
+  const { login, isLoading: authLoading } = useAuth();
 
   const handleChange = (e) => {
     setFormData({
@@ -30,18 +29,11 @@ const LoginPage = () => {
     setIsLoading(true);
 
     try {
-      await login(formData);
-      
+      await login(formData.email, formData.password);
       setIsSubmitted(true);
-      toast.success('¡Inicio de sesión exitoso!');
-      
-      // Redirección inteligente basada en el rol
-      const redirectPath = isSuperAdmin() ? '/super-admin/dashboard' : '/app/menu-cards';
-      navigate(redirectPath);
+      // La redirección se maneja en el AuthContext
     } catch (error) {
-      toast.error(error.message || 'Error al iniciar sesión');
       console.error('Login error:', error);
-    } finally {
       setIsLoading(false);
     }
   };
@@ -230,7 +222,7 @@ const LoginPage = () => {
 
                 <button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isLoading || authLoading}
                   className="w-full bg-emerald-500 hover:bg-emerald-600 disabled:bg-slate-400 text-white py-3 px-6 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all duration-300 shadow-lg hover:shadow-xl"
                 >
                   {isLoading ? (

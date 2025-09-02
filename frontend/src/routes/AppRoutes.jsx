@@ -1,8 +1,8 @@
 import React, { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import MainLayout from "../components/layout/MainLayout";
-import useAuthStore from "../store/authStore";
-import ProtectedRoute from "./ProtectedRoute";
+import { useAuth } from "../context/AuthContext";
+import ProtectedRoute, { SuperAdminRoute } from "./ProtectedRoute";
 
 // IMPORTACIÓN DIRECTA PARA DEPURACIÓN - TEMPORALMENTE DESHABILITADA
 // import DocumentosListing from "../components/documentos/DocumentosListing";
@@ -142,8 +142,7 @@ const PoliticaCalidadPage = lazy(() => import("../pages/PoliticaCalidadPage"));
 
 
 const AppRoutes = () => {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const user = useAuthStore((state) => state.user);
+  const { isAuthenticated, user } = useAuth();
 
   return (
     <Suspense fallback={<LoadingFallback />}>
@@ -283,14 +282,16 @@ const AppRoutes = () => {
 
                   {/* Ruta temporal para Super Admin Dashboard */}
                   <Route path="super-admin/tablero" element={
-                    <div className="p-6">
-                      <h1 className="text-2xl font-bold mb-4">Tablero Super Administrador</h1>
-                      <p>Esta es la página del tablero para el Super Admin.</p>
-                      <p>Usuario: {user?.email}</p>
-                      <p>Rol: {user?.role}</p>
-                      <p>Organización: {user?.organization_name}</p>
-                      <p>ID Organización: {user?.organization_id}</p>
-                    </div>
+                    <SuperAdminRoute>
+                      <div className="p-6">
+                        <h1 className="text-2xl font-bold mb-4">Tablero Super Administrador</h1>
+                        <p>Esta es la página del tablero para el Super Admin.</p>
+                        <p>Usuario: {user?.email}</p>
+                        <p>Rol: {user?.role}</p>
+                        <p>Organización: {user?.organization_name}</p>
+                        <p>ID Organización: {user?.organization_id}</p>
+                      </div>
+                    </SuperAdminRoute>
                   } />
 
                   {/* Ruta de prueba para verificar autenticación */}
